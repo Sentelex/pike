@@ -1,24 +1,40 @@
-import state as s
-import router as r
+import tools.stocks as st
+import tools.summaries as su
+import tools.pdf_files as pf
+import tools.text_files as tf
+import tools.web_pages as wp
+import tools.action_items as aci
+from graph_builder import build_default_graph
 
-class LangGraphApp:
-    def __init__(self):
-        self.graph = self.build_graph()
-        self.llm_orchestrator = r.LLMOrchestrater()
 
-    def build_graph(self):
-        # Build the graph logic, if needed.
-        return {}
+def print_stream(stream):
+    for s in stream:
+        message = s["messages"][-1]
+        print(message.pretty_print() if hasattr(message, "pretty_print") else message)
 
-    def final_response(self, state):
-        return state["response"]
 
-    def invoke(self, message):
-        # Combine the pieces: create a state, pass it to the orchestrator, and get a response.
-        chat_state = s.ChatState(chat_id="unique_id", agent_type="chatbot")
-        chat_state.add_message(message)
-        short_state = chat_state.get_short_state()
+if __name__ == "__main__":
+    model = "Some Model"
+    tools = [
+        st.get_stock_price, 
+        su.summarize_text, 
+        pf.parse_pdf, 
+        tf.parse_file, 
+        wp.parse_webpage, 
+        aci.get_action_items
+    ]
+    model = model.bind_tools(tools)  # For models in Langchain
 
-        # Render the prompt based on the state
-        response = self.llm_orchestrator.get_response(short_state)
-        return self.final_response(response)
+    graph = build_default_graph(model, tools, graph_id="default")
+
+    # Example user input
+    user_input = {
+        "messages": [("user", "Summarize this: I love langgraph because it's powerful.")],
+        "attachment": None,
+        "graph_id": "default"
+    }
+
+    # Stream the response from the graph, passing the user input
+    response = graph.stream(user_input, stream_mode="values")
+
+    print_stream(response)
