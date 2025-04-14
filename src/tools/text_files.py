@@ -1,7 +1,7 @@
-from langchain_core.tools import tool
+import langchain_core.tools as lcct
 
 
-@tool
+@lcct.tool
 def parse_file(file: str) -> str:
     """Mock: Return fake parsed content from text file."""
     return "Parsed content from the text file (mocked)."
