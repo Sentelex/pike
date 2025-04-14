@@ -1,5 +1,4 @@
 import json
-import functools as ft
 from typing import Callable, List
 import langchain_core.messages as lcm
 import langchain_core.runnables as lcr
@@ -15,7 +14,6 @@ TOOL_LIST_LOOKUP = {
 }
 
 
-@ft.partial
 def tools_node(state: st.State, tools: List[Callable]):
     tools_by_name = {tool.name: tool for tool in tools}
     outputs = []
@@ -33,7 +31,6 @@ def tools_node(state: st.State, tools: List[Callable]):
     return {"messages": outputs}
 
 
-@ft.partial
 def assistant_node(state: st.State, model: lcr.RunnableConfig):
     system_prompt = lcm.SystemMessage(
         "You are a helpful assistant with tool at your disposal."
@@ -54,7 +51,6 @@ def add_new_message(
     return {'full_messages': [state.new_message]}
 
 
-@ft.partial
 def truncate_history(s: st.StateFull, max_messages: int = 10) -> st.State:
     """
     Truncate the history of messages to the last max_messages.
@@ -70,9 +66,10 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
     model.bind_tools(tools)
     _graph = lgg.StateGraph(st.State)
     _graph.add_node("new_massage", add_new_message)
-    _graph.add_node("truncate_history", truncate_history)
-    _graph.add_node("agent", assistant_node(model=model))
-    _graph.add_node("tools", tools_node(tools=tools))
+    _graph.add_node("truncate_history",
+                    lambda s: truncate_history(s, max_messages=10))
+    _graph.add_node("agent", lambda s: assistant_node(s, model=model))
+    _graph.add_node("tools", lambda s: tools_node(s, tools=tools))
     _graph.set_entry_point("new_massage")
     _graph.add_edge("new_massage", "truncate_history")
     _graph.add_edge("truncate_history", "agent")

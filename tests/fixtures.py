@@ -11,8 +11,16 @@ def mock_message():
 
 @pytest.fixture
 def mock_model():
-    """Fixture to provide a mock model."""
-    return "Some Model"
+    """Fixture to provide a mock model with a bind_tools() function."""
+    class MockModel:
+        def __init__(self):
+            self.tools = []
+
+        def bind_tools(self, tools):
+            """Mock implementation of bind_tools."""
+            self.tools = tools
+
+    return MockModel()
 
 
 @pytest.fixture
