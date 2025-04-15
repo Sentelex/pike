@@ -65,13 +65,13 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
     tools = TOOL_LIST_LOOKUP.get(graph_id, [])
     model.bind_tools(tools)
     _graph = lgg.StateGraph(st.State)
-    _graph.add_node("new_massage", add_new_message)
+    _graph.add_node("message", add_new_message)
     _graph.add_node("truncate_history",
                     lambda s: truncate_history(s, max_messages=10))
     _graph.add_node("agent", lambda s: assistant_node(s, model=model))
     _graph.add_node("tools", lambda s: tools_node(s, tools=tools))
-    _graph.set_entry_point("new_massage")
-    _graph.add_edge("new_massage", "truncate_history")
+    _graph.set_entry_point("message")
+    _graph.add_edge("message", "truncate_history")
     _graph.add_edge("truncate_history", "agent")
     _graph.add_conditional_edges("agent", tool_condition, {
         "tools": "tools", "end": lgg.END})
