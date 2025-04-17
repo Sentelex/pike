@@ -33,7 +33,7 @@ def tools_node(state: st.State, tools: List[Callable]):
 
 def assistant_node(state: st.State, model: lcr.RunnableConfig):
     system_prompt = lcm.SystemMessage(
-        "You are a helpful assistant with tool at your disposal."
+        "You are a helpful assistant with tools at your disposal. If you can use a tool try to use a tool."
     )
     response = model.invoke([system_prompt] + state.messages)
     return {"messages": [response]}
@@ -63,12 +63,12 @@ def truncate_history(s: st.StateFull, max_messages: int = 10) -> st.State:
 
 def build_graph(model, graph_id: str) -> lgg.StateGraph:
     tools = TOOL_LIST_LOOKUP.get(graph_id, [])
-    model.bind_tools(tools)
+    _model = model.bind_tools(tools)
     _graph = lgg.StateGraph(st.State)
     _graph.add_node("message", add_new_message)
     _graph.add_node("truncate_history",
                     lambda s: truncate_history(s, max_messages=10))
-    _graph.add_node("agent", lambda s: assistant_node(s, model=model))
+    _graph.add_node("agent", lambda s: assistant_node(s, model=_model))
     _graph.add_node("tools", lambda s: tools_node(s, tools=tools))
     _graph.set_entry_point("message")
     _graph.add_edge("message", "truncate_history")

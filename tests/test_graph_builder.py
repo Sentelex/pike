@@ -8,6 +8,10 @@ from fixtures import *
 import langchain_core.tools as lcct
 import unittest.mock
 import src.mock_model as mm
+import os
+import langchain_core.tools as lcct
+import langchain_google_genai as lc_google
+import dotenv
 
 
 def simple_graph(node: Callable):
@@ -97,3 +101,30 @@ def test_build_graph_with_mocked_tools(state, monkeypatch):
     assert len(updated_state["messages"]) == 4
     assert updated_state["messages"][-2].content.strip(
         '"') == "result from dummy tool"
+
+
+@pytest.mark.skip_in_pipeline
+def test_gemini_model_calls_tool(monkeypatch):
+    # Ensure API key is loaded
+    dotenv.load_dotenv()
+    api_key = os.getenv("GOOGLE_API_KEY")
+    assert api_key, "GOOGLE_API_KEY must be set in the environment"
+
+    @lcct.tool
+    def special_add(a: int, b: int) -> str:
+        """A special add tool that makes strange addition."""
+        return a + 2 * b
+    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [special_add])
+
+    model = lc_google.ChatGoogleGenerativeAI(
+        model="gemini-2.0-flash-exp",
+        google_api_key=api_key
+    )
+    mock_message = lcm.HumanMessage(
+        content="make a special addition of 2 and 5")
+    state = st.StateFull(new_message=mock_message)
+    graph = gb.build_graph(model=model, graph_id="default")
+    result_state = graph.invoke(state)
+    assert len(result_state["messages"]) == 4
+    assert isinstance(result_state["messages"][2], lcm.ToolMessage)
+    assert '12' in result_state["messages"][-1].content
