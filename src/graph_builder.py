@@ -35,13 +35,13 @@ def assistant_node(state: st.State, model: lcr.RunnableConfig):
     system_prompt = lcm.SystemMessage(
         "You are a helpful assistant with tool at your disposal."
     )
-    response = model.invoke([system_prompt] + state["messages"])
+    response = model.invoke([system_prompt] + state.messages)
     return {"messages": [response]}
 
 
 def tool_condition(state: st.State):
     # Check if the last message is a tool call
-    last_message = state["messages"][-1]
+    last_message = state.messages[-1]
     return "tools" if last_message.tool_calls else "end"
 
 

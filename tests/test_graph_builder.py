@@ -1,3 +1,4 @@
+import pytest
 import src.graph_builder as gb
 import src.state as st
 from typing import Callable
@@ -6,6 +7,7 @@ import langchain_core.messages as lcm
 from fixtures import *
 import langchain_core.tools as lcct
 import unittest.mock
+import src.mock_model as mm
 
 
 def simple_graph(node: Callable):
@@ -61,9 +63,37 @@ def test_tools_node(state):
     _graph = simple_graph(lambda s: gb.tools_node(s, tools=[test_tool]))
     updated_state = _graph.invoke(state)
     mock_tool.assert_called_once_with("value1", "value2")
-    assert updated_state["messages"][-1].content.strip('"') == "value1 and value2"
+    assert updated_state["messages"][-1].content.strip(
+        '"') == "value1 and value2"
 
 
-def test_build_graph(mock_model):
+def test_build_graph_with_mocked_tools(state, monkeypatch):
+    dummy_tool = unittest.mock.MagicMock()
+    dummy_tool.name = "dummy_tool"
+    dummy_tool.invoke = unittest.mock.MagicMock(
+        return_value="result from dummy tool")
+
+    # Patch the graph_builder to use only our dummy_tool for the 'default' graph
+    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, 'default', [dummy_tool])
+    response_messages = [
+        lcm.AIMessage(
+            content="dummy input",
+            tool_calls=[
+                lcm.ToolCall(
+                    name="dummy_tool",  # This must match the tool's name
+                    args={"file_path": "dummy_path.pdf"},
+                    id="tool-call-id-1"
+                )
+            ]
+        ),
+        lcm.AIMessage(
+            content="tool call completed"
+        )
+    ]
+    mock_model = mm.MockLLM(responses=response_messages)
     graph = gb.build_graph(model=mock_model, graph_id="default")
-    pass
+    updated_state = graph.invoke(state)
+    dummy_tool.invoke.assert_called_once_with({'file_path': 'dummy_path.pdf'})
+    assert len(updated_state["messages"]) == 4
+    assert updated_state["messages"][-2].content.strip(
+        '"') == "result from dummy tool"
