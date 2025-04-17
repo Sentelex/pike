@@ -112,19 +112,26 @@ def test_gemini_model_calls_tool(monkeypatch):
 
     @lcct.tool
     def special_add(a: int, b: int) -> str:
-        """A special add tool that makes strange addition."""
+        """A special add tool."""
         return a + 2 * b
-    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [special_add])
+
+    @lcct.tool
+    def special_multiply(a: int, b: int) -> str:
+        """A special multipy tool."""
+        return a * b / 6
+    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default",
+                        [special_add, special_multiply])
 
     model = lc_google.ChatGoogleGenerativeAI(
         model="gemini-2.0-flash",
         google_api_key=api_key
     )
     mock_message = lcm.HumanMessage(
-        content="make a special addition of 2 and 5")
+        content="make a special addition of 2 and 5 and then special multiply by 4")
     state = st.StateFull(new_message=mock_message)
     graph = gb.build_graph(model=model, graph_id="default")
     result_state = graph.invoke(state)
-    assert len(result_state["messages"]) == 4
+    assert len(result_state["messages"]) == 6
     assert isinstance(result_state["messages"][2], lcm.ToolMessage)
-    assert '12' in result_state["messages"][-1].content
+    assert isinstance(result_state["messages"][4], lcm.ToolMessage)
+    assert '8' in result_state["messages"][-1].content
