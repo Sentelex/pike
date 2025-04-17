@@ -117,7 +117,7 @@ def test_gemini_model_calls_tool(monkeypatch):
     monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [special_add])
 
     model = lc_google.ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash-exp",
+        model="gemini-2.0-flash",
         google_api_key=api_key
     )
     mock_message = lcm.HumanMessage(
