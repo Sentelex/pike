@@ -16,6 +16,7 @@ class MockLLM:
     def bind_tools(self, tools):
         """Mock bind_tools method that stores tools for later use."""
         self.tools = tools
+        return self
 
     def invoke(self,
                input: Union[str, List[lc_messages.BaseMessage]],
