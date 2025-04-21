@@ -1,6 +1,7 @@
 import langchain_core.tools as lcct
 import fitz
 import unicodedata
+import os
 
 
 @lcct.tool
@@ -14,6 +15,9 @@ def parse_pdf(file_path: str) -> str:
     Returns:
     - str: Extracted text from the PDF.
     """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file at {file_path} does not exist.")
+
     try:
         with fitz.open(file_path) as doc:
             if doc.is_encrypted:

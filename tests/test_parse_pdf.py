@@ -33,5 +33,5 @@ def test_parse_pdf_reads_content(dummy_pdf_file):
 
 
 def test_parse_pdf_invalid_path():
-    with pytest.raises(RuntimeError):
+    with pytest.raises(FileNotFoundError):
         parse_pdf("non_existent_file.pdf")
