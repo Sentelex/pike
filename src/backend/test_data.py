@@ -1,27 +1,36 @@
 import hashlib as h
 import base64
 import uuid as u
-from .typedefs import *
+import typedefs as td
+import user_spec as user
+import chat_spec as chat
+import agent_spec as agent
+import uuid_hierarchy as uh
 
 
-root_namespace = u.uuid.NAMESPACE_DNS
-namespace_uuid = u.uuid5(root_namespace, "pike.sentelex.com")
+
 
 test_chat_map = {
     UserToken(h.sha512(("MickeyMouse" + "MinnieR0XX").encode("UTF-8")).hexdigest()): {
         (
             "Mickey Mouse",
-            set[
-                (ChatDescriptor("Pluto Gift Ideas"), u.uuid5(namespace_uuid, "Pluto")),
-                (
-                    ChatDescriptor("Minnie Gift Ideas"),
-                    u.uuid5(namespace_uuid, "Minnie"),
+            set(
+                [                  
+                chat.ChatTag(
+                        chat.ChatDescriptor("Pluto Gift Ideas"), 
+                        uh.string_to_safe_uuid("Pluto")
                 ),
-            ],
+                chat.ChatTag(
+                        chat.ChatDescriptor("Minnie Gift Ideas"),
+                        uh.string_to_safe_uuid("Minnie"),
+                )
+                ]
+                ),                    
         )
     }
 }
 
+def encode_url_safe(base_uuid: u.UUID)->td.
 
 def string_to_safe_uuid(base_uuid: u.UUID, specific: str) -> str:
     """

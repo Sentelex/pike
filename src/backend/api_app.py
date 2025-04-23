@@ -2,8 +2,8 @@ import contextlib as cl
 import fastapi as fapi
 import fastapi.middleware.cors as fapi_cors
 
-from .typedefs import *
-from test_data import test_chat_map, chat_recap_example
+import typedefs as td
+import test_data as teda
 
 import langchain_core.messages as lcm
 
@@ -18,7 +18,7 @@ def get_user_chat_map() -> ChatMap:
     """
     # This is a placeholder function. In a real application, this would fetch
     # data from a database or other storage.
-    return test_chat_map
+    return teda.test_chat_map
 
 
 user_map = {}
@@ -80,7 +80,7 @@ async def get_agent_types() -> list[str]:
 
 
 @pike_api.get("/user/{user_id}/chat")
-async def get_chats(user_id: UserToken) -> list[ChatToken]:
+async def get_chats(user_id: td.UserToken) -> list[td.ChatToken]:
     """
     Provides a list of all thread ids which are associated with the specific user.
 
@@ -108,7 +108,7 @@ async def get_chats(user_id: UserToken) -> list[ChatToken]:
 
 
 @pike_api.get("/user/{user_id}/chat/{chat_id}")
-async def get_history(user_id: UserToken, chat_id: ChatToken) -> ChatRecap:
+async def get_history(user_id: td.UserToken, chat_id: td.ChatToken) -> td.ChatRecap:
     """
     Provides the chat history for user {user_id} and thread {chat_id} in an
     appropriate format for sending to the frontend.
@@ -126,13 +126,13 @@ async def get_history(user_id: UserToken, chat_id: ChatToken) -> ChatRecap:
         A ChatRecap object containing the user_id, the short name of the chat
         for the frontend, and the chat messages themselves.
     """
-    if not UserToken in user_map:
+    if not td.UserToken in user_map:
         raise fapi.HTTPException(status_code=404, detail=f"User not found")
     try:
         if not chat_id in user_map.values():
             raise fapi.HTTPException(
                 status_code=404, detail=f"Requested chat not found"
             )
-        return chat_recap_example
+        return td.chat_recap_example
     except Exception as e:
         raise
