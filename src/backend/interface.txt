@@ -1,0 +1,55 @@
+Interface calls/responses outline
+
+
+Data Defintions
+---------------
+A "token" is a UUID.
+
+chat_tag:       (chat_token, chat_description)
+agent_tag:      (agent_token, agent_description)
+user_tag:       (user_token, user_name)
+attachment_tag: (attachment_token, attachment_description)
+
+Maps:  Maps token/tag to something, or something to token/tag.
+
+user_map:         Maps (user_name, password) -> user_tag  # Note: Need to secure the mapping of (user_name, password)
+attachment_map:   Maps attachment_token to attachment_data
+user_chat_map:    Maps user to list of their chat_tokens
+
+
+In many cases we will pass back tags (token + light_data) instead of raw tokens
+from retrieval calls because we generally use tokens as non user-facing IDs and have
+an alternate user-facing item to display instead.
+
+Retrieve_Descriptors
+--------------------
+get_agents() -> {list[agent_tags]}
+
+Chat_Functions
+--------------
+GET
+get_agents() -> {list[agent_tags]}
+
+get_user(user, password) -> {user_tag}
+get_user_data(user_token) -> {user_info}
+get_user_chats(user_token) -> {list[chat_tags]}
+
+get_chat_history(user_token, chat_token) -> {chat_message_list}
+get_chat_status(user_token, chat_token) -> {status_tag_list}
+get_chat_full(user_token, chat_token) -> {status_tag_list, chat_message_list, attachment_tag_list}
+
+get_chat_attachments(user_token, chat_token) -> {attachment_tag_list}
+get_attachment(user_token, chat_token, attachment_token) -> {attachment_data}
+
+get_agent_list() -> {agent_tag_list}
+get_agent_info() -> {agent_info, agent_skill_list}
+get_chat_by_agent(user_token, agent_token) -> {chat_tag_list}
+
+POST
+new_chat(user_token, agent_token) -> {chat_tag}
+new_chat_attachment(chat_token, attachment_data) -> {attachment_tag}
+
+PUT
+get_response(chat_token, message_data) -> {response}
+modify_chat_status(chat_token, status_tag_list) -> {status_tag_list}
+
