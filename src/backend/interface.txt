@@ -21,35 +21,28 @@ In many cases we will pass back tags (token + light_data) instead of raw tokens
 from retrieval calls because we generally use tokens as non user-facing IDs and have
 an alternate user-facing item to display instead.
 
-Retrieve_Descriptors
---------------------
-get_agents() -> {list[agent_tags]}
-
 Chat_Functions
 --------------
 GET
-get_agents() -> {list[agent_tags]}
+*get_agents() -> {array(Agent)}
 
-get_user(user, password) -> {user_tag}
-get_user_data(user_token) -> {user_info}
-get_user_chats(user_token) -> {list[chat_tags]}
-
-get_chat_history(user_token, chat_token) -> {chat_message_list}
-get_chat_status(user_token, chat_token) -> {status_tag_list}
-get_chat_full(user_token, chat_token) -> {status_tag_list, chat_message_list, attachment_tag_list}
-
-get_chat_attachments(user_token, chat_token) -> {attachment_tag_list}
-get_attachment(user_token, chat_token, attachment_token) -> {attachment_data}
-
-get_agent_list() -> {agent_tag_list}
-get_agent_info() -> {agent_info, agent_skill_list}
-get_chat_by_agent(user_token, agent_token) -> {chat_tag_list}
+*get_user_info(user_id) -> {User}
+*get_user_agents(user_id) -> {array(Agent)}
+*get_user_chats_compact(user_id) -> {array(ChatTag)}
+*get_user-chats_by_agent(user_id, agent_id) -> {array(ChatTag)}
+*get_user_chat(user_id, chat_id) -> {Chat}
+*get_attachment(attachment_token) -> {attachment_data}
+*get_agent() -> {Agent}
 
 POST
-new_chat(user_token, agent_token) -> {chat_tag}
-new_chat_attachment(chat_token, attachment_data) -> {attachment_tag}
+*create_chat(user_id, agent_id) -> {chat_tag}
+*add_agent_to_user(user_id, agent_id) -> {array(Agent)}
+*invoke_chat(user_id, chat_id, input) -> lcm.BaseMessage
+
+DELETE
+*remove_agent_from_user(user_id, agent_id) -> {array(Agent)}
+*remove_chat_from_user(user_id, chat_id) -> {array(ChatTag)}
 
 PUT
-get_response(chat_token, message_data) -> {response}
-modify_chat_status(chat_token, status_tag_list) -> {status_tag_list}
+*modify_chat_status(chat_token, status_tag_list) -> {status_tag_list}
 
