@@ -5,6 +5,7 @@ import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 import src.state as st
 import src.tools as tools
+import langgraph.checkpoint.memory as lgcm
 
 
 TOOL_LIST_LOOKUP = {
@@ -76,4 +77,4 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
     _graph.add_conditional_edges("agent", tool_condition, {
         "tools": "tools", "end": lgg.END})
     _graph.add_edge("tools", "agent")
-    return _graph.compile()
+    return _graph.compile(checkpointer=lgcm.InMemorySaver())
