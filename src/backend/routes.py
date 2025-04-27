@@ -33,7 +33,6 @@ class InputMessage(pyd.BaseModel):
         return model
 
 
-
 # User access calls
 
 ## Read calls
@@ -220,7 +219,7 @@ async def create_chat(user_id: user.UserID, agent_id: agent.AgentID)-> chat.Chat
     return new_chatTag
 
 
-## Update calls
+## Creation calls
 # c.ii.  add agent (Ignore agent preparedness flag for now)
 @pike.api.post("/user/{user_id}/agent/{agent_id}")
 async def add_agent_to_user(
@@ -247,6 +246,9 @@ async def add_agent_to_user(
 # 2.d (and 2.c.ii)
 @pike.api.post("/user/{user_id}/chat/{chat_id}")
 async def invoke_chat(user_id: user.UserID, chat_id: chat.ChatID, input: InputMessage) -> lcm.BaseMessage:
+
+  config = {"configurable": {"thread_id": chat_id}}
+
   try:
     if input.text:
       message_body = {"role" : "user", "content" : input.text}
@@ -254,7 +256,7 @@ async def invoke_chat(user_id: user.UserID, chat_id: chat.ChatID, input: InputMe
       message_body = {"role" : "user", "content" : input.multimodal.model_dump()}
     
     responses = []
-    for event in graph.stream( {"messages" : [message_body]}, 
+    for event in pike.graph.stream( {"messages" : [message_body]}, 
                               config ):
         for value in event.values():
             responses.append(value["messages"].content)
@@ -263,6 +265,3 @@ async def invoke_chat(user_id: user.UserID, chat_id: chat.ChatID, input: InputMe
   except Exception as err:
     print(f"Error in invoke_chat: {str(err)}")
     raise fapi.HTTPException(status_code=500, detail=str(err))
-
-
-

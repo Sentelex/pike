@@ -8,11 +8,10 @@ import pydantic as pyd
 
 import test_data as teda
 import data_maps as dm
-import langgraph.graph as lgg
-import backend.data_specs.user_spec as user
-import backend.data_specs.chat_spec as chat
-import backend.data_specs.agent_spec as agent
+import graph_builder as gb
 
+model = "Some Model"
+graph = gb.build_graph(model, graph_id="default")
 
 def get_user_chat_map() -> dm.UserChat:
     """
@@ -58,8 +57,7 @@ async def service_lifecycle(app: fapi.FastAPI):
 
     # save_user_map(user_map) # For eventual use when we have a database
     del user_map
-
-
+    
 api = fapi.FastAPI(lifespan=service_lifecycle)
 security = fapi_sec.HTTPBasic()
 
