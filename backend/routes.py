@@ -1,179 +1,203 @@
-import pike
-import typing as t
-import pydantic as pyd
+import base64
+
+import backend.pike as pike
 import langchain_core.messages as lcm
-import fastapi as fapi
-import copy
+import datetime as dt
 
-import backend.data_specs.agent_spec as agent
-import backend.data_specs.chat_spec as chat
-import backend.data_specs.user_spec as user
-import backend.data_specs.attachment_spec as attach
-
-import test_data as teda
-
-# See https://python.langchain.com/docs/how_to/multimodal_inputs/#documents-pdf for more info on the payload
-class MultimodalContent(pyd.BaseModel):
-    content: list[dict[str,str]]    
-
-class InputMessage(pyd.BaseModel):
-    """
-    An input message that may have text input, a multimodal message input 
-    dictionary, or both.
-    """
-    text: t.Optional[str] = None
-    multimodal: t.Optional[MultimodalContent] = None
-
-    @pyd.model_validator(mode="after")
-    def validate_message(cls, model):
-        """
-        Ensure that at least one of 'text' or 'multimodal' is provided.
-        """
-        if not model.text and not model.multimodal:
-            raise ValueError("InputMessage must contain either a text or multimodal payload.")
-        return model
+import uuid as u
 
 
-# User access calls
+model_additional = {
+    "temperature": 0.5,
+    "max_tokens": 250,
+}
+
+model = {
+    "model_name": "gpt-4o-mini",
+    "api_key": "N0T-4-R34L-K3Y",
+    "additonal_arguments": model_additional,
+}
+
+skill_1 = {
+    "ID": "8365d252-1bf2-46da-b621-5450e31eb90d",
+    "name": "PDF Reader",
+    "description": "Parses main-body text from PDFs",
+}
+
+skill_2 = {
+    "ID": "728f0e28-1d15-4934-92c4-a236f01acb9a",
+    "name": "Summarizer",
+    "description": "Summerizes provided text into a three sentence description.",
+    "model": model,
+}
+
+agent_1 = {
+    "ID": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
+    "name": "Default Agent",
+    "description": "PIKE's default agent",
+    "model": model,
+    "skills": [skill_1],
+}
+
+agent_2 = {
+    "ID": "5461e31d-cbe0-4278-8c7e-a0a4ecd9d7b7",
+    "name": "Additional Agent",
+    "description": "Agent which does cool stuff",
+    "model": model,
+    "skills": [skill_1, skill_2],
+}
+
+file_path = "../tests/data/squeaky_bone.jpg"
+with open(file_path, "rb") as image_file:
+    image_data = image_file.read()
+    encoded_image = base64.urlsafe_b64encode(image_data).decode("utf-8")
+
+file_path = "../tests/data/dummy.pdf"
+with open(file_path, "rb") as pdf_file:
+    pdf_data = pdf_file.read()
+    encoded_pdf = base64.urlsafe_b64encode(pdf_data).decode("utf-8")
+
+attachment_db = {
+    "d0e478dd-dd1b-4e55-9beb-ec6c2c3f18d7": encoded_image,
+    "20a6737d-1fb6-4a63-9d9f-c0034d77153e": encoded_pdf,
+}
+
+chat_1_no_message = {
+    "ID": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
+    "name": "First Chat",
+    "pinned": True,
+    "bookmarked": False,
+    "focused": True,
+    "open": True,
+    "to_delete": False,
+    "last_accessed": dt.datetime(2023, 10, 4, 12, 0, 0),
+    "agent": agent_1,
+}
+chat_1 = {chat_1_no_message} | {
+    "messages": [
+        lcm.HumanMessage(content="This is a basic human input message to the chat."),
+        lcm.AIMessage(content="This is an AI response to the human message."),
+        lcm.HumanMessage(
+            content=[
+                {"type": "text", "text": "Please find me something like this image."},
+                {
+                    "type": "image",
+                    "source_type": "base64",
+                    "mime_type": "image/jpeg",
+                    "data": attachment_db["d0e478dd-dd1b-4e55-9beb-ec6c2c3f18d7"],
+                },
+            ]
+        ),
+    ]
+}
+
+chat_2_no_message = {
+    "ID": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
+    "name": "Second Chat",
+    "pinned": True,
+    "bookmarked": False,
+    "focused": True,
+    "open": True,
+    "to_delete": False,
+    "last_accessed": dt.datetime(2024, 10, 4, 12, 0, 0),
+    "agent": agent_2,
+}
+chat_2 = {chat_2_no_message} | {
+    "messages": [
+        lcm.HumanMessage(content="This is a basic human input message to the chat."),
+        lcm.AIMessage(content="This is an AI response to the human message."),
+        lcm.HumanMessage(
+            content=[
+                {"type": "text", "text": "Summarize this document."},
+                {
+                    "type": "file",
+                    "source_type": "base64",
+                    "mime_type": "application/pdf",
+                    "data": attachment_db["20a6737d-1fb6-4a63-9d9f-c0034d77153e"],
+                },
+            ]
+        ),
+    ]
+}
+
+
+chat_message = {
+    "messages": [lcm.AIMessage(content="This is an AI response to the human message.")]
+}
+
+user = {
+    "ID": "6b96666e-8b3a-4996-932d-3aa75c08c16f",
+    "name": "Michael Luch",
+    "start_date": dt.date(1928, 11, 18),
+    "end_date": dt.date(2026, 5, 1),
+    "available_credits": 26,
+    "used_credits": 14,
+    "location": "Anaheim, CA",
+    "agents": [agent_1, agent_2],
+    "chats": [chat_1, chat_2],
+}
 
 
 ## Read calls
 # c.iii.1 (?) get available agents
 @pike.api.get("/agents")
-async def get_public_agents() -> list[agent.Agent]:
+async def get_public_agents() -> list[dict]:
     """
     Get a list of all public agent types.
-
-    Returns
-    -------
-    agent_list: list[Agent]
     """
-    return list(teda.all_agent_set)
+    return [agent_1, agent_2]
+
 
 # 1.d.  User settings
 @pike.api.get("/user/{user_id}")
-async def get_user_info(user_id: user.UserID) -> user.User:
+async def get_user_info(user_id: str) -> dict:
     """
     Provides full info about a user given their user_id.
-
-    Parameters:
-    -----------
-    user_id:  UserToken
-      User's ID token from login
-
-    Returns:
-    --------
-    user: User
-      All information about a user
     """
-    user_complete = teda.mickey_user
-    return user_complete
+    return user
+
 
 # 1.a.  get my agents
 @pike.api.get("/user/{user_id}/agents")
-async def get_user_agents(user_id: user.UserID) -> list[agent.Agent]:
+async def get_user_agents(user_id: u.UUID) -> list[dict]:
     """
     Get all agents the user has chosen to enable.
-
-    Parameters
-    ----------
-    user_id:  UserToken
-      User's ID token from login
-
-    Returns
-    -------
-    agent_list: list[Agent]
-      List of currently enabled agents for the user.
     """
-    agent_list = teda.mickey_user.agents
-    return agent_list
+    [agent_1, agent_2]
+
 
 # 1.b.  get compact chat representations
 @pike.api.get("/user/{user_id}/chats")
-async def get_user_chats_compact(user_id: user.UserID) -> list[chat.ChatTag]:
+async def get_user_chats_compact(user_id: str) -> list[dict]:
     """
     Gets a list of chat tags, providing enough information to render the associated
     chats without messages.
-
-    Parameters:
-    -----------
-    user_id:  UserToken
-      User's ID token from login
-
-    Returns:
-    --------
-    compact_chat_list: list[ChatTag]
-      A list of compact representations (ChatTags) of chats in which the user has been
-      involved
     """
-    compact_chat_list = teda.mickey_user.chats
-    return compact_chat_list
+    return [chat_1_no_message, chat_2_no_message]
+
 
 # 2.a
 @pike.api.get("/user/{user_id}/agent/{agent_id}/chats")
-async def get_user_chats_by_agent(user_id: user.UserID, agent_id: agent.AgentID)->list[chat.ChatTag]:
+async def get_user_chats_by_agent(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Return a list of all chats for a specific user which use a specific agent.
-
-    Parameters
-    ----------
-    user_id: UserToken
-      The token identifying the current user
-
-    agent_id: UUID
-      The UUID identifying the currently selected agent
-
-    Returns
-    -------
-    chat_list: list[ChatTag]
-      List of all chat tags belonging to this user which employ the specified agent.
     """
-    # user_id = teda.mickey_user.tag.ID
-    # user_chats = teda.mickey_user.chats
-    # agent_id = teda.mickey_AgentTag_1
-    # chat_list = [chat for chat in user_chats if chat.agent.ID == agent_id]
-    chat_list = [teda.mickey_Chat1.tag]
-    return chat_list
+    return [chat_1_no_message]
+
 
 # 2.b (somwhat) get a chat's full history
 @pike.api.get("/user/{user_id}/chat/{chat_id}")
-async def get_user_chat(user_id: user.UserID, chat_id: chat.ChatID) -> chat.Chat:
+async def get_user_chat(user_id: str, chat_id: u.UUID) -> dict:
     """
     Provides the chat history for user {user_id} and thread {chat_id} in an
     appropriate format for sending to the frontend.
-
-    Parameters
-    ----------
-    user_id : UserToken
-        The user token to identify the user.
-    chat_id : ChatToken
-        The thread ID associated with the user.
-
-    Returns
-
-
-    -------
-    ChatRecap
-        A ChatRecap object containing the user_id, the short name of the chat
-        for the frontend, and the chat messages themselves.
     """
-    return teda.mickey_Chat1
-    # user_id = teda.mickey_token
-    # chat_id = teda.chat_token_1
-    # if not user_id in user_map:
-    #     raise fapi.HTTPException(status_code=404, detail=f"User not found")
-    # try:
-    #     if not chat_id in user_map.values():
-    #         raise fapi.HTTPException(
-    #             status_code=404, detail=f"Requested chat not found"
-    #         )
-    #     return teda.chat_recap_example
-    # except Exception as e:
-    #     raise
+    return chat_1
+
 
 # 2.h Get attachment information.  (Should be implicitly filtered by user as attachments are in user's chats)
 @pike.api.get("/attachment/{attachment_id}")
-async def get_attachment(attachment_id: attach.AttachmentID) -> attach.Attachment:
+async def get_attachment(attachment_id: u.UUID) -> str:
     """
     Uses an attachment_id to request the data from a specific attachment from the backend.
 
@@ -181,168 +205,75 @@ async def get_attachment(attachment_id: attach.AttachmentID) -> attach.Attachmen
     ----------
     attachment_id:  The UUID of the attachment requested.
     """
-    return teda.bbgun_Attach
+    return encoded_image
+
 
 @pike.api.get("/agent/{agent_id}")
-async def get_agent(agent_id: agent.AgentID)-> agent.Agent:
+async def get_agent(agent_id: u.UUID) -> dict:
     """
     Retrieve the information about a specific agent.
-
-    Parameters
-    ----------
-    agent_id: UUID
-      The ID of the agent about which to retrieve information.
     """
+    return agent_1
 
-    return teda.default_Agent
 
 ## Create calls
 # 2.c Create a new chat
 @pike.api.post("/user/{user_id}/agent/{agent_id}/chat")
-async def create_chat(user_id: user.UserID, agent_id: agent.AgentID)-> chat.ChatTag:
+async def create_chat(user_id: str, agent_id: u.UUID) -> dict:
     """
     Generates a new, empty chat with a ChatID, attached to a specific user with a specific agent
     employed within the chat.
-
-
-    Parameters
-    ----------
-    user_id: UserToken
-      The token identifying the current user
-
-    agent_id: UUID
-      The UUID identifying the currently selected agent
-
-    Returns
-    -------
-    chat_tag: ChatTag
-      A ChatTag representing the newly created chat.
     """
-    # Faux user lookup to get username
-    user = teda.mickey_user
-    # Faux lokup for agent info
-    agent = teda.default_Agent
-    new_chatTag = chat.ChatTag(
-        ID=teda.new_chatID,
-        name=f"NewChat - {user.tag.name} - {agent.tag.name}",
-        flags=chat.ChatFlags(
-            is_open=True,
-            is_focused=True
-        ),
-        agent = agent.tag
-    )
-    return new_chatTag
+
+    return chat_1_no_message
+
 
 # c.ii.  add agent (Ignore agent preparedness flag for now)
 @pike.api.post("/user/{user_id}/agent/{agent_id}")
-async def add_agent_to_user(
-    user_id: user.UserID, agent_id: agent.AgentID
-) -> list[agent.Agent]:
+async def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Adds a new potential agent to the user's current agent list.
-
-    Parameters
-    ----------
-    user_id: UserToken
-      User's ID token from login
-    agent_id: UUID
-      ID of the agent to add to the user's list
-
-    Returns:
-    --------
-    new_agent_list:  list[Agent]
-      New list of agents for user
     """
-    teda.mickey_user.agents.append(teda.additional_Agent)
-    return teda.mickey_user.agents
+    return [agent_1, agent_2]
+
 
 # 2.d (and 2.c.ii)
 @pike.api.post("/user/{user_id}/chat/{chat_id}")
-async def invoke_chat(user_id: user.UserID, chat_id: chat.ChatID, input: InputMessage) -> lcm.BaseMessage:
+async def invoke_chat(
+    user_id: str, chat_id: u.UUID, input: str | list[dict]
+) -> str | list[dict]:
+    """
+    Sends input to the agent and receives output dictionary with responses.
+    """
+    return chat_message
 
-  config = {"configurable": {"thread_id": chat_id}}
-
-  try:
-    if input.text:
-      message_body = {"role" : "user", "content" : input.text}
-    else:
-      message_body = {"role" : "user", "content" : input.multimodal.model_dump()}
-    
-    responses = []
-    for event in pike.graph.stream( {"messages" : [message_body]}, 
-                              config ):
-        for value in event.values():
-            responses.append(value["messages"].content)
-    return {"responses" : responses[0] if responses else "..."}
-  
-  except Exception as err:
-    print(f"Error in invoke_chat: {str(err)}")
-    raise fapi.HTTPException(status_code=500, detail=str(err))
 
 ##Deletion calls
 # Delete agent from user
 @pike.api.delete("/user/{user_id}/agent/{agent_id}")
-async def remove_agent_from_user(user_id: user.UserID, agent_id: agent.AgentID) -> list[agent.Agent]:
+async def remove_agent_from_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
-    Removes a curent agent from the user's current agent list.
-
-    Parameters
-    ----------
-    user_id: UserToken
-      User's ID token from login
-    agent_id: UUID
-      ID of the agent to remove from the user's list
-
-    Returns:
-    --------
-    new_agent_list:  list[Agent]
-      Adjusted list of agents for the user
+    Removes the specified agent from the current user's list and returns the
+    modified agent list for the user.
     """
-    if teda.additional_Agent in teda.mickey_user.agents:
-        teda.mickey_user.agents.pop(teda.additional_Agent)
-    return teda.mickey_user.agents
+    return [agent_1]
+
 
 @pike.api.delete("/user/{user_id}/chat/{chat_id}")
-async def remove_chat_from_user(user_id: user.UserID, chat_id: chat.ChatID)->list[chat.ChatTag]:
+async def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
     """
-    Deletes a chat and all associated information, unlinking it from a user's history.
-
-    Parameters
-    ----------
-    user_id : UserToken
-      The chat owner's ID
-    chat_id : UUID
-      The chat identifier of the chat to be deleted.
-
-    Returns
-    -------
-      The updated list of chat tags belonging to the user after deletion.
+    Deletes the specified chat history and removes the reference from the users
+    list, returning the modified chat list for the user.
     """
+    return [chat_1]
 
-    return copy.copy(teda.mickey_user_chats).pop(teda.mickey_ChatTag_2)
 
 ##Put calls
 # Change chat flags
 @pike.api.put("/user/{user_id}/chat/{chat_id}")
-async def modify_chat_status(user_id: user.UserID, chat_id: chat.ChatID, chat_flags: chat.ChatFlags)->chat.ChatTag:
+async def modify_chat_status(user_id: str, chat_id: u.UUID, chat_flags: dict) -> dict:
     """
-    Modifies the flags controlling a chat's state (pinned, bookmarked, open, etc...)
-
-    Parameters
-    ----------
-    user_id : UserToken
-      ID of the user owning the chat
-    chat_id : UUID
-      Identifier for the chat being modified
-    chat_flags : ChatFlags
-      The flags and their respective desired states
-
-    Returns
-    -------
-      The updated ChatTag for the chat whose flags were modified.
+    Modifies the chat flags included in the current chat to be those sent in the
+    chat_flags object by the frontend.  Returns the modified chat without messages.
     """
-    
-    return (chat.ChatTag(teda.mickey_Chat1.tag.ID,
-                         teda.mickey_Chat1.tag.name,
-                         chat_flags,
-                         teda.mickey_Chat1.tag.agent))
+    return chat_1_no_message
