@@ -81,4 +81,4 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
         "agent", tool_condition, {"tools": "tools", "end": lgg.END}
     )
     _graph.add_edge("tools", "agent")
-    return _graph.compile(checkpointer=lgcm.InMemorySaver())
+    return _graph.compile()
