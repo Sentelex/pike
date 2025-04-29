@@ -141,7 +141,7 @@ user = {
 ## Read calls
 # c.iii.1 (?) get available agents
 @pike.api.get("/agents")
-async def get_public_agents() -> list[dict]:
+def get_public_agents() -> list[dict]:
     """
     Get a list of all public agent types.
     """
@@ -150,7 +150,7 @@ async def get_public_agents() -> list[dict]:
 
 # 1.d.  User settings
 @pike.api.get("/user/{user_id}")
-async def get_user_info(user_id: str) -> dict:
+def get_user_info(user_id: str) -> dict:
     """
     Provides full info about a user given their user_id.
     """
@@ -159,7 +159,7 @@ async def get_user_info(user_id: str) -> dict:
 
 # 1.a.  get my agents
 @pike.api.get("/user/{user_id}/agents")
-async def get_user_agents(user_id: u.UUID) -> list[dict]:
+def get_user_agents(user_id: u.UUID) -> list[dict]:
     """
     Get all agents the user has chosen to enable.
     """
@@ -168,7 +168,7 @@ async def get_user_agents(user_id: u.UUID) -> list[dict]:
 
 # 1.b.  get compact chat representations
 @pike.api.get("/user/{user_id}/chats")
-async def get_user_chats_compact(user_id: str) -> list[dict]:
+def get_user_chats_compact(user_id: str) -> list[dict]:
     """
     Gets a list of chat tags, providing enough information to render the associated
     chats without messages.
@@ -178,7 +178,7 @@ async def get_user_chats_compact(user_id: str) -> list[dict]:
 
 # 2.a
 @pike.api.get("/user/{user_id}/agent/{agent_id}/chats")
-async def get_user_chats_by_agent(user_id: str, agent_id: u.UUID) -> list[dict]:
+def get_user_chats_by_agent(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Return a list of all chats for a specific user which use a specific agent.
     """
@@ -187,7 +187,7 @@ async def get_user_chats_by_agent(user_id: str, agent_id: u.UUID) -> list[dict]:
 
 # 2.b (somwhat) get a chat's full history
 @pike.api.get("/user/{user_id}/chat/{chat_id}")
-async def get_user_chat(user_id: str, chat_id: u.UUID) -> dict:
+def get_user_chat(user_id: str, chat_id: u.UUID) -> dict:
     """
     Provides the chat history for user {user_id} and thread {chat_id} in an
     appropriate format for sending to the frontend.
@@ -197,7 +197,7 @@ async def get_user_chat(user_id: str, chat_id: u.UUID) -> dict:
 
 # 2.h Get attachment information.  (Should be implicitly filtered by user as attachments are in user's chats)
 @pike.api.get("/attachment/{attachment_id}")
-async def get_attachment(attachment_id: u.UUID) -> str:
+def get_attachment(attachment_id: u.UUID) -> str:
     """
     Uses an attachment_id to request the data from a specific attachment from the backend.
 
@@ -209,7 +209,7 @@ async def get_attachment(attachment_id: u.UUID) -> str:
 
 
 @pike.api.get("/agent/{agent_id}")
-async def get_agent(agent_id: u.UUID) -> dict:
+def get_agent(agent_id: u.UUID) -> dict:
     """
     Retrieve the information about a specific agent.
     """
@@ -219,7 +219,7 @@ async def get_agent(agent_id: u.UUID) -> dict:
 ## Create calls
 # 2.c Create a new chat
 @pike.api.post("/user/{user_id}/agent/{agent_id}/chat")
-async def create_chat(user_id: str, agent_id: u.UUID) -> dict:
+def create_chat(user_id: str, agent_id: u.UUID) -> dict:
     """
     Generates a new, empty chat with a ChatID, attached to a specific user with a specific agent
     employed within the chat.
@@ -230,7 +230,7 @@ async def create_chat(user_id: str, agent_id: u.UUID) -> dict:
 
 # c.ii.  add agent (Ignore agent preparedness flag for now)
 @pike.api.post("/user/{user_id}/agent/{agent_id}")
-async def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
+def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Adds a new potential agent to the user's current agent list.
     """
@@ -239,7 +239,7 @@ async def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
 
 # 2.d (and 2.c.ii)
 @pike.api.post("/user/{user_id}/chat/{chat_id}")
-async def invoke_chat(
+def invoke_chat(
     user_id: str, chat_id: u.UUID, input: str | list[dict]
 ) -> str | list[dict]:
     """
@@ -251,7 +251,7 @@ async def invoke_chat(
 ##Deletion calls
 # Delete agent from user
 @pike.api.delete("/user/{user_id}/agent/{agent_id}")
-async def remove_agent_from_user(user_id: str, agent_id: u.UUID) -> list[dict]:
+def remove_agent_from_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Removes the specified agent from the current user's list and returns the
     modified agent list for the user.
@@ -260,7 +260,7 @@ async def remove_agent_from_user(user_id: str, agent_id: u.UUID) -> list[dict]:
 
 
 @pike.api.delete("/user/{user_id}/chat/{chat_id}")
-async def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
+def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
     """
     Deletes the specified chat history and removes the reference from the users
     list, returning the modified chat list for the user.
@@ -271,7 +271,7 @@ async def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
 ##Put calls
 # Change chat flags
 @pike.api.put("/user/{user_id}/chat/{chat_id}")
-async def modify_chat_status(user_id: str, chat_id: u.UUID, chat_flags: dict) -> dict:
+def modify_chat_status(user_id: str, chat_id: u.UUID, chat_flags: dict) -> dict:
     """
     Modifies the chat flags included in the current chat to be those sent in the
     chat_flags object by the frontend.  Returns the modified chat without messages.

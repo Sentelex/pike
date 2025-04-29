@@ -9,7 +9,7 @@ graph = gb.build_graph(model, graph_id="default")
 
 
 @cl.asynccontextmanager
-async def service_lifecycle(app: fapi.FastAPI):
+def service_lifecycle(app: fapi.FastAPI):
     """
     Lifecycle context manager for FastAPI app.
     """
