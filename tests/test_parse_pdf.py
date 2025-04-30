@@ -1,37 +1,49 @@
-import os
-import tempfile
+import io
+import base64
 import pytest
+from unittest.mock import patch
 from reportlab.pdfgen import canvas
 
 from src.tools.pdf_files import parse_pdf
 
 
-@pytest.fixture
-def dummy_pdf_file():
+def generate_test_pdf_bytes() -> bytes:
     """
-    Creates a temporary PDF file with known content for testing.
-    Cleans up the file after use.
+    Generates a simple PDF in-memory and returns its binary content.
     """
-    fd, path = tempfile.mkstemp(suffix=".pdf")
-    os.close(fd)
-
-    test_text = "This is a test PDF. Hello World!"
-    c = canvas.Canvas(path)
-    c.drawString(100, 750, test_text)
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer)
+    c.drawString(100, 750, "This is a test PDF. Hello World!")
     c.save()
-
-    yield path
-
-    os.remove(path)
+    buffer.seek(0)
+    return buffer.read()
 
 
-def test_parse_pdf_reads_content(dummy_pdf_file):
-    content = parse_pdf(dummy_pdf_file)
+@pytest.fixture
+def encoded_pdf_data():
+    """
+    Returns a base64-encoded string representing a small in-memory PDF file.
+    """
+    pdf_bytes = generate_test_pdf_bytes()
+    return base64.b64encode(pdf_bytes).decode('utf-8')
+
+
+@patch("src.tools.pdf_files.get_attachment")
+def test_parse_pdf_reads_content(mock_get_attachment, encoded_pdf_data):
+    # Decode base64 string to get binary content
+    pdf_binary = base64.b64decode(encoded_pdf_data)
+    mock_get_attachment.return_value = io.BytesIO(pdf_binary)
+
+    content = parse_pdf("fake-uuid-1234")
+
     assert isinstance(content, str)
     assert "Hello World" in content
     assert "This is a test PDF" in content
 
 
-def test_parse_pdf_invalid_path():
+@patch("src.tools.pdf_files.get_attachment")
+def test_parse_pdf_invalid_attachment(mock_get_attachment):
+    mock_get_attachment.side_effect = FileNotFoundError("Attachment not found")
+
     with pytest.raises(FileNotFoundError):
-        parse_pdf("non_existent_file.pdf")
+        parse_pdf("non-existent-uuid")
