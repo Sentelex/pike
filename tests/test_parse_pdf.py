@@ -22,7 +22,7 @@ def generate_test_pdf_bytes() -> str:
 
 def test_parse_pdf_reads_content(monkeypatch, generate_test_pdf_bytes):
     pdf_binary = base64.b64decode(generate_test_pdf_bytes)
-    monkeypatch.setattr(pf, "get_attachment", lambda _: io.BytesIO(pdf_binary))
+    monkeypatch.setattr(pf, "get_pdf_attachment", lambda _: io.BytesIO(pdf_binary))
 
     content = pf.parse_pdf("fake-uuid-1234")
 
@@ -32,7 +32,7 @@ def test_parse_pdf_reads_content(monkeypatch, generate_test_pdf_bytes):
 
 
 def test_parse_pdf_invalid_attachment(monkeypatch):
-    monkeypatch.setattr(pf, "get_attachment", lambda _: (_ for _ in ()).throw(FileNotFoundError("Attachment not found")))
+    monkeypatch.setattr(pf, "get_pdf_attachment", lambda _: (_ for _ in ()).throw(FileNotFoundError("Attachment not found")))
 
     with pytest.raises(FileNotFoundError):
         pf.parse_pdf("non-existent-uuid")

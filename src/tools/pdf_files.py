@@ -4,7 +4,7 @@ import unicodedata
 import os
 
 
-def get_attachment(id: str):
+def get_pdf_attachment(id: str):
     pass
 
 
@@ -19,7 +19,7 @@ def parse_pdf(attachment_id: str) -> str:
     Returns:
     - str: Extracted text from the PDF.
     """
-    attachment = get_attachment(attachment_id)
+    attachment = get_pdf_attachment(attachment_id)
 
     # Fix: use stream=... and filetype='pdf'
     with fitz.open(stream=attachment, filetype="pdf") as doc:
