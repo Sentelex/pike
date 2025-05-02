@@ -1,11 +1,12 @@
 import contextlib as cl
 import fastapi as fapi
 import fastapi.middleware.cors as fapi_cors
+import backend.routes as routes
 
-import src.graph_builder as gb
+# import backend.src.graph_builder as gb
 
-model = "Some Model"
-graph = gb.build_graph(model, graph_id="default")
+# model = "Some Model"
+# graph = gb.build_graph(model, graph_id="default")
 
 
 @cl.asynccontextmanager
@@ -31,6 +32,7 @@ def service_lifecycle(app: fapi.FastAPI):
 
 
 api = fapi.FastAPI(lifespan=service_lifecycle)
+api.include_router(routes.pike_router)
 
 api.add_middleware(
     fapi_cors.CORSMiddleware,

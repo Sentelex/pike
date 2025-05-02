@@ -5,8 +5,8 @@ import langchain_core.messages as lcm
 import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
-from . import state as st
-from . import tools
+import backend.src.state as st
+import backend.src.tools as tools
 import langgraph.checkpoint.memory as lgcm
 
 
