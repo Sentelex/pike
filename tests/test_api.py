@@ -8,23 +8,23 @@ pytest_plugins = ["tests.api_fixtures"]
 client = TestClient(pike.api)
 
 
-def test_get_public_agents(mock_agent_one_skill, mock_agent_two_skills):
+def test_get_public_agents(mock_agent_interface, mock_agent_alt):
     response = client.get("/agents")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert mock_agent_one_skill in data or mock_agent_two_skills in data
+    assert mock_agent_interface in data or mock_agent_alt in data
 
 
-def test_get_user_info(mock_user):
-    response = client.get(f"/user/{mock_user['ID']}")
+def test_get_user_info(mock_user_info):
+    response = client.get(f"/user/{mock_user_info['ID']}")
     assert response.status_code == 200
     data = response.json()
-    assert data["ID"] == mock_user["ID"]
+    assert data["ID"] == mock_user_info["ID"]
 
 
-def test_get_user_agents(mock_user):
-    response = client.get(f"/user/{mock_user['ID']}/agents")
+def test_get_user_agents(mock_user_info):
+    response = client.get(f"/user/{mock_user_info['ID']}/agents")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
@@ -32,33 +32,33 @@ def test_get_user_agents(mock_user):
 
 
 def test_get_user_chats_compact(
-    mock_chat_without_messages, mock_additional_chat_without_messages, mock_user
+    mock_chat_interface, mock_chat_alt, mock_user_info
 ):
-    response = client.get(f"/user/{mock_user['ID']}/chats")
+    response = client.get(f"/user/{mock_user_info['ID']}/chats")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list) or isinstance(data, tuple)
-    assert any(chat["ID"] == mock_chat_without_messages["ID"] for chat in data)
+    assert any(chat["ID"] == mock_chat_interface["ID"] for chat in data)
 
 
 def test_get_user_chats_by_agent(
-    mock_chat_without_messages, mock_user, mock_agent_one_skill
+    mock_chat_interface, mock_user_info, mock_agent_interface
 ):
     response = client.get(
-        f"/user/{mock_user['ID']}/agent/{mock_agent_one_skill['ID']}/chats"
+        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}/chats"
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["ID"] == mock_chat_without_messages["ID"]
+    assert data["ID"] == mock_chat_interface["ID"]
 
 
-def test_get_user_chat(mock_chat_with_messages, mock_user):
+def test_get_user_chat(mock_chat_history, mock_user_info):
     chat_id = (
-        mock_chat_with_messages["ID"]
-        if "ID" in mock_chat_with_messages
+        mock_chat_history["ID"]
+        if "ID" in mock_chat_history
         else "test-chat-id"
     )
-    response = client.get(f"/user/{mock_user['ID']}/chat/{chat_id}")
+    response = client.get(f"/user/{mock_user_info['ID']}/chat/{chat_id}")
     assert response.status_code == 200
     data = response.json()
     assert "messages" in data
@@ -71,78 +71,78 @@ def test_get_attachment(mock_attachment_database):
     assert response.text.strip() != ""
 
 
-def test_get_agent(mock_agent_two_skills):
-    response = client.get(f"/agent/{mock_agent_two_skills['ID']}")
+def test_get_agent(mock_agent_alt):
+    response = client.get(f"/agent/{mock_agent_alt['ID']}")
     assert response.status_code == 200
     data = response.json()
-    assert data["ID"] == mock_agent_two_skills["ID"]
+    assert data["ID"] == mock_agent_alt["ID"]
 
 
 def test_create_chat(
-    mock_user, mock_agent_one_skill, mock_additional_chat_without_messages
+    mock_user_info, mock_agent_interface, mock_chat_alt
 ):
     response = client.post(
-        f"/user/{mock_user['ID']}/agent/{mock_agent_one_skill['ID']}/chat"
+        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}/chat"
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["ID"] == mock_additional_chat_without_messages["ID"]
+    assert data["ID"] == mock_chat_alt["ID"]
 
 
-def test_add_agent_to_user(mock_user, mock_agent_one_skill):
+def test_add_agent_to_user(mock_user_info, mock_agent_interface):
     response = client.post(
-        f"/user/{mock_user['ID']}/agent/{mock_agent_one_skill['ID']}"
+        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}"
     )
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
 
 
-def test_invoke_chat(mock_user, mock_chat_with_messages):
+def test_invoke_chat(mock_user_info, mock_chat_history):
     chat_id = (
-        mock_chat_with_messages["ID"]
-        if "ID" in mock_chat_with_messages
+        mock_chat_history["ID"]
+        if "ID" in mock_chat_history
         else "test-chat-id"
     )
     response = client.post(
-        f"/user/{mock_user['ID']}/chat/{chat_id}", json={"input": "Hello"}
+        f"/user/{mock_user_info['ID']}/chat/{chat_id}", json={"input": "Hello"}
     )
     assert response.status_code == 200
     data = response.json()
     assert "messages" in data or isinstance(data, list)
 
 
-def test_remove_agent_from_user(mock_user, mock_agent_one_skill):
+def test_remove_agent_from_user(mock_user_info, mock_agent_interface):
     response = client.delete(
-        f"/user/{mock_user['ID']}/agent/{mock_agent_one_skill['ID']}"
+        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}"
     )
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert any(agent["ID"] == mock_agent_one_skill["ID"] for agent in data)
+    assert any(agent["ID"] == mock_agent_interface["ID"] for agent in data)
 
 
-def test_remove_chat_from_user(mock_user, mock_chat_with_messages):
+def test_remove_chat_from_user(mock_user_info, mock_chat_history):
     chat_id = (
-        mock_chat_with_messages["ID"]
-        if "ID" in mock_chat_with_messages
+        mock_chat_history["ID"]
+        if "ID" in mock_chat_history
         else "test-chat-id"
     )
-    response = client.delete(f"/user/{mock_user['ID']}/chat/{chat_id}")
+    response = client.delete(f"/user/{mock_user_info['ID']}/chat/{chat_id}")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
 
 
-def test_modify_chat_status(mock_user, mock_chat_with_messages):
+def test_modify_chat_status(mock_user_info, mock_chat_history):
     chat_id = (
-        mock_chat_with_messages["ID"]
-        if "ID" in mock_chat_with_messages
+        mock_chat_history["ID"]
+        if "ID" in mock_chat_history
         else "test-chat-id"
     )
     chat_flags = {"pinned": True, "bookmarked": False, "open": True}
     response = client.put(
-        f"/user/{mock_user['ID']}/chat/{chat_id}", json={"chat_flags": chat_flags}
+        f"/user/{mock_user_info['ID']}/chat/{chat_id}", json={"chat_flags": chat_flags}
     )
     assert response.status_code == 200
     data = response.json()

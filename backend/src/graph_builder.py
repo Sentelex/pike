@@ -27,7 +27,8 @@ def tools_node(state: st.State, tools: list[callable]):
     outputs = []
     # Iterate through the tool calls in the last message of the state
     for tool_call in state.messages[-1].tool_calls:
-        tool_result = tools_by_name[tool_call["name"]].invoke(tool_call["args"])
+        tool_result = tools_by_name[tool_call["name"]].invoke(
+            tool_call["args"])
         outputs.append(
             lcm.ToolMessage(
                 content=json.dumps(tool_result),
@@ -71,7 +72,8 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
     _model = model.bind_tools(tools)
     _graph = lgg.StateGraph(st.State)
     _graph.add_node("message", add_new_message)
-    _graph.add_node("truncate_history", lambda s: truncate_history(s, max_messages=10))
+    _graph.add_node("truncate_history",
+                    lambda s: truncate_history(s, max_messages=10))
     _graph.add_node("agent", lambda s: assistant_node(s, model=_model))
     _graph.add_node("tools", lambda s: tools_node(s, tools=tools))
     _graph.set_entry_point("message")
