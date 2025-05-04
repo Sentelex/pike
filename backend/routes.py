@@ -48,7 +48,7 @@ def get_user_chats(user_id: str, agent_id: u.UUID) -> list[dict]:
     ]
 
 
-@pike_router.get("/chat/{chat_id}")
+@pike_router.get("/chat/{chat_id}/history")
 def get_chat_history(chat_id: u.UUID) -> dict:
     """
     Provides the chat history for user {user_id} and thread {chat_id} in an
@@ -73,7 +73,7 @@ def get_agent(agent_id: u.UUID) -> dict:
     return api_mocks.mock_agent_alt()
 
 
-@pike_router.post("/user/{user_id}/agent/{agent_id}/chat")
+@pike_router.post("/user/{user_id}/agent/{agent_id}/create_chat")
 def create_chat(user_id: str, agent_id: u.UUID) -> dict:
     """
     Generates a new, empty chat with a ChatID, attached to a specific user with a specific agent
@@ -82,7 +82,7 @@ def create_chat(user_id: str, agent_id: u.UUID) -> dict:
     return api_mocks.mock_chat_alt()
 
 
-@pike_router.post("/user/{user_id}/agent/{agent_id}")
+@pike_router.post("/user/{user_id}/agent/{agent_id}/add")
 def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Adds a new potential agent to the user's current agent list.
@@ -90,7 +90,7 @@ def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     return [api_mocks.mock_agent_interface(), api_mocks.mock_agent_alt()]
 
 
-@pike_router.post("/chat/{chat_id}/")
+@pike_router.post("/chat/{chat_id}/response")
 def get_response(chat_id: u.UUID, body: ChatInput) -> dict:
     """
     Sends input to the agent and receives output dictionary with responses.
@@ -98,7 +98,7 @@ def get_response(chat_id: u.UUID, body: ChatInput) -> dict:
     return api_mocks.mock_chat_response()
 
 
-@pike_router.delete("/user/{user_id}/agent/{agent_id}")
+@pike_router.delete("/user/{user_id}/agent/{agent_id}/delete")
 def remove_agent_from_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Removes the specified agent from the current user's list and returns the
@@ -107,7 +107,7 @@ def remove_agent_from_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     return [api_mocks.mock_agent_interface()]
 
 
-@pike_router.delete("/user/{user_id}/chat/{chat_id}")
+@pike_router.delete("/user/{user_id}/chat/{chat_id}/delete")
 def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
     """
     Deletes the specified chat history and removes the reference from the users
@@ -116,7 +116,7 @@ def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
     return [api_mocks.mock_chat_interface()]
 
 
-@pike_router.put("/chat/{chat_id}")
+@pike_router.put("/chat/{chat_id}/status")
 def modify_chat_status(chat_id: u.UUID, chat_flags: dict) -> dict:
     """
     Modifies the chat flags included in the current chat to be those sent in the
