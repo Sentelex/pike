@@ -36,10 +36,10 @@ def get_user_chats(user_id: str, agent_id) -> list[dict]:
     Gets a list of chat tags, providing enough information
     to render the associated chats without messages.
     """
-    return (
+    return [
         api_mocks.mock_chat_interface,
         api_mocks.mock_chat_alt,
-    )
+    ]
 
 
 @pike_router.get("/user/{user_id}/chat/{chat_id}")
@@ -82,9 +82,7 @@ def add_agent_to_user(user_id: str, agent_id: u.UUID) -> list[dict]:
     """
     Adds a new potential agent to the user's current agent list.
     """
-    return api_mocks.mock_user_info["agents"].append(
-        api_mocks.mock_agent_alt
-        )
+    return [api_mocks.mock_agent, api_mocks.mock_agent_alt]
 
 
 @pike_router.post("/user/{user_id}/chat/{chat_id}")
@@ -112,7 +110,7 @@ def remove_chat_from_user(user_id: str, chat_id: u.UUID) -> list[dict]:
     Deletes the specified chat history and removes the reference from the users
     list, returning the modified chat list for the user.
     """
-    return [api_mocks.mock_user_info["chats"][:-1]]
+    return [api_mocks.mock_chat_interface]
 
 
 @pike_router.put("/user/{user_id}/chat/{chat_id}")
