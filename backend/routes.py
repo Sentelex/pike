@@ -43,7 +43,7 @@ def get_user_chats(user_id: str, agent_id) -> list[dict]:
 
 
 @pike_router.get("/user/{user_id}/chat/{chat_id}")
-def get_user_chat(user_id: str, chat_id: u.UUID) -> dict:
+def get_chat_history(chat_id: u.UUID) -> dict:
     """
     Provides the chat history for user {user_id} and thread {chat_id} in an
     appropriate format for sending to the frontend.
