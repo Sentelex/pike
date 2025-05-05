@@ -7,7 +7,7 @@ import langchain_core.messages as lcm
 from fixtures import *
 import langchain_core.tools as lcct
 import unittest.mock
-import backend.src.mock_model as mm
+import backend.src.mocks.mock_model as mm
 import os
 import langchain_core.tools as lcct
 import langchain_google_genai as lc_google

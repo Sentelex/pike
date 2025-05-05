@@ -1,7 +1,7 @@
 import pytest
 import langchain_core.messages as lcm
 import backend.src.state as st
-import backend.src.mock_model as mock
+import backend.src.mocks.mock_model as mock
 import langchain_core.tools as lcct
 
 

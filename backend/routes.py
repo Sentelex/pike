@@ -1,6 +1,6 @@
 import uuid as u
 import copy
-import backend.src.mock_api_interfaces as api_mocks
+import backend.src.mocks.mock_api_interfaces as api_mocks
 import fastapi as fapi
 import pydantic as pyd
 
@@ -9,7 +9,7 @@ pike_router = fapi.APIRouter()
 
 class ChatInput(pyd.BaseModel):
     message: str
-    attachment: str | None = None
+    attachment: dict | None = None
 
 
 @pike_router.get("/agents")
