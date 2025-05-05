@@ -2,20 +2,20 @@ import pytest as pytest
 import pydantic as pdc
 import langchain_core.messages as lcm
 import langgraph.graph.message as lgm
-import src.state as st
+import backend.src.state as st
 from tests.fixtures import *
 
 
 def test_full_state_valid_data(mock_message):
     full_messages = [
         lcm.BaseMessage(content="Previous message 1", type="text"),
-        lcm.BaseMessage(content="Previous message 2", type="text")
+        lcm.BaseMessage(content="Previous message 2", type="text"),
     ]
     state = st.StateFull(
         full_messages=full_messages,
         new_message=mock_message,
         attachment="example.pdf",
-        graph_id="graph123"
+        graph_id="graph123",
     )
     assert state.full_messages == full_messages
     assert state.new_message == mock_message
@@ -45,8 +45,7 @@ def test_state_messages_missing(mock_message):
 
 def test_state_invalid_messages(mock_message):
     with pytest.raises(pdc.ValidationError):
-        st.StateFull(
-            full_messages="invalid_data", new_message=mock_message)
+        st.StateFull(full_messages="invalid_data", new_message=mock_message)
 
 
 def test_state_invalid_attachment(mock_message):

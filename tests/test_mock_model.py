@@ -1,5 +1,5 @@
 import pytest
-import src.mock_model as mock
+import backend.src.mocks.mock_model as mock
 import langchain_core.messages as lc_messages
 
 
@@ -20,8 +20,10 @@ def test_mock_llm_multiple_responses():
 
 def test_mock_llm_with_message_list():
     llm = mock.MockLLM(["Mocked"])
-    messages = [lc_messages.HumanMessage(
-        content="Hello"), lc_messages.HumanMessage(content="World")]
+    messages = [
+        lc_messages.HumanMessage(content="Hello"),
+        lc_messages.HumanMessage(content="World"),
+    ]
     response = llm.invoke(messages)
     assert response.content == "Mocked"
     assert llm.call_count == 1

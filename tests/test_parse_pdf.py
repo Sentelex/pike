@@ -3,7 +3,7 @@ import base64
 import pytest
 from reportlab.pdfgen import canvas as pdf_canvas
 
-import src.tools.pdf_files as pf
+import backend.src.tools.pdf_files as pf
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def generate_test_pdf_bytes() -> str:
     c.save()
     buffer.seek(0)
     pdf_bytes = buffer.read()
-    return base64.b64encode(pdf_bytes).decode('utf-8')
+    return base64.b64encode(pdf_bytes).decode("utf-8")
 
 
 def test_parse_pdf_reads_content(monkeypatch, generate_test_pdf_bytes):
@@ -32,7 +32,11 @@ def test_parse_pdf_reads_content(monkeypatch, generate_test_pdf_bytes):
 
 
 def test_parse_pdf_invalid_attachment(monkeypatch):
-    monkeypatch.setattr(pf, "get_pdf_attachment", lambda _: (_ for _ in ()).throw(FileNotFoundError("Attachment not found")))
+    monkeypatch.setattr(
+        pf,
+        "get_pdf_attachment",
+        lambda _: (_ for _ in ()).throw(FileNotFoundError("Attachment not found")),
+    )
 
     with pytest.raises(FileNotFoundError):
         pf.parse_pdf("non-existent-uuid")

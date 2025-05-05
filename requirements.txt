@@ -4,5 +4,6 @@ langchain-core
 pytest
 langchain-google-genai
 python-dotenv
+fastapi
 pymupdf
 reportlab

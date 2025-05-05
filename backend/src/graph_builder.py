@@ -1,20 +1,28 @@
 import json
-from typing import Callable, List
+
+# from typing import Callable, List
 import langchain_core.messages as lcm
 import langchain_core.runnables as lcr
 import langgraph.graph as lgg
-import src.state as st
-import src.tools as tools
+
+import backend.src.state as st
+import backend.src.tools as tools
+import langgraph.checkpoint.memory as lgcm
 
 
 TOOL_LIST_LOOKUP = {
-    'default': [tools.get_action_items, tools.parse_pdf,
-                tools.get_stock_price, tools.parse_file,
-                tools.parse_webpage, tools.summarize_text],
+    "default": [
+        tools.get_action_items,
+        tools.parse_pdf,
+        tools.get_stock_price,
+        tools.parse_file,
+        tools.parse_webpage,
+        tools.summarize_text,
+    ],
 }
 
 
-def tools_node(state: st.State, tools: List[Callable]):
+def tools_node(state: st.State, tools: list[callable]):
     tools_by_name = {tool.name: tool for tool in tools}
     outputs = []
     # Iterate through the tool calls in the last message of the state
@@ -45,10 +53,8 @@ def tool_condition(state: st.State):
     return "tools" if last_message.tool_calls else "end"
 
 
-def add_new_message(
-    state: st.StateFull
-) -> st.StateFull:
-    return {'full_messages': [state.new_message]}
+def add_new_message(state: st.StateFull) -> st.StateFull:
+    return {"full_messages": [state.new_message]}
 
 
 def truncate_history(s: st.StateFull, max_messages: int = 10) -> st.State:
@@ -73,7 +79,8 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
     _graph.set_entry_point("message")
     _graph.add_edge("message", "truncate_history")
     _graph.add_edge("truncate_history", "agent")
-    _graph.add_conditional_edges("agent", tool_condition, {
-        "tools": "tools", "end": lgg.END})
+    _graph.add_conditional_edges(
+        "agent", tool_condition, {"tools": "tools", "end": lgg.END}
+    )
     _graph.add_edge("tools", "agent")
     return _graph.compile()
