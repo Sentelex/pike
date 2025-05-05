@@ -3,15 +3,29 @@ from fastapi.testclient import TestClient
 import backend.src.mock_api_interfaces as mai
 import backend.pike as pike
 
-
 client = TestClient(pike.api)
 
 
-def test_get_public_agents():
+class CheckAPI:
+    @staticmethod
+    def ensure_unique_value(
+        dict_with_id_list: list[dict], input_key: str = "ID"
+    ) -> bool:
+        id_set = set([datum[input_key] for datum in dict_with_id_list])
+        return len(dict_with_id_list) == len(id_set)
+
+
+@pytest.fixture
+def api_checker():
+    return CheckAPI
+
+
+def test_get_public_agents(api_checker):
     response = client.get("/agents")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+    assert api_checker.ensure_unique_value(data, "ID")
     assert mai.mock_agent_interface() in data or mai.mock_agent_alt() in data
 
 
@@ -23,16 +37,17 @@ def test_get_user_info():
     assert data == mock_uinf
 
 
-def test_get_user_agents():
+def test_get_user_agents(api_checker):
     mock_user_info = mai.mock_user_info()
     response = client.get(f"/user/{mock_user_info['ID']}/agents")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+    assert api_checker.ensure_unique_value(data, "ID")
     assert all("ID" in agent for agent in data)
 
 
-def test_get_user_chats():
+def test_get_user_chats(api_checker):
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
     mock_chat_interface = mai.mock_chat_interface()
@@ -41,7 +56,8 @@ def test_get_user_chats():
     )
     assert response.status_code == 200
     data = response.json()
-    assert isinstance(data, list) or isinstance(data, tuple)
+    assert isinstance(data, list)
+    assert api_checker.ensure_unique_value(data, "ID")
     assert any(chat["ID"] == mock_chat_interface["ID"] for chat in data)
 
 
@@ -87,7 +103,7 @@ def test_create_chat():
     assert data["ID"] == mock_chat_alt["ID"]
 
 
-def test_add_agent_to_user():
+def test_add_agent_to_user(api_checker):
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
     response = client.post(
@@ -96,13 +112,12 @@ def test_add_agent_to_user():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+    assert api_checker.ensure_unique_value(data, "ID")
 
 
 def test_get_response():
     chat_id = mai.mock_chat_interface()["ID"]
-    response = client.post(
-        f"/chat/{chat_id}/response", json={"message": "Hello"}
-    )
+    response = client.post(f"/chat/{chat_id}/response", json={"message": "Hello"})
     mock_response = mai.mock_chat_response()
     assert response.status_code == 200
     data = response.json()
@@ -115,7 +130,7 @@ def test_get_response():
     )
 
 
-def test_remove_agent_from_user():
+def test_remove_agent_from_user(api_checker):
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
     response = client.delete(
@@ -124,10 +139,11 @@ def test_remove_agent_from_user():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+    assert api_checker.ensure_unique_value(data, "ID")
     assert any(agent["ID"] == mock_agent_interface["ID"] for agent in data)
 
 
-def test_remove_chat_from_user():
+def test_remove_chat_from_user(api_checker):
     mock_user_info = mai.mock_user_info()
     mock_chat = mai.mock_chat_interface()
     response = client.delete(
@@ -136,6 +152,7 @@ def test_remove_chat_from_user():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+    assert api_checker.ensure_unique_value(data, "ID")
 
 
 def test_modify_chat_status():

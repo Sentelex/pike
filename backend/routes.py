@@ -123,7 +123,7 @@ def modify_chat_status(chat_id: u.UUID, chat_flags: dict) -> dict:
     chat_flags object by the frontend.  Returns the modified chat without messages.
     """
     modified_chat = copy.copy(api_mocks.mock_chat_history())
-    modified_chat['pinned'] = True
-    modified_chat['bookmarked'] = False
-    modified_chat['open'] = True
+    modified_chat["pinned"] = True
+    modified_chat["bookmarked"] = False
+    modified_chat["open"] = True
     return modified_chat
