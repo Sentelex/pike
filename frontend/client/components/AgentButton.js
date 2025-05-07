@@ -1,0 +1,39 @@
+import React, { useState, useEffect } from 'react';
+import { IoMdSettings } from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
+
+export default function AgentButton({ agent, selected, onSelect }) {
+	const navigate = useNavigate();
+	const [hovered, setHovered] = useState(false);
+
+	const handleGoToAgentSettings = (e) => {
+		e.stopPropagation(); // Stop the click from reaching parent
+		navigate(`agent/${agent.agentId}/settings`);
+	};
+	const handleClick = () => {
+		navigate(`agent/${agent.agentId}/chat`);
+		onSelect(agent.agentId);
+	};
+
+	return (
+		<div
+			className={`agent-button ${selected ? 'selected' :''}`}
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
+			onClick={handleClick}
+		>
+			{hovered ? (
+				<>
+					<div className='a-b-name'>{agent.agentName}</div>
+					<div className='a-b-settings' onClick={handleGoToAgentSettings}>
+						<IoMdSettings />
+					</div>
+				</>
+			) : (
+				<>
+					<div className='a-b-name'>{agent.agentName}</div>
+				</>
+			)}
+		</div>
+	);
+}
