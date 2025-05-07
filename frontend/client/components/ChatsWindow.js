@@ -1,0 +1,69 @@
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router';
+import { fetchAgentChatsList } from '../store';
+import Chat from './Chat';
+
+export default function ChatsWindow() {
+	const dispatch = useDispatch();
+	const { agentId: agentIdParam } = useParams();
+	const agentId = parseInt(agentIdParam, 10);
+	const chatLists = useSelector((state) => state.chatLists);
+
+	const agentChatList = chatLists.find((list) => list.agentId === agentId);
+
+	useEffect(() => {
+		// console.log('!!!AGENT ID from params: ', agentId);
+		if (!agentChatList) {
+			dispatch(fetchAgentChatsList(1, agentId));
+		}
+	}, [agentChatList, agentId, dispatch]);
+
+	// const renderChatList = () => {
+	// 	if (!agentChatList || agentChatList.chatsList.length === 0) {
+	// 		return <>No chats</>;
+	// 	}
+
+	// 	return agentChatList.chatsList.map((chat) => (
+	// 		<div key={chat.id} className='chat-window-folded'>
+	// 			{chat.chatName}
+	// 		</div>
+	// 	));
+	// };
+
+	const renderChatList = () => {
+		if (
+			!agentChatList ||
+			!agentChatList.chatsList ||
+			agentChatList.chatsList.length === 0
+		) {
+			return <>No chats</>;
+		}
+
+		return agentChatList.chatsList.map((chat) => (
+			<Chat
+				agentId={agentId}
+				chatName={chat.chatName}
+				isOpen={chat.isOpen}
+				chatId={chat.id}
+			/>
+		));
+	};
+
+	return (
+		<>
+			<div id='button-new-chat'>
+				New
+				<br />
+				Chat
+			</div>
+			<div id='top-panel'>
+				<div id='filter-menu'>Filter menu</div>
+				<div id='chats-search-bar'>Search bar</div>
+			</div>
+			<div id='main-panel'>
+				<div id='chat-area'>{renderChatList()}</div>
+			</div>
+		</>
+	);
+}
