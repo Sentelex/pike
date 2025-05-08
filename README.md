@@ -12,3 +12,9 @@ Personal Interactive Knowledge Exploration
     cd frontend
     npm i
     npm run start-dev
+
+To access the frontend, navigate to:
+     http://localhost:8080
+
+## Backend
+    Create a virtual environment for your python interpreter to run the backend:
