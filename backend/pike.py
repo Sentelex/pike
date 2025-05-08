@@ -5,7 +5,7 @@ import backend.routes as routes
 
 
 @cl.asynccontextmanager
-def service_lifecycle(app: fapi.FastAPI):
+async def service_lifecycle(app: fapi.FastAPI):
     """
     Lifecycle context manager for FastAPI app.
     """
