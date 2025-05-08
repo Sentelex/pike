@@ -172,7 +172,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
 .vscode/
 frontend/node_modules
 frontend/shhkey
 frontend/shhkey.pub
+frontend/public/bundle.js
+frontend/public/bundle.js.map
+
