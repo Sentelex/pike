@@ -18,7 +18,7 @@ export default function Dashboard() {
 	const [selectedAgentId, selectAgentId] = useState(null);
 
 	useEffect(() => {
-		dispatch(fetchUserAgents());
+		dispatch(fetchUserAgents(1));
 	}, []);
 
 	useEffect(() => {

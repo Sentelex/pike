@@ -7,7 +7,9 @@ import Chat from './Chat';
 export default function ChatsWindow() {
 	const dispatch = useDispatch();
 	const { agentId: agentIdParam } = useParams();
-	const agentId = parseInt(agentIdParam, 10);
+	// const agentId = parseInt(agentIdParam, 10);
+	const agentId = agentIdParam;
+	console.log('AGENT ID: ', agentId);
 	const chatLists = useSelector((state) => state.chatLists);
 
 	const agentChatList = chatLists.find((list) => list.agentId === agentId);
@@ -45,7 +47,7 @@ export default function ChatsWindow() {
 				agentId={agentId}
 				chatName={chat.chatName}
 				isOpen={chat.isOpen}
-				chatId={chat.id}
+				chatId={chat.chatId}
 			/>
 		));
 	};
