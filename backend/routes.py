@@ -145,7 +145,7 @@ def modify_chat_status(chat_id: u.UUID, chat_flags: dict) -> dict:
     Modifies the chat flags included in the current chat to be those sent in the
     chat_flags object by the frontend.  Returns the modified chat without messages.
     """
-    modified_chat = copy.copy(api_mocks.mock_chat_history())
+    modified_chat = copy.copy(api_mocks.mock_chat_interface())
     modified_chat["pinned"] = True
     modified_chat["bookmarked"] = False
     modified_chat["open"] = True
