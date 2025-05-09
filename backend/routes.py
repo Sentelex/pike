@@ -63,7 +63,7 @@ def get_user_chats(user_id: str, agent_id: u.UUID) -> list[dict]:
         return []
 
 @pike_router.get("/user/{user_id}/pinned-chats")
-def get_user_chats(user_id: str) -> list[dict]:
+def get_user_pinned_chats(user_id: str) -> list[dict]:
     """
     Gets a list of pinned chats for a particular user.
     """
