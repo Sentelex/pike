@@ -9,10 +9,6 @@ def ensure_unique_value(
     dict_with_id_list: list[dict], input_key: str = "ID"
 ) -> bool:
     id_set = set([datum[input_key] for datum in dict_with_id_list])
-    num_set = len(id_set)
-    num_list = len(dict_with_id_list)
-    q = num_set == num_list
-    return q
     return len(dict_with_id_list) == len(id_set)
 
 
@@ -27,7 +23,7 @@ def test_get_public_agents():
 
 def test_get_user_info():
     mock_uinf = mai.mock_user_info()
-    response = client.get(f"/user/{mock_uinf['agentId']}")
+    response = client.get(f"/user/{mock_uinf['userId']}")
     assert response.status_code == 200
     data = response.json()
     assert data == mock_uinf
