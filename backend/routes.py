@@ -150,5 +150,3 @@ def modify_chat_status(chat_id: u.UUID, chat_flags: dict) -> dict:
     modified_chat["bookmarked"] = False
     modified_chat["open"] = True
     return modified_chat
-
-#maybe it makes sense to split the above to modify isOpen, isBookmarked etc separately.

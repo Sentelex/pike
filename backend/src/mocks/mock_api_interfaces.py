@@ -75,8 +75,8 @@ def mock_chat_interface():
         "isPinned": False,
         "isBookmarked": True,
         "to_delete": False,
-        "created_at": dt.datetime(2023, 10, 4, 12, 0, 0),
-        "updated_at": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "createdAt": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 12, 0, 0),
         "agentId": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
     }
 
@@ -88,8 +88,8 @@ def mock_chat_alt():
         "isOpen": True,
         "isPinned": False,
         "isBookmarked": False,
-        "created_at": dt.datetime(2023, 10, 4, 15, 0, 0),
-        "updated_at": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "createdAt": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 15, 0, 0),
         "agentId": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
     }
 
@@ -101,8 +101,8 @@ def mock_chat_interface_2():
         "isPinned": False,
         "isBookmarked": True,
         "to_delete": False,
-        "created_at": dt.datetime(2023, 10, 4, 12, 0, 0),
-        "updated_at": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "createdAt": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 12, 0, 0),
         "agentId": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
     }
 
@@ -114,8 +114,8 @@ def mock_chat_alt_2():
         "isOpen": True,
         "isPinned": False,
         "isBookmarked": False,
-        "created_at": dt.datetime(2023, 10, 4, 15, 0, 0),
-        "updated_at": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "createdAt": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 15, 0, 0),
         "agentId": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
     }
 
