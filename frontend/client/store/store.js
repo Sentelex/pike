@@ -40,29 +40,32 @@ const toggleChatOpen = (agentId, chatId) => ({
 // Fetch all active user agents
 export const fetchUserAgents = (userId) => {
 	return async (dispatch) => {
-		// const { data } = await axios.get(`/api/user/${id}/user-agents`);
-		const data = [
-			{
-				agentId: 1,
-				agentName: 'Document Assistant',
-				developer: 'PIKE',
-			},
-			{
-				agentId: 2,
-				agentName: 'Personal Finance Manager',
-				developer: 'PIKE',
-			},
-			{
-				agentId: 3,
-				agentName: 'Legal Assistant',
-				developer: 'PIKE',
-			},
-			{
-				agentId: 4,
-				agentName: 'Scheduling Assistant',
-				developer: 'PIKE',
-			},
-		];
+		const { data } = await axios.get(
+			`http://localhost:8000/user/${userId}/agents`
+		);
+		console.log('USER AGENTS:', data);
+		// const data = [
+		// 	{
+		// 		agentId: 1,
+		// 		agentName: 'Document Assistant',
+		// 		developer: 'PIKE',
+		// 	},
+		// 	{
+		// 		agentId: 2,
+		// 		agentName: 'Personal Finance Manager',
+		// 		developer: 'PIKE',
+		// 	},
+		// 	{
+		// 		agentId: 3,
+		// 		agentName: 'Legal Assistant',
+		// 		developer: 'PIKE',
+		// 	},
+		// 	{
+		// 		agentId: 4,
+		// 		agentName: 'Scheduling Assistant',
+		// 		developer: 'PIKE',
+		// 	},
+		// ];
 
 		dispatch(setUserAgents(data));
 	};
@@ -70,27 +73,29 @@ export const fetchUserAgents = (userId) => {
 
 export const fetchPinnedChats = (userId) => {
 	return async (dispatch) => {
-		// const { data } = await axios.get(`/api/user/${id}/user-agents`);
-		const data = [
-			{
-				chatId: 1,
-				agentId: 2,
-				chatName: 'Credit score advice',
-				chatAgent: 'Personal Finance Manager',
-			},
-			{
-				chatId: 1,
-				agentId: 1,
-				chatName: 'Moby Dick Q and A',
-				chatAgent: 'Document Assistant',
-			},
-			{
-				chatId: 2,
-				agentId: 2,
-				chatName: 'Monthly Budget Advice',
-				chatAgent: 'Personal Finance Manager',
-			},
-		];
+		const { data } = await axios.get(
+			`http://localhost:8000/user/${userId}/pinned-chats`
+		);
+		// const data = [
+		// 	{
+		// 		chatId: 1,
+		// 		agentId: 2,
+		// 		chatName: 'Credit score advice',
+		// 		chatAgent: 'Personal Finance Manager',
+		// 	},
+		// 	{
+		// 		chatId: 1,
+		// 		agentId: 1,
+		// 		chatName: 'Moby Dick Q and A',
+		// 		chatAgent: 'Document Assistant',
+		// 	},
+		// 	{
+		// 		chatId: 2,
+		// 		agentId: 2,
+		// 		chatName: 'Monthly Budget Advice',
+		// 		chatAgent: 'Personal Finance Manager',
+		// 	},
+		// ];
 
 		dispatch(setPinnedChats(data));
 	};
@@ -98,10 +103,13 @@ export const fetchPinnedChats = (userId) => {
 
 export const fetchAgentChatsList = (userId, agentId) => {
 	return async (dispatch) => {
-		// const { data } = await axios.get(`/api/user/${id}/user-agents`);
-		const data = mockAgentChatLists.find((item) => item.agentId === agentId);
-		// console.log('THIS SHOULD BE CHATS LIST', data);
-		dispatch(addAgentChatsList(data));
+		const { data } = await axios.get(
+			`http://localhost:8000/user/${userId}/agent/${agentId}/chats`
+		);
+		// const data = mockAgentChatLists.find((item) => item.agentId === agentId);
+		console.log('THIS SHOULD BE CHATS LIST', data);
+
+		dispatch(addAgentChatsList({ agentId: agentId, chatsList: data }));
 	};
 };
 
@@ -242,7 +250,7 @@ export function chatLists(state = [], action) {
 				return {
 					...agent,
 					chatsList: agent.chatsList.map((chat) =>
-						chat.id === chatId ? { ...chat, isOpen: !chat.isOpen } : chat
+						chat.chatId === chatId ? { ...chat, isOpen: !chat.isOpen } : chat
 					),
 				};
 			});

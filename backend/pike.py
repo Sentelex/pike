@@ -21,7 +21,7 @@ api.include_router(routes.pike_router)
 api.add_middleware(
     fapi_cors.CORSMiddleware,
     allow_origins=["http://localhost",
-                   "https://localhost", "https://localhost:8080"],
+                   "https://localhost", "http://localhost:8080"],
     # Should be restricted to designated front ends for production/testing
     allow_credentials=True,
     allow_methods=["*"],
