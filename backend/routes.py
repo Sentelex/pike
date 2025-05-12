@@ -42,10 +42,33 @@ def get_user_chats(user_id: str, agent_id: u.UUID) -> list[dict]:
     Gets a list of chat tags, providing enough information
     to render the associated chats without messages.
     """
-    return [
-        api_mocks.mock_chat_interface(),
-        api_mocks.mock_chat_alt(),
-    ]
+    if agent_id == u.UUID("0e3c04dd-268a-45d8-8834-fd0e3e0c9f47"):
+        # Return chats for agent one
+        print("0e3c04dd-268a-45d8-8834-fd0e3e0c9f47")
+        return [
+            api_mocks.mock_chat_interface(),
+            api_mocks.mock_chat_alt(),
+        ]
+    elif agent_id == u.UUID("bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48"):
+        
+        # Return a different set of chats for agent two
+        print("bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48")
+        return [
+            api_mocks.mock_chat_interface_2(),
+            api_mocks.mock_chat_alt_2(),
+        ]
+    else:
+        # For any other agent_id, you could return an empty list or a default
+        print("no agent_id matched")
+        return []
+
+@pike_router.get("/user/{user_id}/pinned-chats")
+def get_user_pinned_chats(user_id: str) -> list[dict]:
+    """
+    Gets a list of pinned chats for a particular user.
+    """
+    return api_mocks.mock_pinned_chats_list()
+    
 
 
 @pike_router.get("/chat/{chat_id}/history")
@@ -122,7 +145,7 @@ def modify_chat_status(chat_id: u.UUID, chat_flags: dict) -> dict:
     Modifies the chat flags included in the current chat to be those sent in the
     chat_flags object by the frontend.  Returns the modified chat without messages.
     """
-    modified_chat = copy.copy(api_mocks.mock_chat_history())
+    modified_chat = copy.copy(api_mocks.mock_chat_interface())
     modified_chat["pinned"] = True
     modified_chat["bookmarked"] = False
     modified_chat["open"] = True

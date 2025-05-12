@@ -34,8 +34,9 @@ def mock_skill_alt():
 
 def mock_agent_interface():
     return {
-        "ID": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
-        "name": "Default Agent",
+        "agentId": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
+        "agentName": "Default Agent 1",
+        "developer": "PIKE",
         "description": "PIKE's default agent",
         "model": mock_model_interface(),
         "skills": [mock_skill_interface()],
@@ -45,7 +46,8 @@ def mock_agent_interface():
 def mock_agent_alt():
     agent_alt = copy.copy(mock_agent_interface())
     agent_alt['skills'].append(mock_skill_alt())
-    agent_alt['ID'] = "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48"
+    agent_alt['agentId'] = "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48"
+    agent_alt['agentName'] = "Default Agent 2"
     return agent_alt
 
 
@@ -67,26 +69,52 @@ def mock_pdf_attachment():
 
 def mock_chat_interface():
     return {
-        "ID": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
-        "name": "First Chat",
-        "pinned": False,
-        "bookmarked": True,
-        "to_delete": False,
-        "created_at": dt.datetime(2023, 10, 4, 12, 0, 0),
-        "updated_at": dt.datetime(2023, 10, 4, 12, 0, 0),
-        "agent_id": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
+        "chatId": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
+        "chatName": "First Chat - Agent 1",
+        "isOpen": False,
+        "isPinned": False,
+        "isBookmarked": True,
+        "createdAt": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "agentId": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
     }
 
 
 def mock_chat_alt():
     return {
-        "ID": "cabddc2b-36e6-495a-a8e4-d5207a50f122",
-        "name": "Second Chat",
-        "pinned": False,
-        "bookmarked": False,
-        "created_at": dt.datetime(2023, 10, 4, 15, 0, 0),
-        "updated_at": dt.datetime(2023, 10, 4, 15, 0, 0),
-        "agent_id": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
+        "chatId": "cabddc2b-36e6-495a-a8e4-d5207a50f122",
+        "chatName": "Second Chat - Agent 1",
+        "isOpen": True,
+        "isPinned": False,
+        "isBookmarked": False,
+        "createdAt": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "agentId": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
+    }
+
+def mock_chat_interface_2():
+    return {
+        "chatId": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
+        "chatName": "First Chat - Agent 2",
+        "isOpen": False,
+        "isPinned": False,
+        "isBookmarked": True,
+        "createdAt": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 12, 0, 0),
+        "agentId": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
+    }
+
+
+def mock_chat_alt_2():
+    return {
+        "chatId": "cabddc2b-36e6-495a-a8e4-d5207a50f122",
+        "chatName": "Second Chat - Agent 2",
+        "isOpen": True,
+        "isPinned": False,
+        "isBookmarked": False,
+        "createdAt": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "updatedAt": dt.datetime(2023, 10, 4, 15, 0, 0),
+        "agentId": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
     }
 
 
@@ -141,7 +169,29 @@ def mock_chat_response():
 
 def mock_user_info() -> dict:
     return {
-        "ID": "6b96666e-8b3a-4996-932d-3aa75c08c16f",
-        "name": "Michael Luch",
-        "agents": [mock_agent_interface(), mock_agent_alt()],
+        "userId": "6b96666e-8b3a-4996-932d-3aa75c08c16f",
+        "userName": "Michael Luch",
+        "userAgents": [mock_agent_interface(), mock_agent_alt()],
     }
+
+def mock_pinned_chats_list() -> dict:
+    return [
+			{
+				"chatId": 1,
+				"agentId": 2,
+				"chatName": 'Pinned Chat 1',
+				"chatAgent": 'Personal Finance Manager',
+			},
+			{
+				"chatId": 1,
+				"agentId": 1,
+				"chatName": 'Pinned Chat 2',
+				"chatAgent": 'Document Assistant',
+			},
+			{
+				"chatId": 2,
+				"agentId": 2,
+				"chatName": 'Pinned Chat 3',
+				"chatAgent": 'Personal Finance Manager',
+			},
+		]

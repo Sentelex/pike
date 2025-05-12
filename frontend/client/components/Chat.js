@@ -25,6 +25,7 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 				{chatName}
 			</div>
 			<div className={`chat-viewer ${isOpen ? '' : 'hidden'}`}>
+				{/* KEEP WHILE BEING BUILT, defines fields: */}
 				{/* Chat viewer */}
 				{/* {generateDivs(15, 'message-test')} */}
 				{[...Array(15)].map((_, i) => (
@@ -36,27 +37,6 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 			<div className={`chat-message-input ${isOpen ? '' : 'hidden'}`}>
 				Chat message input{' '}
 			</div>
-		</div>
-	);
-	return isOpen ? (
-		<div className='chat-window'>
-			<div className='chat-top-panel' onClick={handleToggle}>
-				Chat name:{chatName}
-			</div>
-			<div className='chat-viewer'>
-				{/* Chat viewer */}
-				{/* {generateDivs(15, 'message-test')} */}
-				{[...Array(15)].map((_, i) => (
-					<div className='message-test' key={i}>
-						Hello Pike and Hello world!
-					</div>
-				))}
-			</div>
-			<div className='chat-message-input'>Chat message input </div>
-		</div>
-	) : (
-		<div key={chatId} className='chat-window-folded' onClick={handleToggle}>
-			{chatName}
 		</div>
 	);
 }

@@ -17,13 +17,13 @@ def test_get_public_agents():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert ensure_unique_value(data, "ID")
+    assert ensure_unique_value(data, "agentId")
     assert mai.mock_agent_interface() in data or mai.mock_agent_alt() in data
 
 
 def test_get_user_info():
     mock_uinf = mai.mock_user_info()
-    response = client.get(f"/user/{mock_uinf['ID']}")
+    response = client.get(f"/user/{mock_uinf['userId']}")
     assert response.status_code == 200
     data = response.json()
     assert data == mock_uinf
@@ -31,12 +31,12 @@ def test_get_user_info():
 
 def test_get_user_agents():
     mock_user_info = mai.mock_user_info()
-    response = client.get(f"/user/{mock_user_info['ID']}/agents")
+    response = client.get(f"/user/{mock_user_info['userId']}/agents")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert ensure_unique_value(data, "ID")
-    assert all("ID" in agent for agent in data)
+    assert ensure_unique_value(data, "agentId")
+    assert all("agentId" in agent for agent in data)
 
 
 def test_get_user_chats():
@@ -44,19 +44,19 @@ def test_get_user_chats():
     mock_agent_interface = mai.mock_agent_interface()
     mock_chat_interface = mai.mock_chat_interface()
     response = client.get(
-        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}/chats"
+        f"/user/{mock_user_info['userId']}/agent/{mock_agent_interface['agentId']}/chats"
     )
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert ensure_unique_value(data, "ID")
-    assert any(chat["ID"] == mock_chat_interface["ID"] for chat in data)
+    assert ensure_unique_value(data, "chatId")
+    assert any(chat["chatId"] == mock_chat_interface["chatId"] for chat in data)
 
 
 def test_get_chat_history():
     mock_chat = mai.mock_chat_interface()
     mock_chat_history = mai.mock_chat_history()
-    response = client.get(f"/chat/{mock_chat['ID']}/history")
+    response = client.get(f"/chat/{mock_chat['chatId']}/history")
     assert response.status_code == 200
     data = response.json()
     assert "messages" in data
@@ -77,10 +77,10 @@ def test_get_attachment():
 
 def test_get_agent():
     mock_agent_alt = mai.mock_agent_alt()
-    response = client.get(f"/agent/{mock_agent_alt['ID']}")
+    response = client.get(f"/agent/{mock_agent_alt['agentId']}")
     assert response.status_code == 200
     data = response.json()
-    assert data["ID"] == mock_agent_alt["ID"]
+    assert data["agentId"] == mock_agent_alt["agentId"]
 
 
 def test_create_chat():
@@ -88,27 +88,27 @@ def test_create_chat():
     mock_agent_interface = mai.mock_agent_interface()
     mock_chat_alt = mai.mock_chat_alt()
     response = client.post(
-        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}/create_chat"
+        f"/user/{mock_user_info['userId']}/agent/{mock_agent_interface['agentId']}/create_chat"
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["ID"] == mock_chat_alt["ID"]
+    assert data["chatId"] == mock_chat_alt["chatId"]
 
 
 def test_add_agent_to_user():
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
     response = client.post(
-        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}/add"
+        f"/user/{mock_user_info['userId']}/agent/{mock_agent_interface['agentId']}/add"
     )
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert ensure_unique_value(data, "ID")
+    assert ensure_unique_value(data, "agentId")
 
 
 def test_get_response():
-    chat_id = mai.mock_chat_interface()["ID"]
+    chat_id = mai.mock_chat_interface()["chatId"]
     response = client.post(
         f"/chat/{chat_id}/response", json={"message": "Hello"})
     mock_response = mai.mock_chat_response()
@@ -127,32 +127,32 @@ def test_remove_agent_from_user():
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
     response = client.delete(
-        f"/user/{mock_user_info['ID']}/agent/{mock_agent_interface['ID']}/delete"
+        f"/user/{mock_user_info['userId']}/agent/{mock_agent_interface['agentId']}/delete"
     )
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert ensure_unique_value(data, "ID")
-    assert any(agent["ID"] == mock_agent_interface["ID"] for agent in data)
+    assert ensure_unique_value(data, "agentId")
+    assert any(agent["agentId"] == mock_agent_interface["agentId"] for agent in data)
 
 
 def test_remove_chat_from_user():
     mock_user_info = mai.mock_user_info()
     mock_chat = mai.mock_chat_interface()
     response = client.delete(
-        f"/user/{mock_user_info['ID']}/chat/{mock_chat['ID']}/delete"
+        f"/user/{mock_user_info['userId']}/chat/{mock_chat['chatId']}/delete"
     )
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
-    assert ensure_unique_value(data, "ID")
+    assert ensure_unique_value(data, "chatId")
 
 
 def test_modify_chat_status():
     mock_chat = mai.mock_chat_interface()
     chat_flags = {"pinned": True, "bookmarked": False, "open": True}
     response = client.put(
-        f"/chat/{mock_chat['ID']}/status", json={"chat_flags": chat_flags}
+        f"/chat/{mock_chat['chatId']}/status", json={"chat_flags": chat_flags}
     )
     assert response.status_code == 200
     data = response.json()

@@ -7,7 +7,6 @@ import AddNewAgentButton from './AddNewAgentButton';
 import UserDashboard from './UserDashboard';
 import UserDashboardButton from './UserDashboardButton';
 import { useSelector, useDispatch } from 'react-redux';
-// import { fetchIssues } from '../store';
 import { BrowserRouter, Route, Routes, Link, Switch } from 'react-router-dom';
 import { fetchUserAgents, fetchPinnedChats } from '../store';
 
@@ -18,7 +17,7 @@ export default function Dashboard() {
 	const [selectedAgentId, selectAgentId] = useState(null);
 
 	useEffect(() => {
-		dispatch(fetchUserAgents());
+		dispatch(fetchUserAgents(1));
 	}, []);
 
 	useEffect(() => {
@@ -52,7 +51,6 @@ export default function Dashboard() {
 		);
 	};
 
-	// console.log('THESE ARE MY AGENTS', userAgents);
 	//Actual page:
 	return (
 		<div id='app-frame'>
