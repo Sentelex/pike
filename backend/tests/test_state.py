@@ -2,7 +2,7 @@ import pytest as pytest
 import pydantic as pdc
 import langchain_core.messages as lcm
 import langgraph.graph.message as lgm
-import backend.src.state as st
+import src.state as st
 from tests.fixtures import *
 
 

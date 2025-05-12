@@ -1,7 +1,7 @@
 import contextlib as cl
 import fastapi as fapi
 import fastapi.middleware.cors as fapi_cors
-import backend.routes as routes
+import routes as routes
 
 
 @cl.asynccontextmanager
