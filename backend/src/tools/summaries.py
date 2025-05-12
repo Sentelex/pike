@@ -37,7 +37,7 @@ def summarize_text(input_text: str) -> str:
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(prompt)
     response_text = response.text.strip().strip("`").replace("json", "", 1).strip()
-    
+
     try:
         summary_data = json.loads(response_text)
         final_summary = summary_data[-1]["Denser_Summary"]
@@ -45,11 +45,3 @@ def summarize_text(input_text: str) -> str:
         raise ValueError("Failed to parse summary response: " + str(e))
 
     return final_summary.strip()
-
-if __name__ == "__main__":
-    text = """
-    Artificial intelligence is revolutionizing how businesses operate. 
-    From automating tasks to generating insights, AI is becoming an essential tool in the modern enterprise. 
-    However, concerns about bias, job loss, and misuse persist.
-    """
-    print(summarize_text(text))
