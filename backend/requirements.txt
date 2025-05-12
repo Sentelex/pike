@@ -10,3 +10,6 @@ reportlab
 uvicorn
 beautifulsoup4
 langchain-openai
+fitz
+jinja2
+tools
