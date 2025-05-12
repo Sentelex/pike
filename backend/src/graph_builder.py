@@ -6,18 +6,18 @@ import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
 import backend.src.state as st
-import backend.src.pike_tools as pike_tools
+import backend.src.tools as tools
 import langgraph.checkpoint.memory as lgcm
 
 
 TOOL_LIST_LOOKUP = {
     "default": [
-        pike_tools.get_action_items,
-        pike_tools.parse_pdf,
-        pike_tools.get_stock_price,
-        pike_tools.parse_file,
-        pike_tools.parse_webpage,
-        pike_tools.summarize_text,
+        tools.get_action_items,
+        tools.parse_pdf,
+        tools.get_stock_price,
+        tools.parse_file,
+        tools.parse_webpage,
+        tools.summarize_text,
     ],
 }
 

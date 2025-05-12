@@ -3,7 +3,7 @@ import base64
 import pytest
 from reportlab.pdfgen import canvas as pdf_canvas
 
-import backend.src.pike_tools.pdf_files as pf
+import backend.src.tools.pdf_files as pf
 
 
 @pytest.fixture
