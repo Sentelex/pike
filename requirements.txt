@@ -9,4 +9,3 @@ pymupdf
 reportlab
 uvicorn
 jinja2
-tools
