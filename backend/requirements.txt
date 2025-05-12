@@ -13,4 +13,3 @@ langchain-openai
 jinja2
 fitz
 jinja2
-tools
