@@ -8,6 +8,5 @@ fastapi
 pymupdf
 reportlab
 uvicorn
-fitz
 jinja2
 tools
