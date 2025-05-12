@@ -1,7 +1,7 @@
 import pytest
 import json
 from types import SimpleNamespace
-from src.pike_tools import summaries as su
+from backend.src.tools import summaries as su
 
 
 @pytest.fixture
