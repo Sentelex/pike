@@ -1,7 +1,7 @@
 import pytest
 import json
 from types import SimpleNamespace
-from src.tools import summaries as su
+from src.pike_tools import summaries as su
 
 
 @pytest.fixture
@@ -9,38 +9,38 @@ def mock_dependencies(monkeypatch):
     # Capture the prompt sent to the model
     captured = {}
 
-    # Mock LangChain ChatGoogleGenerativeAI
+    # Mock genai.configure
+    monkeypatch.setattr("src.pike_tools.summaries.genai.configure", lambda **kwargs: None)
+
+    # Mock template rendering
+    class MockTemplate:
+        def render(self, input_text):
+            assert isinstance(input_text, str)
+            rendered_prompt = f"Summarize: {input_text}"
+            captured['prompt'] = rendered_prompt
+            return rendered_prompt
+
+    class MockEnv:
+        def get_template(self, name):
+            assert name == "templates/summarize.j2"
+            return MockTemplate()
+
+    monkeypatch.setattr("src.pike_tools.summaries.Environment", lambda *args, **kwargs: MockEnv())
+
+    # Mock Gemini model
     class MockModel:
-        def invoke(self, prompt):
+        def generate_content(self, prompt):
             assert "Summarize:" in prompt
-            captured['prompt'] = prompt
+            # Return a fake JSON-like summary structure
             fake_json = [
                 {"Missing_Entities": ["AI", "world"], "Denser_Summary": "AI is transforming the world."},
                 {"Missing_Entities": ["technology"], "Denser_Summary": "AI and technology are transforming the world."}
             ]
-            return SimpleNamespace(content=f"```json\n{json.dumps(fake_json)}\n```")
+            return SimpleNamespace(text=f"```json\n{json.dumps(fake_json)}\n```")
 
-    # Patch model initialization to use MockModel
-    def mock_post_init(self, *args, **kwargs):
-        self.model_instance = MockModel()
-
-    monkeypatch.setattr("src.model.Model.model_post_init", mock_post_init)
-
-    # Patch Jinja environment and rendering
-    class MockTemplate:
-        def render(self, num, input_text):
-            rendered = f"Summarize: {input_text}"
-            return rendered
-
-    class MockEnv:
-        def get_template(self, name):
-            assert name == "templates/CoD_summarize.j2"
-            return MockTemplate()
-
-    monkeypatch.setattr("src.tools.summaries.Environment", lambda *args, **kwargs: MockEnv())
+    monkeypatch.setattr("src.pike_tools.summaries.genai.GenerativeModel", lambda name: MockModel())
 
     return captured
-
 
 def test_summarize_text_mocked(mock_dependencies):
     input_text = "Artificial Intelligence is transforming the world."
@@ -58,3 +58,4 @@ def test_summarize_text_real():
     output = su.summarize_text(input_text)
 
     assert isinstance(output, str)
+    print("\nReal summary output:", output)
