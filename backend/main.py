@@ -1,10 +1,11 @@
-import backend.src.graph_builder as gb
+import src.graph_builder as gb
 
 
 def print_stream(stream):
     for s in stream:
         message = s["messages"][-1]
-        print(message.pretty_print() if hasattr(message, "pretty_print") else message)
+        print(message.pretty_print() if hasattr(
+            message, "pretty_print") else message)
 
 
 if __name__ == "__main__":

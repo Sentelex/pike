@@ -1,13 +1,13 @@
 import pytest
-import backend.src.graph_builder as gb
-import backend.src.state as st
+import src.graph_builder as gb
+import src.state as st
 from typing import Callable
 import langgraph.graph as lgg
 import langchain_core.messages as lcm
-from fixtures import *
+from tests.fixtures import *
 import langchain_core.tools as lcct
 import unittest.mock
-import backend.src.mocks.mock_model as mm
+import src.mocks.mock_model as mm
 import os
 import langchain_core.tools as lcct
 import langchain_google_genai as lc_google
@@ -68,13 +68,15 @@ def test_tools_node(state):
     _graph = simple_graph(lambda s: gb.tools_node(s, tools=[test_tool]))
     updated_state = _graph.invoke(state)
     mock_tool.assert_called_once_with("value1", "value2")
-    assert updated_state["messages"][-1].content.strip('"') == "value1 and value2"
+    assert updated_state["messages"][-1].content.strip(
+        '"') == "value1 and value2"
 
 
 def test_build_graph_with_mocked_tools(state, monkeypatch):
     dummy_tool = unittest.mock.MagicMock()
     dummy_tool.name = "dummy_tool"
-    dummy_tool.invoke = unittest.mock.MagicMock(return_value="result from dummy tool")
+    dummy_tool.invoke = unittest.mock.MagicMock(
+        return_value="result from dummy tool")
 
     # Patch the graph_builder to use only our dummy_tool for the 'default' graph
     monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [dummy_tool])
@@ -96,7 +98,8 @@ def test_build_graph_with_mocked_tools(state, monkeypatch):
     updated_state = graph.invoke(state)
     dummy_tool.invoke.assert_called_once_with({"file_path": "dummy_path.pdf"})
     assert len(updated_state["messages"]) == 4
-    assert updated_state["messages"][-2].content.strip('"') == "result from dummy tool"
+    assert updated_state["messages"][-2].content.strip(
+        '"') == "result from dummy tool"
 
 
 @pytest.mark.skip_in_pipeline
@@ -116,7 +119,8 @@ def test_gemini_model_calls_tool(monkeypatch):
         """A special multipy tool."""
         return a * b / 6
 
-    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [special_add, special_multiply])
+    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default",
+                        [special_add, special_multiply])
 
     model = lc_google.ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", google_api_key=api_key

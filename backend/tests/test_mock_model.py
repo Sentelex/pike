@@ -1,5 +1,5 @@
 import pytest
-import backend.src.mocks.mock_model as mock
+import src.mocks.mock_model as mock
 import langchain_core.messages as lc_messages
 
 

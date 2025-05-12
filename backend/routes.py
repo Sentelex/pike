@@ -1,6 +1,6 @@
 import uuid as u
 import copy
-import backend.src.mocks.mock_api_interfaces as api_mocks
+import src.mocks.mock_api_interfaces as api_mocks
 import fastapi as fapi
 import pydantic as pyd
 
@@ -83,7 +83,7 @@ def get_chat_history(chat_id: u.UUID) -> dict:
 @pike_router.get("/attachment/{attachment_id}")
 def get_attachment(attachment_id: u.UUID) -> str:
     """
-    Uses an attachment_id to request the data from a specific attachment from the backend.
+    Uses an attachment_id to request the data from a specific attachment from the 
     """
     return api_mocks.mock_pdf_attachment()
 

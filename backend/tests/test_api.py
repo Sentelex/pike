@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
-import backend.src.mocks.mock_api_interfaces as mai
-import backend.pike as pike
+import src.mocks.mock_api_interfaces as mai
+import pike as pike
 
 client = TestClient(pike.api)
 
