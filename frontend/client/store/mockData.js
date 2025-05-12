@@ -1,3 +1,5 @@
+// KEEP: using this mock data for testing until have this sent from back end.
+
 export const mockAgentChatLists = [
 	{
 		agentId: 1,

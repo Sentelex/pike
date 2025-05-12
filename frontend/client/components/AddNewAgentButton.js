@@ -6,7 +6,6 @@ export default function AddNewAgentButton({ onSelect, selected }) {
 	const navigate = useNavigate();
 
 	const handleClick = (e) => {
-		// e.stopPropagation(); // Stop the click from reaching parent
 		navigate('marketplace');
 		onSelect('add-agent');
 	};

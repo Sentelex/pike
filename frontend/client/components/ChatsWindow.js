@@ -7,6 +7,7 @@ import Chat from './Chat';
 export default function ChatsWindow() {
 	const dispatch = useDispatch();
 	const { agentId: agentIdParam } = useParams();
+	// KEEP:
 	// const agentId = parseInt(agentIdParam, 10);
 	const agentId = agentIdParam;
 	console.log('AGENT ID: ', agentId);
@@ -15,23 +16,10 @@ export default function ChatsWindow() {
 	const agentChatList = chatLists.find((list) => list.agentId === agentId);
 
 	useEffect(() => {
-		// console.log('!!!AGENT ID from params: ', agentId);
 		if (!agentChatList) {
 			dispatch(fetchAgentChatsList(1, agentId));
 		}
 	}, [agentChatList, agentId, dispatch]);
-
-	// const renderChatList = () => {
-	// 	if (!agentChatList || agentChatList.chatsList.length === 0) {
-	// 		return <>No chats</>;
-	// 	}
-
-	// 	return agentChatList.chatsList.map((chat) => (
-	// 		<div key={chat.id} className='chat-window-folded'>
-	// 			{chat.chatName}
-	// 		</div>
-	// 	));
-	// };
 
 	const renderChatList = () => {
 		if (

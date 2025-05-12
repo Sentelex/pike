@@ -6,7 +6,6 @@ export default function UserDashboardButton() {
 	const navigate = useNavigate();
 
 	const handleGoToUserDashboard = (e) => {
-		// e.stopPropagation(); // Stop the click from reaching parent
 		navigate('dashboard');
 	};
 
