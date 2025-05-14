@@ -10,7 +10,7 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 		dispatch(toggleChatOpenThunk(agentId, chatId));
 	};
 	return (
-		<div className={`chat-w-test ${isOpen ? 'open' : 'folded'}`}>
+		<div className={`chat-window ${isOpen ? 'open' : 'folded'}`}>
 			<div
 				key={chatId}
 				className={`chat-window-folded ${isOpen ? 'hidden' : ''}`}

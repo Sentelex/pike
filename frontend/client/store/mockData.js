@@ -32,3 +32,47 @@ export const mockAgentChatLists = [
 		],
 	},
 ];
+
+export const mockAgents = [
+	{
+		agentId: 1,
+		agentName: 'Document Assistant',
+		developer: 'PIKE',
+	},
+	{
+		agentId: 2,
+		agentName: 'Personal Finance Manager',
+		developer: 'PIKE',
+	},
+	{
+		agentId: 3,
+		agentName: 'Legal Assistant',
+		developer: 'PIKE',
+	},
+	{
+		agentId: 4,
+		agentName: 'Scheduling Assistant',
+		developer: 'PIKE',
+	},
+];
+
+export const mockPinnedChats = [
+	{
+		chatId: 1,
+		agentId: 2,
+		chatName: 'Credit score advice',
+		chatAgent: 'Personal Finance Manager',
+	},
+	{
+		chatId: 1,
+		agentId: 1,
+		chatName: 'Moby Dick Q and A',
+		chatAgent: 'Document Assistant',
+	},
+	{
+		chatId: 2,
+		agentId: 2,
+		chatName: 'Monthly Budget Advice',
+		chatAgent: 'Personal Finance Manager',
+	},
+];

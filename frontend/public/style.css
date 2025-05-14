@@ -94,7 +94,7 @@ body,
 
 #left-panel {
 	width: 290px;
-	/* width: 70px; */
+	/* width: 700px; */
 	background-color: beige;
 	display: flex;
 	flex-direction: column;
@@ -104,24 +104,77 @@ body,
 #main-area {
 	width: 100%;
 }
-#button-new-chat {
+#create-chat-button {
+	overflow: hidden;
 	cursor: pointer;
 	position: fixed;
-	bottom: 15px;
-	right: 30px;
+
 	display: flex;
-	align-items: center; /* Vertical centering */
-	justify-content: center; /* Horizontal centering (optional) */
+	align-items: center;
+	justify-content: center;
 	border-radius: 22px;
 	border: solid 1px gray;
 	background-color: white;
 	height: 60px;
 	width: 80px;
-	/* width: auto; */
 	padding: 10px;
+	transition: all 0.2s ease;
+	z-index: 1000;
 }
-#button-new-chat:hover {
+
+/* #create-chat-button {
+	cursor: pointer;
+	transition: all 0.3s ease-in-out;
+	text-align: center;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	border-radius: 5px;
+	overflow: hidden;
+} */
+
+#create-chat-button.collapsed {
+	right: 30px;
+
+	bottom: 15px;
+	width: 80px;
+	height: 50px;
+}
+
+#create-chat-button.expanded {
+	/* cursor: none; */
+
+	transform: translateX(0%);
+	right: 250px;
+	border-bottom-right-radius: 0px;
+	bottom: 30px;
+	width: 50%;
+	height: 100px;
+	text-align: left;
+	padding-left: 20px;
+}
+
+#create-chat-button:hover {
 	background-color: lightgray;
+}
+
+.popup-blanket {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(
+		0,
+		0,
+		0,
+		0.5
+	); /* Semi-transparent background overlay */
+
+	z-index: 500; /* Make sure it's above other content */
+	overflow-y: scroll;
+	overflow-x: hidden;
+	transition: all 0.05s ease;
 }
 
 #top-panel {
@@ -459,7 +512,7 @@ body,
 
 #user-login-menu {
 	position: relative;
-	transform: translateY(-20%);
+	/* transform: translateY(-20%); */
 	height: 300px;
 	width: 500px;
 	background-color: white;
@@ -504,7 +557,7 @@ body,
 	background-color: lightgray;
 }
 
-.chat-w-test {
+.chat-window {
 	overflow: hidden;
 	background-color: white;
 	border: solid 1px gray;

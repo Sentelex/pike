@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { mockAgentChatLists } from './mockData';
+import { mockAgentChatLists, mockAgents, mockPinnedChats } from './mockData';
 
 // ACTION TYPES
 
@@ -43,7 +43,9 @@ export const fetchUserAgents = (userId) => {
 		const { data } = await axios.get(
 			`http://localhost:8000/user/${userId}/agents`
 		);
-		console.log('USER AGENTS:', data);
+		// KEEP FOR TESTING
+		// const data = mockAgents;
+		// console.log('USER AGENTS:', data);
 		dispatch(setUserAgents(data));
 	};
 };
@@ -53,6 +55,9 @@ export const fetchPinnedChats = (userId) => {
 		const { data } = await axios.get(
 			`http://localhost:8000/user/${userId}/pinned-chats`
 		);
+		// KEEP FOR TESTING
+		// const data = mockPinnedChats;
+		// console.log('PINNED CHATS:', data);
 
 		dispatch(setPinnedChats(data));
 	};
@@ -64,7 +69,10 @@ export const fetchAgentChatsList = (userId, agentId) => {
 			`http://localhost:8000/user/${userId}/agent/${agentId}/chats`
 		);
 		// KEEP FOR TESTING:
-		// const data = mockAgentChatLists.find((item) => item.agentId === agentId);
+		// const data = mockAgentChatLists.find(
+		// 	(item) => item.agentId === agentId
+		// ).chatsList;
+
 		console.log('THIS SHOULD BE CHATS LIST', data);
 
 		dispatch(addAgentChatsList({ agentId: agentId, chatsList: data }));

@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import { fetchAgentChatsList } from '../store';
 import Chat from './Chat';
+import CreateChatButton from './CreateChatButton';
+import PopupBlanket from './PopupBlanket';
 
 export default function ChatsWindow() {
 	const dispatch = useDispatch();
+	const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
 	const { agentId: agentIdParam } = useParams();
-	// KEEP:
+	// KEEP FOR TESTING:
 	// const agentId = parseInt(agentIdParam, 10);
 	const agentId = agentIdParam;
 	console.log('AGENT ID: ', agentId);
@@ -42,11 +45,11 @@ export default function ChatsWindow() {
 
 	return (
 		<>
-			<div id='button-new-chat'>
-				New
-				<br />
-				Chat
-			</div>
+			<PopupBlanket isOpen={isCreateChatOpen} setIsOpen={setIsCreateChatOpen} />
+			<CreateChatButton
+				isOpen={isCreateChatOpen}
+				setIsOpen={setIsCreateChatOpen}
+			/>
 			<div id='top-panel'>
 				<div id='filter-menu'>Filter menu</div>
 				<div id='chats-search-bar'>Search bar</div>
