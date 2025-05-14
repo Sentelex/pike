@@ -14,8 +14,9 @@ export default function PopupBlanket({ isOpen, setIsOpen, newMessage }) {
 
 	return (
 		<div
-			className='popup-blanket'
-			style={{ display: isOpen ? 'block' : 'none' }}
+			// className='popup-blanket'
+			className={`popup-blanket ${isOpen ? 'visible' : ''}`}
+			// style={{ display: isOpen ? 'block' : 'none' }}
 			onClick={handleClick}
 		></div>
 	);
