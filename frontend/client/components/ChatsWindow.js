@@ -8,8 +8,11 @@ import PopupBlanket from './PopupBlanket';
 
 export default function ChatsWindow() {
 	const dispatch = useDispatch();
+
 	const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
+	const [newMessage, setNewMessage] = useState('');
 	const { agentId: agentIdParam } = useParams();
+
 	// KEEP FOR TESTING:
 	// const agentId = parseInt(agentIdParam, 10);
 	const agentId = agentIdParam;
@@ -45,10 +48,17 @@ export default function ChatsWindow() {
 
 	return (
 		<>
-			<PopupBlanket isOpen={isCreateChatOpen} setIsOpen={setIsCreateChatOpen} />
+			<PopupBlanket
+				isOpen={isCreateChatOpen}
+				setIsOpen={setIsCreateChatOpen}
+				newMessage={newMessage}
+			/>
 			<CreateChatButton
 				isOpen={isCreateChatOpen}
 				setIsOpen={setIsCreateChatOpen}
+				agentId={agentId}
+				newMessage={newMessage}
+				setNewMessage={setNewMessage}
 			/>
 			<div id='top-panel'>
 				<div id='filter-menu'>Filter menu</div>
