@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import SendButton from './SendButton'; // Import the SendButton component
+import SendButton from './SendButton';
+import { IoAdd } from 'react-icons/io5';
 
 export default function CreateChatButton({
 	isOpen,
@@ -87,10 +88,16 @@ export default function CreateChatButton({
 					<SendButton
 						onClick={handleSendClick}
 						disabled={!newMessage.trim()} // Disable if no message
+						isFullyExpanded={isFullyExpanded}
 					/>
 				</>
 			) : (
-				'New\nChat'
+				<>
+					<div style={{ fontSize: 'xx-large', marginRight: '5px' }}>
+						<IoAdd />{' '}
+					</div>{' '}
+					New Chat
+				</>
 			)}
 		</div>
 	);
