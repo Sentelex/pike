@@ -106,7 +106,7 @@ body,
 }
 #create-chat-button {
 	overflow: hidden;
-	cursor: pointer;
+
 	position: fixed;
 
 	display: flex;
@@ -135,10 +135,10 @@ body,
 
 #create-chat-button.collapsed {
 	right: 30px;
-
 	bottom: 15px;
 	width: 80px;
 	height: 50px;
+	cursor: pointer;
 }
 
 #create-chat-button.expanded {
@@ -154,7 +154,7 @@ body,
 	padding-left: 20px;
 }
 
-#create-chat-button:hover {
+#create-chat-button.collapsed:hover {
 	background-color: lightgray;
 }
 
@@ -175,6 +175,18 @@ body,
 	overflow-y: scroll;
 	overflow-x: hidden;
 	transition: all 0.05s ease;
+}
+
+.input-field {
+	width: 100%;
+	height: auto;
+	font-size: 16px;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	resize: none; /* Prevent resizing if not desired */
+	/* font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+		'Lucida Sans', Arial, sans-serif; */
 }
 
 #top-panel {
