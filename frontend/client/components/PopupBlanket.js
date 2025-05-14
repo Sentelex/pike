@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
-export default function PopupBlanket({ isOpen, setIsOpen }) {
+export default function PopupBlanket({ isOpen, setIsOpen, newMessage }) {
+	const dispatch = useDispatch();
 	const handleClick = () => {
 		setIsOpen(false);
-		console.log('Click! (isOpen)', isOpen);
+		dispatch({
+			type: 'UPDATE_NEW_CHAT_MESSAGE',
+			payload: newMessage,
+		});
+		console.log('Click! (isOpen) and message:', isOpen, newMessage);
 	};
 
 	return (

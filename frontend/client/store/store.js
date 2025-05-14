@@ -9,6 +9,7 @@ const SET_PINNED_CHATS = 'SET_PINNED_CHATS';
 const ADD_AGENT_CHATS_LIST = 'ADD_AGENT_CHATS_LIST';
 const APPEND_AGENT_CHAT = 'APPEND_AGENT_CHAT';
 const TOGGLE_CHAT_OPEN = 'TOGGLE_CHAT_OPEN';
+const UPDATE_NEW_CHAT_MESSAGE = 'UPDATE_NEW_CHAT_MESSAGE';
 
 // ACTION CREATORS
 const setUserAgents = (userAgents) => ({
@@ -154,6 +155,15 @@ export function chatLists(state = [], action) {
 			});
 		}
 
+		default:
+			return state;
+	}
+}
+
+export function newChatMessage(state = '', action) {
+	switch (action.type) {
+		case UPDATE_NEW_CHAT_MESSAGE:
+			return action.payload;
 		default:
 			return state;
 	}

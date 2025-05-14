@@ -177,6 +177,22 @@ body,
 	transition: all 0.05s ease;
 }
 
+.create-chat-input {
+	resize: none;
+	min-height: 50px;
+	border-radius: 15px;
+	max-height: 150px;
+	padding: 10px;
+	font-size: medium;
+	line-height: 1.5;
+	overflow-x: hidden;
+	outline: none;
+	width: 100%;
+	height: auto;
+	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+		'Lucida Sans', Arial, sans-serif;
+}
+
 .input-field {
 	width: 100%;
 	height: auto;
