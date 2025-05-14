@@ -118,7 +118,7 @@ body,
 	height: 60px;
 	width: 80px;
 	padding: 10px;
-	transition: all 0.2s ease;
+	/* transition: all 0.2s ease; */
 	z-index: 1000;
 }
 
@@ -143,7 +143,8 @@ body,
 
 #create-chat-button.expanded {
 	/* cursor: none; */
-
+	/* transition: all 0.2s ease; */
+	transition: all 0.1s ease;
 	transform: translateX(0%);
 	right: 250px;
 	border-bottom-right-radius: 0px;
@@ -172,9 +173,16 @@ body,
 	); /* Semi-transparent background overlay */
 
 	z-index: 500; /* Make sure it's above other content */
-	overflow-y: scroll;
+	overflow-y: hidden;
 	overflow-x: hidden;
-	transition: all 0.05s ease;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.1s ease, visibility 0.1s ease;
+}
+
+.popup-blanket.visible {
+	opacity: 1;
+	visibility: visible;
 }
 
 .create-chat-input {
@@ -191,7 +199,27 @@ body,
 	height: auto;
 	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
 		'Lucida Sans', Arial, sans-serif;
+	/* transition: color 0.1s ease-in-out;  */
+	transition: opacity 0.05s ease;
 }
+
+.create-chat-input.fade-in {
+	opacity: 1; /* Fully visible */
+}
+
+.create-chat-input {
+	opacity: 0; /* Initially hidden */
+	/* visibility: hidden; */
+}
+
+/* .create-chat-input::placeholder {
+	color: transparent; 
+	transition: color 2s ease-in-out;
+}
+
+.create-chat-input.fade-in::placeholder {
+	color: #aaa; 
+} */
 
 .input-field {
 	width: 100%;

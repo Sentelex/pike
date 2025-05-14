@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import SendButton from './SendButton'; // Import the SendButton component
 
@@ -13,8 +13,21 @@ export default function CreateChatButton({
 	const agents = useSelector((state) => state.agents);
 	const dispatch = useDispatch();
 
+	const [isFullyExpanded, setIsFullyExpanded] = useState(false);
+
+	// Trigger a delay to show the placeholder after expansion
+	useEffect(() => {
+		let timeout;
+		if (isOpen) {
+			timeout = setTimeout(() => setIsFullyExpanded(true), 25); // Adjust delay to match CSS transition
+		} else {
+			setIsFullyExpanded(false);
+		}
+		return () => clearTimeout(timeout);
+	}, [isOpen]);
+
 	const handleChange = (e) => {
-		const { name, value } = e.target;
+		const { value } = e.target;
 		setNewMessage(value);
 	};
 
@@ -22,7 +35,6 @@ export default function CreateChatButton({
 		if (!isOpen) {
 			setNewMessage(storedChatMessage);
 			setIsOpen(true);
-			console.log('Click! (isOpen)', isOpen);
 		}
 	};
 
@@ -38,7 +50,6 @@ export default function CreateChatButton({
 				type: 'UPDATE_NEW_CHAT_MESSAGE',
 				payload: '',
 			});
-			console.log('Send message:', newMessage);
 			setNewMessage(''); // Clear the input
 		}
 	};
@@ -62,13 +73,16 @@ export default function CreateChatButton({
 						name='createChatPrompt'
 						inputMode='text'
 						autoComplete='off'
-						placeholder={`Start a new chat with ${returnAgentName(agentId)}`}
-						className='create-chat-input'
-						value={newMessage}
+						placeholder={
+							isFullyExpanded
+								? `Start a new chat with ${returnAgentName(agentId)}`
+								: ''
+						}
+						className={`create-chat-input ${isFullyExpanded ? 'fade-in' : ''}`}
+						value={isFullyExpanded ? newMessage : ''}
 						onChange={handleChange}
-						onKeyDown={handleKeyDown} // Add keydown listener
-						rows={1} // Number of visible text lines
-						// cols={30} // Width of the textarea
+						onKeyDown={handleKeyDown}
+						rows={1}
 					/>
 					<SendButton
 						onClick={handleSendClick}
