@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import './NewChatButton.css'; // Add styles here
 
 export default function PopupBlanket({ isOpen, setIsOpen }) {
 	const handleClick = () => {
