@@ -92,12 +92,19 @@ export default function CreateChatButton({
 					/>
 				</>
 			) : (
-				<>
-					<div style={{ fontSize: 'xx-large', marginRight: '5px' }}>
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						paddingRight: '10px',
+					}}
+				>
+					<div id={'plus-sign-wrapper'}>
 						<IoAdd />{' '}
 					</div>{' '}
 					New Chat
-				</>
+				</div>
 			)}
 		</div>
 	);
