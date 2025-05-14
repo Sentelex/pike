@@ -110,35 +110,28 @@ body,
 	position: fixed;
 
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: center;
+	gap: 5px;
 	border-radius: 22px;
-	border: solid 1px gray;
+
 	background-color: white;
 	height: 60px;
 	width: 80px;
-	padding: 10px;
+	padding: 15px;
+
 	/* transition: all 0.2s ease; */
 	z-index: 1000;
 }
 
-/* #create-chat-button {
-	cursor: pointer;
-	transition: all 0.3s ease-in-out;
-	text-align: center;
-	padding: 10px;
-	background-color: #007bff;
-	color: white;
-	border-radius: 5px;
-	overflow: hidden;
-} */
-
 #create-chat-button.collapsed {
+	border: solid 1px lightgray;
 	right: 30px;
 	bottom: 15px;
 	width: 80px;
 	height: 50px;
 	cursor: pointer;
+	align-items: center;
 }
 
 #create-chat-button.expanded {
@@ -152,11 +145,11 @@ body,
 	width: 50%;
 	height: 100px;
 	text-align: left;
-	padding-left: 20px;
 }
 
 #create-chat-button.collapsed:hover {
-	background-color: lightgray;
+	background-color: rgb(236, 236, 236);
+	border: solid 1px white;
 }
 
 .popup-blanket {
@@ -186,11 +179,15 @@ body,
 }
 
 .create-chat-input {
+	opacity: 0;
+	/* background-color: aquamarine; */
 	resize: none;
-	min-height: 50px;
-	border-radius: 15px;
-	max-height: 150px;
-	padding: 10px;
+	min-height: 100%;
+	/* min-height: 50px; */
+	/* border-radius: 15px; */
+	border: none;
+	/* max-height: 150px; */
+	/* padding: 10px; */
 	font-size: medium;
 	line-height: 1.5;
 	overflow-x: hidden;
@@ -207,9 +204,33 @@ body,
 	opacity: 1; /* Fully visible */
 }
 
-.create-chat-input {
-	opacity: 0; /* Initially hidden */
-	/* visibility: hidden; */
+.send-button {
+	opacity: 0;
+	cursor: pointer;
+	background-color: white;
+	border: solid 1px lightgray;
+	min-height: 35px;
+	min-width: 35px;
+	border-radius: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: x-large;
+	transition: opacity 0.05s ease;
+}
+
+.send-button.fade-in {
+	opacity: 1; /* Fully visible */
+}
+
+.send-button.inactive {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.send-button.active:hover {
+	background-color: rgb(236, 236, 236);
+	border: solid 1px white;
 }
 
 /* .create-chat-input::placeholder {
