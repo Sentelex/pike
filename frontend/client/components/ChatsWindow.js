@@ -16,7 +16,6 @@ export default function ChatsWindow() {
 	// KEEP FOR TESTING:
 	// const agentId = parseInt(agentIdParam, 10);
 	const agentId = agentIdParam;
-	console.log('AGENT ID: ', agentId);
 	const chatLists = useSelector((state) => state.chatLists);
 
 	const agentChatList = chatLists.find((list) => list.agentId === agentId);

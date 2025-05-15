@@ -17,13 +17,33 @@ export default function CreateChatButton({
 	const [isFullyExpanded, setIsFullyExpanded] = useState(false);
 	const textareaRef = useRef(null); // Create a ref for the textarea
 
+	// Adjust the textarea height as the user types
+	const adjustTextareaHeight = () => {
+		const textarea = textareaRef.current;
+		if (textarea) {
+			textarea.style.height = 'auto';
+			const lineHeight = parseInt(
+				window.getComputedStyle(textarea).lineHeight,
+				10
+			);
+			console.log('lineHeight:', lineHeight);
+			const maxHeight = lineHeight * 5; // limit to 5 lines
+			textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+			textarea.style.overflowY =
+				textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
+		}
+	};
+
 	// Trigger a delay to show the placeholder after expansion
 	useEffect(() => {
 		let timeout;
 		if (isOpen) {
 			timeout = setTimeout(() => {
 				setIsFullyExpanded(true);
-				textareaRef.current?.focus(); // Focus the textarea when expanded
+				requestAnimationFrame(() => {
+					textareaRef.current?.focus();
+					adjustTextareaHeight();
+				});
 			}, 25); // Adjust delay to match CSS transition
 		} else {
 			setIsFullyExpanded(false);
@@ -34,12 +54,14 @@ export default function CreateChatButton({
 	const handleChange = (e) => {
 		const { value } = e.target;
 		setNewMessage(value);
+		adjustTextareaHeight();
 	};
 
 	const handleButtonClick = () => {
 		if (!isOpen) {
 			setNewMessage(storedChatMessage);
 			setIsOpen(true);
+			adjustTextareaHeight();
 		}
 	};
 
@@ -90,18 +112,25 @@ export default function CreateChatButton({
 						onKeyDown={handleKeyDown}
 						rows={1}
 					/>
-					<SendButton
-						onClick={handleSendClick}
-						disabled={!newMessage.trim()} // Disable if no message
-						isFullyExpanded={isFullyExpanded}
-					/>
+					<div
+						style={{
+							minHeight: '100%',
+							display: 'flex',
+							alignSelf: 'flex-end',
+						}}
+					>
+						<SendButton
+							onClick={handleSendClick}
+							disabled={!newMessage.trim()} // Disable if no message
+							isFullyExpanded={isFullyExpanded}
+						/>
+					</div>
 				</>
 			) : (
 				<div
 					style={{
 						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
+						alignItems: 'flex-end',
 						paddingRight: '10px',
 					}}
 				>

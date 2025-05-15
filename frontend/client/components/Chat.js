@@ -13,7 +13,7 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 		<div className={`chat-window ${isOpen ? 'open' : 'folded'}`}>
 			<div
 				key={chatId}
-				className={`chat-window-folded ${isOpen ? 'hidden' : ''}`}
+				className={`chat-summary ${isOpen ? 'hidden' : ''}`}
 				onClick={handleToggle}
 			>
 				{chatName}
