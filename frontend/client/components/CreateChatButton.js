@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import SendButton from './SendButton';
 import { IoAdd } from 'react-icons/io5';
@@ -15,12 +15,16 @@ export default function CreateChatButton({
 	const dispatch = useDispatch();
 
 	const [isFullyExpanded, setIsFullyExpanded] = useState(false);
+	const textareaRef = useRef(null); // Create a ref for the textarea
 
 	// Trigger a delay to show the placeholder after expansion
 	useEffect(() => {
 		let timeout;
 		if (isOpen) {
-			timeout = setTimeout(() => setIsFullyExpanded(true), 25); // Adjust delay to match CSS transition
+			timeout = setTimeout(() => {
+				setIsFullyExpanded(true);
+				textareaRef.current?.focus(); // Focus the textarea when expanded
+			}, 25); // Adjust delay to match CSS transition
 		} else {
 			setIsFullyExpanded(false);
 		}
@@ -71,6 +75,7 @@ export default function CreateChatButton({
 			{isOpen ? (
 				<>
 					<textarea
+						ref={textareaRef} // Attach the ref to the textarea
 						name='createChatPrompt'
 						inputMode='text'
 						autoComplete='off'
