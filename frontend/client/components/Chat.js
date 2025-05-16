@@ -35,7 +35,11 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 			<div className={`chat-viewer ${isOpen ? '' : 'hidden'}`}>
 				{isOpen && chatHistory.length > 0
 					? chatHistory.map((msg, index) => (
-							<div key={index}>{msg.message}</div>
+							<div key={index} className='message-test'>
+								{typeof msg.content === 'object'
+									? msg.content.text
+									: msg.content}
+							</div>
 					  ))
 					: isOpen && <div>Loading chat history...</div>}
 			</div>
