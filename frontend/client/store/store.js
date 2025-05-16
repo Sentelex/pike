@@ -100,7 +100,7 @@ export const toggleChatOpenThunk = (agentId, chatId) => (dispatch) => {
 export const createNewChat = (userId, agentId, newMessage) => {
 	return async (dispatch) => {
 		const chatId = generateUUID();
-		const newChat = {
+		const message = {
 			message: newMessage,
 			attachment: null,
 		};
@@ -114,7 +114,7 @@ export const createNewChat = (userId, agentId, newMessage) => {
 			try {
 				response = await axios.post(
 					`http://localhost:8000/user/${userId}/agent/${agentId}/create_chat/${chatId}`,
-					newChat,
+					message,
 					{ timeout: delay }
 				);
 				break; // Exit loop on success
@@ -133,7 +133,7 @@ export const createNewChat = (userId, agentId, newMessage) => {
 		if (response) {
 			console.log('New chat created response:', response.data);
 			// KEEP FOR TESTING: appending chat NOT from response
-			dispatch(appendAgentChat(agentId, response.data[0]));
+			dispatch(appendAgentChat(agentId, response.data.newChat));
 		}
 	};
 };
