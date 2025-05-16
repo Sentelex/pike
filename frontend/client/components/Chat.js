@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { toggleChatOpenThunk } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleChatOpenThunk, fetchChatHistory } from '../store';
 
 export default function Chat({ agentId, chatName, isOpen, chatId }) {
 	const dispatch = useDispatch();
+	const chatHistory = useSelector((state) => state.chatHistory[chatId] || []);
+	console.log('Chat history:', chatHistory);
+
+	useEffect(() => {
+		if (isOpen) {
+			dispatch(fetchChatHistory(chatId));
+		}
+	}, [isOpen, chatId, dispatch]);
 
 	const handleToggle = () => {
 		console.log('Click! (handle toggle)');
@@ -25,14 +33,11 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 				{chatName}
 			</div>
 			<div className={`chat-viewer ${isOpen ? '' : 'hidden'}`}>
-				{/* KEEP WHILE BEING BUILT, defines fields: */}
-				{/* Chat viewer */}
-				{/* {generateDivs(15, 'message-test')} */}
-				{[...Array(15)].map((_, i) => (
-					<div className='message-test' key={i}>
-						Hello Pike and Hello world!
-					</div>
-				))}
+				{isOpen && chatHistory.length > 0
+					? chatHistory.map((msg, index) => (
+							<div key={index}>{msg.message}</div>
+					  ))
+					: isOpen && <div>Loading chat history...</div>}
 			</div>
 			<div className={`chat-message-input ${isOpen ? '' : 'hidden'}`}>
 				Chat message input{' '}
