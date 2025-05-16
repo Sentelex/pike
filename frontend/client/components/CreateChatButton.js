@@ -34,7 +34,7 @@ export default function CreateChatButton({
 		}
 	};
 
-	// Trigger a delay to show the placeholder after expansion
+	// Trigger a delay to show elements only after expansion is triggered
 	useEffect(() => {
 		let timeout;
 		if (isOpen) {
@@ -44,7 +44,7 @@ export default function CreateChatButton({
 					textareaRef.current?.focus();
 					adjustTextareaHeight();
 				});
-			}, 25); // Adjust delay to match CSS transition
+			}, 25); // Adjust delay here
 		} else {
 			setIsFullyExpanded(false);
 		}
