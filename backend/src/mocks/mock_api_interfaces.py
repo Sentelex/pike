@@ -163,9 +163,7 @@ def mock_chat_history_alt() -> dict:
 
 
 def mock_chat_response():
-    return {
-        "messages": [lcm.AIMessage(content="This is an AI response to the human message.")]
-    }
+    return dict(lcm.AIMessage(content="This is an AI response to the human message."))
 
 
 def mock_user_info() -> dict:

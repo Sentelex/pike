@@ -101,14 +101,7 @@ def test_create_chat():
     assert response["newChat"]["isOpen"] is True
     assert response["newChat"]["isPinned"] is False
     assert response["newChat"]["isBookmarked"] is False
-    assert isinstance(response["message"], dict)
-    assert "messages" in response["message"]
-    assert all(
-        [
-            response["message"]["messages"][i] == dict(mock_response["messages"][i])
-            for i in range(len(response["message"]["messages"]))
-        ]
-    )
+    assert response["message"] == mock_response
 
 
 def test_add_agent_to_user():
@@ -130,13 +123,7 @@ def test_get_response():
     mock_response = mai.mock_chat_response()
     assert response.status_code == 200
     data = response.json()
-    assert "messages" in data
-    assert all(
-        [
-            data["messages"][i] == dict(mock_response["messages"][i])
-            for i in range(len(data["messages"]))
-        ]
-    )
+    assert data == mock_response
 
 
 def test_remove_agent_from_user():
