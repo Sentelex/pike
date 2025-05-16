@@ -46,7 +46,7 @@ export default function CreateChatButton({
 					textareaRef.current?.focus();
 					adjustTextareaHeight();
 				});
-			}, 25); // Adjust delay here
+			}, 50); // Adjust delay here
 		} else {
 			setIsFullyExpanded(false);
 		}

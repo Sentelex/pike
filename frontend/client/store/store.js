@@ -11,6 +11,7 @@ const ADD_AGENT_CHATS_LIST = 'ADD_AGENT_CHATS_LIST';
 const APPEND_AGENT_CHAT = 'APPEND_AGENT_CHAT';
 const TOGGLE_CHAT_OPEN = 'TOGGLE_CHAT_OPEN';
 const UPDATE_NEW_CHAT_MESSAGE = 'UPDATE_NEW_CHAT_MESSAGE';
+const SET_CHAT_HISTORY = 'SET_CHAT_HISTORY';
 
 // ACTION CREATORS
 const setUserAgents = (userAgents) => ({
@@ -35,6 +36,11 @@ const appendAgentChat = (agentId, newChat) => ({
 const toggleChatOpen = (agentId, chatId) => ({
 	type: TOGGLE_CHAT_OPEN,
 	payload: { agentId, chatId },
+});
+
+const setChatHistory = (chatId, messages) => ({
+	type: SET_CHAT_HISTORY,
+	payload: { chatId, messages },
 });
 
 //THUNK CREATORS
@@ -138,6 +144,20 @@ export const createNewChat = (userId, agentId, newMessage) => {
 	};
 };
 
+export const fetchChatHistory = (chatId) => {
+	return async (dispatch) => {
+		try {
+			const { data } = await axios.get(
+				`http://localhost:8000/chat/${chatId}/history`
+			);
+			// Assuming data is an array of message objects
+			dispatch(setChatHistory(chatId, data));
+		} catch (error) {
+			console.error('Failed to fetch chat history:', error);
+		}
+	};
+};
+
 // Agents Reducers
 export function agents(state = [], action) {
 	switch (action.type) {
@@ -206,6 +226,20 @@ export function newChatMessage(state = '', action) {
 	switch (action.type) {
 		case UPDATE_NEW_CHAT_MESSAGE:
 			return action.payload;
+		default:
+			return state;
+	}
+}
+
+export function chatHistory(state = {}, action) {
+	switch (action.type) {
+		case SET_CHAT_HISTORY: {
+			const { chatId, messages } = action.payload;
+			return {
+				...state,
+				[chatId]: messages,
+			};
+		}
 		default:
 			return state;
 	}
