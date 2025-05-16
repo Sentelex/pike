@@ -97,7 +97,7 @@ def get_agent(agentId: u.UUID) -> dict:
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/create_chat/{chatId}")
-def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -> list[dict]:
+def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -> dict:
     """
     Generates a new chat with a chatId, attached to a specific user with a specific agent
     employed within the chat and a first message.
@@ -105,11 +105,10 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -
     chat_interface = api_mocks.mock_chat_interface()
     chat_interface["chatId"] = chatId
     chat_interface["agentId"] = agentId
-    chat_interface["userId"] = userId
     chat_interface["isOpen"] = True
     chat_interface["isPinned"] = False
     chat_interface["isBookmarked"] = False
-    return [chat_interface, api_mocks.mock_chat_response()]
+    return {'newChat': chat_interface, 'message': api_mocks.mock_chat_response()}
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/add")
