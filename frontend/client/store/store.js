@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { mockAgentChatLists, mockAgents, mockPinnedChats } from './mockData';
+import { v4 as uuidv4 } from 'uuid';
+
+const generateUUID = () => uuidv4();
 
 // ACTION TYPES
-
-// Issue Action Types
 const SET_USER_AGENTS = 'SET_USER_AGENTS';
 const SET_PINNED_CHATS = 'SET_PINNED_CHATS';
 const ADD_AGENT_CHATS_LIST = 'ADD_AGENT_CHATS_LIST';
@@ -94,6 +95,34 @@ export const toggleChatOpenThunk = (agentId, chatId) => (dispatch) => {
 
 	// Step 2: Dispatch store update
 	dispatch(toggleChatOpen(agentId, chatId));
+};
+
+const createNewChat = (userId, agentId, message) => {
+	return async (dispatch) => {
+		// Generate a UUID for the new chat
+		const chatId = generateUUID();
+
+		// Construct the new chat object
+		const newChat = {
+			chatId,
+			message,
+			isOpen: true,
+		};
+
+		try {
+			const { data } = await axios.post(
+				`http://localhost:8000/user/${userId}/agent/${agentId}/create_chat`,
+				newChat
+			);
+
+			console.log('New chat created response:', data);
+
+			// KEEP FOR TESTING: appending chat NOT from response
+			dispatch(appendAgentChat(agentId, newChat));
+		} catch (error) {
+			console.error('Failed to create new chat:', error);
+		}
+	};
 };
 
 // Agents Reducers

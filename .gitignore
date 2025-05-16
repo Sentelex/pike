@@ -183,3 +183,4 @@ frontend/public/bundle.js.map
 .nvm
 .env
 frontend/.venv
+start.sh
