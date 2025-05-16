@@ -151,7 +151,8 @@ export const fetchChatHistory = (chatId) => {
 				`http://localhost:8000/chat/${chatId}/history`
 			);
 			// Assuming data is an array of message objects
-			dispatch(setChatHistory(chatId, data));
+			dispatch(setChatHistory(chatId, data.messages));
+			console.log('Chat history fetched:', data);
 		} catch (error) {
 			console.error('Failed to fetch chat history:', error);
 		}
