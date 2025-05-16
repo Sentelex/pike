@@ -97,30 +97,43 @@ export const toggleChatOpenThunk = (agentId, chatId) => (dispatch) => {
 	dispatch(toggleChatOpen(agentId, chatId));
 };
 
-const createNewChat = (userId, agentId, message) => {
+export const createNewChat = (userId, agentId, newMessage) => {
 	return async (dispatch) => {
-		// Generate a UUID for the new chat
 		const chatId = generateUUID();
-
-		// Construct the new chat object
 		const newChat = {
-			chatId,
-			message,
-			isOpen: true,
+			message: newMessage,
+			attachment: null,
 		};
 
-		try {
-			const { data } = await axios.post(
-				`http://localhost:8000/user/${userId}/agent/${agentId}/create_chat`,
-				newChat
-			);
+		let attempt = 0;
+		let response = null;
+		const maxAttempts = 3;
+		const delay = 2000; // Delay in milliseconds
 
-			console.log('New chat created response:', data);
+		while (attempt < maxAttempts) {
+			try {
+				response = await axios.post(
+					`http://localhost:8000/user/${userId}/agent/${agentId}/create_chat/${chatId}`,
+					newChat,
+					{ timeout: delay }
+				);
+				break; // Exit loop on success
+			} catch (error) {
+				attempt++;
+				console.error(`Attempt ${attempt} failed:`, error.message);
+				if (attempt === maxAttempts) {
+					console.error(
+						`Failed to create new chat after ${maxAttempts} attempts.`
+					);
+					return;
+				}
+			}
+		}
 
+		if (response) {
+			console.log('New chat created response:', response.data);
 			// KEEP FOR TESTING: appending chat NOT from response
-			dispatch(appendAgentChat(agentId, newChat));
-		} catch (error) {
-			console.error('Failed to create new chat:', error);
+			dispatch(appendAgentChat(agentId, response.data[0]));
 		}
 	};
 };

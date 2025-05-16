@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import SendButton from './SendButton';
 import { IoAdd } from 'react-icons/io5';
+import { createNewChat } from '../store';
 
 export default function CreateChatButton({
 	isOpen,
@@ -9,6 +10,7 @@ export default function CreateChatButton({
 	agentId,
 	newMessage,
 	setNewMessage,
+	handleScrollToBottom,
 }) {
 	const storedChatMessage = useSelector((state) => state.newChatMessage);
 	const agents = useSelector((state) => state.agents);
@@ -73,11 +75,12 @@ export default function CreateChatButton({
 	const handleSendClick = () => {
 		if (newMessage.trim()) {
 			setIsOpen(false);
-			dispatch({
-				type: 'UPDATE_NEW_CHAT_MESSAGE',
-				payload: '',
+			dispatch(createNewChat(1, agentId, newMessage)).then(() => {
+				if (handleScrollToBottom) {
+					handleScrollToBottom();
+				}
 			});
-			setNewMessage(''); // Clear the input
+			setNewMessage('');
 		}
 	};
 
