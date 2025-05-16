@@ -92,6 +92,7 @@ def mock_chat_alt():
         "agentId": "0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
     }
 
+
 def mock_chat_interface_2():
     return {
         "chatId": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
@@ -174,24 +175,25 @@ def mock_user_info() -> dict:
         "userAgents": [mock_agent_interface(), mock_agent_alt()],
     }
 
+
 def mock_pinned_chats_list() -> dict:
     return [
-			{
-				"chatId": 1,
-				"agentId": 2,
-				"chatName": 'Pinned Chat 1',
-				"chatAgent": 'Personal Finance Manager',
-			},
-			{
-				"chatId": 1,
-				"agentId": 1,
-				"chatName": 'Pinned Chat 2',
-				"chatAgent": 'Document Assistant',
-			},
-			{
-				"chatId": 2,
-				"agentId": 2,
-				"chatName": 'Pinned Chat 3',
-				"chatAgent": 'Personal Finance Manager',
-			},
-		]
+        {
+            "chatId": 1,
+            "agentId": 2,
+            "chatName": 'Pinned Chat 1',
+            "chatAgent": 'Personal Finance Manager',
+        },
+        {
+            "chatId": 1,
+            "agentId": 1,
+            "chatName": 'Pinned Chat 2',
+            "chatAgent": 'Document Assistant',
+        },
+        {
+            "chatId": 2,
+            "agentId": 2,
+            "chatName": 'Pinned Chat 3',
+            "chatAgent": 'Personal Finance Manager',
+        },
+    ]
