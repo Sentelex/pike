@@ -12,25 +12,35 @@ import src.tools as tools
 import src.chat as ct
 import src.model as ml
 
-TOOL_LIST_LOOKUP = {
+
+AGENT_LOOKUP = {
     "default": [
-        tools.get_action_items,
-        tools.parse_pdf,
-        tools.get_stock_price,
-        tools.parse_file,
-        tools.parse_webpage,
-        tools.summarize_text,
-    ]
+        "Action Item Extractor",
+        "PDF Parser",
+        "Stock Price Fetcher",
+        "File Parser",
+        "Webpage Parser",
+        "Text Summarizer",
+    ],
+}
+
+SKILL_LOOKUP = {
+    "Action Item Extractor": tools.get_action_items,
+    "PDF Parser": tools.parse_pdf,
+    "Stock Price Fetcher": tools.get_stock_price,
+    "File Parser": tools.parse_file,
+    "Webpage Parser": tools.parse_webpage,
+    "Text Summarizer": tools.summarize_text,
 }
 
 global AGENT_CACHE
-AGENT_CACHE: dict[u.UUID, 'Agent'] = {}
+AGENT_CACHE: dict[u.UUID, "Agent"] = {}
 
 
 class AgentConfig(pdc.BaseModel):
     name: str
     description: str | None = None
-    model: ml.Model
+    model: str | None = None
     tools: Sequence[str] = pdc.Field(default_factory=list)
 
 
@@ -39,12 +49,12 @@ class Agent(pdc.BaseModel):
     name: str
     description: str | None = None
     tools: list
-    model: ml.Model
+    model: object
     graph: object = None
 
     def model_post_init(self, __context: Optional[dict] = None) -> None:
         if len(self.tools) == 0:
-            self.tools = TOOL_LIST_LOOKUP['default']
+            self.tools = AGENT_LOOKUP["default"]
         self.graph = build_graph(self.model.model_instance, self.tools)
 
     def invoke(self, state: ct.Chat) -> dict:
@@ -56,13 +66,12 @@ class Agent(pdc.BaseModel):
         return self.graph.invoke(state)
 
 
-def tools_node(state: ct.Chat, tools: list[callable]):
+def tools_node(state: st.State, tools: list[callable]):
     tools_by_name = {tool.name: tool for tool in tools}
     outputs = []
     # Iterate through the tool calls in the last message of the state
     for tool_call in state.messages[-1].tool_calls:
-        tool_result = tools_by_name[tool_call["name"]].invoke(
-            tool_call["args"])
+        tool_result = tools_by_name[tool_call["name"]].invoke(tool_call["args"])
         outputs.append(
             lcm.ToolMessage(
                 content=json.dumps(tool_result),
@@ -101,12 +110,14 @@ def truncate_history(s: ct.Chat, max_messages: int = 10) -> ct.Chat:
         return {"messages": s.messages}
 
 
+#     tools = [SKILL_LOOKUP[k] for k in AGENT_LOOKUP.get(graph_id, 'default')] (This goes elsewhere than build_graph now)
+
+
 def build_graph(model, tools) -> lgg.StateGraph:
     _model = model.bind_tools(tools)
     _graph = lgg.StateGraph(ct.Chat)
     _graph.add_node("message", add_new_message)
-    _graph.add_node("truncate_history",
-                    lambda s: truncate_history(s, max_messages=10))
+    _graph.add_node("truncate_history", lambda s: truncate_history(s, max_messages=10))
     _graph.add_node("agent", lambda s: assistant_node(s, model=_model))
     _graph.add_node("tools", lambda s: tools_node(s, tools=tools))
     _graph.set_entry_point("message")
@@ -134,8 +145,7 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
         additional_kwargs = additional_kwargs | {"attachment_id": u.uuid(4)}
         message_content.append(input.attachment)
     message = lcm.HumanMessage(
-        content=message_content,
-        additional_kwargs=additional_kwargs
+        content=message_content, additional_kwargs=additional_kwargs
     )
 
     chat = ct.CHAT_CACHE[chat_id]
@@ -147,8 +157,7 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=TOOL_LIST_LOOKUP.get(
-                chat.agent_id, TOOL_LIST_LOOKUP["default"])
+            tools=TOOL_LIST_LOOKUP.get(chat.agent_id, TOOL_LIST_LOOKUP["default"]),
         )
 
     agent = AGENT_CACHE[chat.agent_id]
