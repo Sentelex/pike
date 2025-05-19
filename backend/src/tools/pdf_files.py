@@ -8,7 +8,7 @@ def get_pdf_attachment(id: str):
     pass
 
 
-@lcct.tool
+@lcct.tool("PDF Parser")
 def parse_pdf(attachment_id: str) -> str:
     """
     Extracts and returns the full text content from a PDF file using PyMuPDF.
