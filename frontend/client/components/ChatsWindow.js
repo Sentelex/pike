@@ -102,7 +102,12 @@ export default function ChatsWindow() {
 				<div id='chats-search-bar'>Search bar</div>
 			</div>
 			<div id='main-panel'>
-				<div id='chat-area' key={agentId} ref={chatAreaRef}>
+				<div
+					id='chat-area'
+					key={agentId}
+					ref={chatAreaRef}
+					style={{ paddingBottom: '150px' }}
+				>
 					{renderChatList()}
 				</div>
 			</div>
