@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleChatOpenThunk, fetchChatHistory } from '../store';
+import UserMessage from './UserMessage';
+import AgentMessage from './AgentMessage';
 
 export default function Chat({ agentId, chatName, isOpen, chatId }) {
 	const dispatch = useDispatch();
@@ -34,13 +36,24 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 			</div>
 			<div className={`chat-viewer ${isOpen ? '' : 'hidden'}`}>
 				{isOpen && chatHistory.length > 0
-					? chatHistory.map((msg, index) => (
-							<div key={index} className='message-test'>
-								{typeof msg.content === 'object'
-									? msg.content.text
-									: msg.content}
-							</div>
-					  ))
+					? chatHistory.map((message, index) => {
+							switch (message.type) {
+								case 'human': {
+									return (
+										<div key={index} className='message-wrapper user'>
+											<UserMessage message={message} />
+										</div>
+									);
+								}
+								case 'ai': {
+									return (
+										<div key={index} className='message-wrapper agent'>
+											<AgentMessage message={message} />
+										</div>
+									);
+								}
+							}
+					  })
 					: isOpen && <div>Loading chat history...</div>}
 			</div>
 			<div className={`chat-message-input ${isOpen ? '' : 'hidden'}`}>

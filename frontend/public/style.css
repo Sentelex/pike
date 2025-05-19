@@ -9,6 +9,7 @@
 	--bottom-panel-height: 50px;
 	--left-panel-width: 290px;
 	--open-chat-window-width: 75%;
+	--message-offset-margin: 40px;
 }
 
 html {
@@ -600,33 +601,41 @@ div#create-chat-button.collapsed:active {
 	background-color: rgba(0, 0, 0, 0.3); /* visible on hover */
 }
 
-.message-test {
+.message-wrapper {
+	display: flex;
+	width: 100%;
+	margin: 5px 0;
+}
+
+/* Agent messages aligned to the left */
+.message-wrapper.agent {
+	justify-content: center;
+}
+
+/* User messages aligned to the right */
+.message-wrapper.user {
+	justify-content: flex-end;
+}
+
+/* Optionally, adjust styling of message bubbles if needed */
+.user-message {
+	margin-right: var(--message-offset-margin);
 	box-sizing: border-box;
-	min-height: 75px;
+	/* min-height: 75px; */
 	min-width: 30%;
 	border-radius: 20px;
 	background-color: rgb(236, 236, 236);
-	align-self: flex-end;
-	margin-right: 60px;
-	padding: 10px;
+	padding: 15px;
 }
 
-.right {
-	margin-left: auto;
-}
-
-.border-div {
-	border: solid 1px red;
-	margin: 2px;
-}
-
-.temp-div {
-	margin: 2px;
-	border: solid 1px green;
-}
-
-.blue-border {
-	border: solid 1px blue;
+.agent-message {
+	box-sizing: border-box;
+	/* min-height: 75px; */
+	min-width: calc(100% - var(--message-offset-margin) * 2);
+	/* border: solid 1px gray; */
+	/* border-radius: 20px; */
+	/* background-color: rgb(145, 211, 183); */
+	/* padding: 10px; */
 }
 
 /* USER LOGIN */
