@@ -497,11 +497,13 @@ div#create-chat-button.collapsed:active {
 	cursor: pointer;
 	box-sizing: border-box;
 	width: 100%;
-	border-radius: 12px 12px 0px 0px;
+	/* border-radius: 0px 0px 0px 22px; */
 	min-height: 40px;
 	border-bottom: solid 1px gray;
 	padding: 10px;
 	z-index: 1;
+	border: none;
+	/* background-color: rgb(235, 235, 235); */
 }
 .chat-top-panel:hover {
 	background-color: lightgray;
@@ -526,8 +528,10 @@ div#create-chat-button.collapsed:active {
 	overscroll-behavior: contain;
 }
 
-.open {
+.chat-window.open {
+	justify-content: space-between;
 	min-height: 90vh;
+	border-radius: 22px 22px 0px 22px;
 }
 
 .folded {
@@ -549,8 +553,10 @@ div#create-chat-button.collapsed:active {
 	width: 100%;
 	min-height: 80px;
 	max-height: 300px;
-	border-top: solid 1px gray;
-	border-radius: 0px 0px 12px 12px;
+	/* border: solid 1px red; */
+	/* border-top: solid 1px gray; */
+	box-shadow: rgba(128, 128, 128, 0.336) -0px -2px 5px;
+	border-radius: 22px 22px 0px 0px;
 	/* box-shadow: rgba(128, 128, 128, 0.336) -0px -2px 5px; */
 	position: sticky;
 	bottom: 0;
