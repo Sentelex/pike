@@ -3,6 +3,7 @@ import copy
 import src.mocks.mock_api_interfaces as api_mocks
 import fastapi as fapi
 import pydantic as pyd
+import src.skill_interface as si
 
 pike_router = fapi.APIRouter()
 
@@ -10,6 +11,14 @@ pike_router = fapi.APIRouter()
 class ChatInput(pyd.BaseModel):
     message: str
     attachment: dict | None = None
+
+
+@pike_router.get("/skills")
+def get_skills() -> list[dict]:
+    """
+    Get a list of all available skills.
+    """
+    return si.get_available_skills()
 
 
 @pike_router.get("/agents")
