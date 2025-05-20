@@ -59,7 +59,7 @@ def parse_webpage(website: str, embedded: bool = True) -> str:
     for descendant in content.descendants:
         if type(descendant) == bs4.NavigableString:
             extracted_string = str(descendant.string)
-        elif type(descendant) == bs4.Tag:
+        elif isinstance(descendant, bs4.Tag):
             if descendant.name == "img":  #Extract alt text from images
                 extracted_string = descendant.attrs.get('alt', '')
             elif descendant.name == "meta": #Extract content from meta tags
