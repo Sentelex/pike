@@ -4,6 +4,7 @@ import SendButton from './SendButton';
 import { IoAdd } from 'react-icons/io5';
 import { RiChatNewLine } from 'react-icons/ri';
 import { BiMessageSquareAdd } from 'react-icons/bi';
+import { TbMessagePlus } from 'react-icons/tb';
 import { createNewChat } from '../store';
 
 export default function CreateChatButton({
@@ -141,7 +142,7 @@ export default function CreateChatButton({
 					}}
 				>
 					<div className={'button-icon-wrapper'}>
-						<BiMessageSquareAdd />
+						<TbMessagePlus style={{ transform: 'scaleX(-1)' }} />
 					</div>
 					New Chat
 				</div>
