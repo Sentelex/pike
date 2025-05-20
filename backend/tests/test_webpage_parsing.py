@@ -29,8 +29,11 @@ def patch_requests_get_local_file(monkeypatch):
         return requests.get(url, *args, **kwargs)
     monkeypatch.setattr(requests, 'get', dummy_get)
 
+    #  Don't look for host on local file test.
+    monkeypatch.setattr(wp, 'host_resolvable', lambda url: True)
+
 @pytest.fixture
-def patch_anyhttpurl_accepts_file(monkeypatch):
+def patch_httpurl_accepts_file(monkeypatch):
     """
     Patch pydantic.HttpUrl to accept file:// URLs for testing purposes.
     """
@@ -44,10 +47,11 @@ def patch_anyhttpurl_accepts_file(monkeypatch):
             yield validator
     monkeypatch.setattr(pyd, 'HttpUrl', PatchedHttpUrl)
 
+
 def test_parse_webpage_returns_all_test_texts(
         local_test_page_url, 
         patch_requests_get_local_file, 
-        patch_anyhttpurl_accepts_file
+        patch_httpurl_accepts_file
 ):
     # Patch requests.get to read the local file instead of making an HTTP request
     result = wp.parse_webpage(local_test_page_url)
@@ -58,7 +62,7 @@ def test_parse_webpage_returns_all_test_texts(
 def test_parse_webpage_ignores_scripts(
         local_test_page_url, 
         patch_requests_get_local_file,
-        patch_anyhttpurl_accepts_file
+        patch_httpurl_accepts_file
 ):
     # Patch requests.get to read the local file instead of making an HTTP request
     result = wp.parse_webpage(local_test_page_url)
