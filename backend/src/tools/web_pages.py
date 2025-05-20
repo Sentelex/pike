@@ -2,7 +2,29 @@ import langchain_core.tools as lcct
 import bs4
 import requests as req
 import pydantic as pyd
+import socket
 
+def host_resolvable(url: str) -> bool:
+    """
+    Check if the host of a URL is resolvable.
+
+    Parameters
+    ----------
+    url : str
+        The URL to check.
+
+    Returns
+    -------
+    bool
+        True if the host is resolvable, False otherwise.
+    """
+    try:
+        host = pyd.HttpUrl(url).host
+        socket.gethostbyname(host)
+        return True
+    except socket.gaierror as e:
+        e.msg = f"Host {host} is not resolvable: {e}"
+        raise e
 
 @lcct.tool
 def parse_webpage(website: str, embedded: bool = True) -> str:
@@ -28,7 +50,8 @@ def parse_webpage(website: str, embedded: bool = True) -> str:
     requests.HTTPError
         If the HTTP request for the webpage fails.
     """
-    sanitized_url = pyd.AnyHttpUrl(website)
+    sanitized_url = pyd.HttpUrl(website)
+    host_resolvable(sanitized_url) # Throw a host unresolvable error to short-circuit response
     response = req.get(sanitized_url, timeout=10, allow_redirects=False)
     response.raise_for_status()  # Raise an error for bad responses
     content = bs4.BeautifulSoup(response.content, "html.parser")

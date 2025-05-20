@@ -3,6 +3,7 @@ import pytest
 import requests
 import src.tools.web_pages as wp
 import pydantic as pyd
+import socket
 
 @pytest.fixture
 def local_test_page_url():
@@ -31,9 +32,9 @@ def patch_requests_get_local_file(monkeypatch):
 @pytest.fixture
 def patch_anyhttpurl_accepts_file(monkeypatch):
     """
-    Patch pydantic.AnyHttpUrl to accept file:// URLs for testing purposes.
+    Patch pydantic.HttpUrl to accept file:// URLs for testing purposes.
     """
-    class PatchedAnyHttpUrl(str):
+    class PatchedHttpUrl(str):
         @classmethod
         def __get_validators__(cls):
             def validator(value):
@@ -41,7 +42,7 @@ def patch_anyhttpurl_accepts_file(monkeypatch):
                     return value
                 raise ValueError("URL scheme should be 'http', 'https', or 'file'")
             yield validator
-    monkeypatch.setattr(pyd, 'AnyHttpUrl', PatchedAnyHttpUrl)
+    monkeypatch.setattr(pyd, 'HttpUrl', PatchedHttpUrl)
 
 def test_parse_webpage_returns_all_test_texts(
         local_test_page_url, 
@@ -74,6 +75,16 @@ def test_parse_webpage_raises_for_wrong_url_scheme():
         wp.parse_webpage(wrong_url)
 
 def test_parse_webpage_raises_for_unsanitizable_url():
-    unsanitizable_url = 'file://path-only'
+    unsanitizable_url = 'http://:80'
     with pytest.raises(pyd.ValidationError):
         wp.parse_webpage(unsanitizable_url)
+
+def test_host_resolvable_raises_for_unresolvable_host():
+    unresolvable_url = 'http://unresolvable.host'
+    with pytest.raises(socket.gaierror):
+        wp.host_resolvable(unresolvable_url)
+
+def test_unresolvable_shortcircuits_request():
+    unresolvable_url = 'http://unresolvable.host'
+    with pytest.raises(socket.gaierror):
+        wp.parse_webpage(unresolvable_url)
