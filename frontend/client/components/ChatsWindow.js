@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
-import { fetchAgentChatsList } from '../store';
+import { fetchAgentChatsList, collapseAllChats } from '../store';
 import Chat from './Chat';
 import CreateChatButton from './CreateChatButton';
 import PopupBlanket from './PopupBlanket';
+import CollapseChatsButton from './CollapseChatsButton';
 
 export default function ChatsWindow() {
 	const dispatch = useDispatch();
@@ -47,15 +48,6 @@ export default function ChatsWindow() {
 			);
 		}
 	};
-	// KEEP: alternative scroll function
-	// const handleScrollToBottom = () => {
-	// 	if (chatAreaRef.current) {
-	// 		chatAreaRef.current.scrollTo({
-	// 			top: chatAreaRef.current.scrollHeight,
-	// 			behavior: 'smooth',
-	// 		});
-	// 	}
-	// };
 
 	useEffect(() => {
 		if (!agentChatList) {
@@ -74,12 +66,21 @@ export default function ChatsWindow() {
 
 		return agentChatList.chatsList.map((chat) => (
 			<Chat
+				key={chat.chatId}
 				agentId={agentId}
 				chatName={chat.chatName}
 				isOpen={chat.isOpen}
 				chatId={chat.chatId}
 			/>
 		));
+	};
+
+	const handleCollapseChats = () => {
+		dispatch(collapseAllChats(agentId));
+		// Wait a short time for state update then scroll to bottom (last chat)
+		setTimeout(() => {
+			handleScrollToBottom();
+		}, 100);
 	};
 
 	return (
@@ -97,6 +98,7 @@ export default function ChatsWindow() {
 				setNewMessage={setNewMessage}
 				handleScrollToBottom={handleScrollToBottom}
 			/>
+			<CollapseChatsButton onCollapseChats={handleCollapseChats} />
 			<div id='top-panel'>
 				<div id='filter-menu'>Filter menu</div>
 				<div id='chats-search-bar'>Search bar</div>
@@ -106,7 +108,7 @@ export default function ChatsWindow() {
 					id='chat-area'
 					key={agentId}
 					ref={chatAreaRef}
-					style={{ paddingBottom: '150px' }}
+					style={{ paddingBottom: '50px' }}
 				>
 					{renderChatList()}
 				</div>

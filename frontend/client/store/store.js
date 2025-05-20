@@ -12,6 +12,7 @@ const APPEND_AGENT_CHAT = 'APPEND_AGENT_CHAT';
 const TOGGLE_CHAT_OPEN = 'TOGGLE_CHAT_OPEN';
 const UPDATE_NEW_CHAT_MESSAGE = 'UPDATE_NEW_CHAT_MESSAGE';
 const SET_CHAT_HISTORY = 'SET_CHAT_HISTORY';
+const COLLAPSE_ALL_CHATS = 'COLLAPSE_ALL_CHATS'; // New action type
 
 // ACTION CREATORS
 const setUserAgents = (userAgents) => ({
@@ -41,6 +42,12 @@ const toggleChatOpen = (agentId, chatId) => ({
 const setChatHistory = (chatId, messages) => ({
 	type: SET_CHAT_HISTORY,
 	payload: { chatId, messages },
+});
+
+// New action creator to collapse all chats except the most recent one
+export const collapseAllChats = (agentId) => ({
+	type: COLLAPSE_ALL_CHATS,
+	payload: { agentId },
 });
 
 //THUNK CREATORS
@@ -215,6 +222,23 @@ export function chatLists(state = [], action) {
 						chat.chatId === chatId ? { ...chat, isOpen: !chat.isOpen } : chat
 					),
 				};
+			});
+		}
+
+		case COLLAPSE_ALL_CHATS: {
+			const { agentId } = action.payload;
+			return state.map((agent) => {
+				if (agent.agentId !== agentId) return agent;
+				if (!agent.chatsList || agent.chatsList.length === 0) return agent;
+				const chatsCount = agent.chatsList.length;
+				// Collapse all chats except the most recent one
+				const updatedChatsList = agent.chatsList.map((chat, index) => {
+					if (index < chatsCount - 1) {
+						return { ...chat, isOpen: false };
+					}
+					return chat;
+				});
+				return { ...agent, chatsList: updatedChatsList };
 			});
 		}
 
