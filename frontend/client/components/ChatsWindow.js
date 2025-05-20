@@ -44,8 +44,14 @@ export default function ChatsWindow() {
 			smoothScrollTo(
 				chatAreaRef.current,
 				chatAreaRef.current.scrollHeight,
-				200
+				500
 			);
+		}
+	};
+
+	const handleScrollToTop = () => {
+		if (chatAreaRef.current) {
+			smoothScrollTo(chatAreaRef.current, 0, 50);
 		}
 	};
 
@@ -77,10 +83,11 @@ export default function ChatsWindow() {
 
 	const handleCollapseChats = () => {
 		dispatch(collapseAllChats(agentId));
+		// handleScrollToTop();
 		// Wait a short time for state update then scroll to bottom (last chat)
 		setTimeout(() => {
 			handleScrollToBottom();
-		}, 100);
+		}, 200);
 	};
 
 	return (

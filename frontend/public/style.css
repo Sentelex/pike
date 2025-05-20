@@ -284,6 +284,10 @@ div#create-chat-button.collapsed:active {
 	opacity: 1; /* Fully visible */
 }
 
+.send-button.active {
+	opacity: 1; /* Fully visible */
+}
+
 .send-button.inactive {
 	opacity: 0;
 	visibility: hidden;
@@ -477,7 +481,7 @@ div#create-chat-button.collapsed:active {
 	/* height: 100%; */
 	height: calc(100vh - var(--top-panel-height));
 	max-height: calc(100vh - var(--top-panel-height));
-	background-color: rgb(250, 250, 250);
+	background-color: lightgray;
 	/* overflow-y: scroll; */
 	scrollbar-gutter: stable;
 	display: flex;
@@ -502,7 +506,7 @@ div#create-chat-button.collapsed:active {
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	transition: all 0.05s ease;
+	transition: all 0.2s ease-out;
 }
 
 .chat-summary {
@@ -577,21 +581,41 @@ div#create-chat-button.collapsed:active {
 	height: 0;
 }
 
-.chat-message-input {
-	box-sizing: border-box;
-	background-color: white;
-	width: 100%;
-	min-height: 80px;
-	max-height: 300px;
-	/* border: solid 1px red; */
-	/* border-top: solid 1px gray; */
-	box-shadow: rgba(128, 128, 128, 0.336) -0px -2px 5px;
+.create-chat-message-area {
+	display: flex;
+	flex-direction: row;
+	justify-content: center; /* Align items horizontally */
+	align-items: center; /* Align items vertically */
+	gap: 5px;
 	border-radius: 22px 22px 0px 0px;
-	/* box-shadow: rgba(128, 128, 128, 0.336) -0px -2px 5px; */
+	background-color: white;
+	box-sizing: border-box;
+	width: 100%;
+	/* min-height: 80px; */
+	padding: 15px;
+	box-shadow: rgba(128, 128, 128, 0.336) -0px -2px 5px;
 	position: sticky;
 	bottom: 0;
-	/* margin-top: 100px; */
-	padding-left: 10px;
+}
+
+.create-chat-message-input {
+	width: 100%;
+	/* min-height: 100%; */
+	/* min-height: 48px; */
+	opacity: 1;
+	/* background-color: aquamarine; */
+	resize: none;
+	overflow-y: auto;
+	border: none;
+	font-size: medium;
+	line-height: 1.5;
+	overflow-x: hidden;
+	outline: none;
+	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+		'Lucida Sans', Arial, sans-serif;
+	transition: opacity 0.05s ease;
+	/* transition: color 0.1s ease-in-out;  */
+	/* transition: height 0.2s ease; */
 }
 
 /* Firefox */

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleChatOpenThunk, fetchChatHistory } from '../store';
 import UserMessage from './UserMessage';
 import AgentMessage from './AgentMessage';
+import ChatMessageInput from './ChatMessageInput';
 
 export default function Chat({ agentId, chatName, isOpen, chatId }) {
 	const dispatch = useDispatch();
@@ -56,9 +57,18 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 					  })
 					: isOpen && <div>Loading chat history...</div>}
 			</div>
-			<div className={`chat-message-input ${isOpen ? '' : 'hidden'}`}>
+			{isOpen && (
+				<ChatMessageInput
+					isOpen={isOpen}
+					onSend={(msg) => {
+						console.log('Send message:', msg);
+						// perform your send action here, e.g., dispatch(createMessage(...))
+					}}
+				/>
+			)}
+			{/* <div className={`chat-message-input ${isOpen ? '' : 'hidden'}`}>
 				Chat message input{' '}
-			</div>
+			</div> */}
 		</div>
 	);
 }
