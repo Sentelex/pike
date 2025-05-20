@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import SendButton from './SendButton';
 import { IoAdd } from 'react-icons/io5';
+import { RiChatNewLine } from 'react-icons/ri';
+import { BiMessageSquareAdd } from 'react-icons/bi';
 import { createNewChat } from '../store';
 
 export default function CreateChatButton({
@@ -133,13 +135,14 @@ export default function CreateChatButton({
 				<div
 					style={{
 						display: 'flex',
-						alignItems: 'flex-end',
+						alignItems: 'center',
 						paddingRight: '10px',
+						gap: '5px',
 					}}
 				>
-					<div id={'plus-sign-wrapper'}>
-						<IoAdd />{' '}
-					</div>{' '}
+					<div className={'button-icon-wrapper'}>
+						<BiMessageSquareAdd />
+					</div>
 					New Chat
 				</div>
 			)}
