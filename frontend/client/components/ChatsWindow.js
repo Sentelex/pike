@@ -109,7 +109,7 @@ function ChatsWindow() {
 					id='chat-area'
 					key={agentId}
 					ref={chatAreaRef}
-					style={{ paddingBottom: '10%' }}
+					style={{ paddingBottom: '50px' }}
 				>
 					{renderChatList()}
 				</div>
