@@ -548,7 +548,7 @@ div#create-chat-button.collapsed:active {
 	overflow-y: auto;
 	/* box-sizing: border-box; */
 	width: 100%;
-	/* min-height: 70vh; */
+	/* min-height: 100%; */
 	/* max-height: 100%; */
 	/* max-height: calc(100vh - var(--top-panel-height)); */
 	/* background-color: aquamarine; */
@@ -564,7 +564,8 @@ div#create-chat-button.collapsed:active {
 
 .chat-window.open {
 	justify-content: space-between;
-	min-height: 90vh;
+	min-height: calc(100vh - var(--top-panel-height) - 50px - 20px);
+	/* min-height: 90vh; */
 	border-radius: 22px 22px 0px 22px;
 }
 

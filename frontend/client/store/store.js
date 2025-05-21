@@ -12,7 +12,10 @@ const APPEND_AGENT_CHAT = 'APPEND_AGENT_CHAT';
 const TOGGLE_CHAT_OPEN = 'TOGGLE_CHAT_OPEN';
 const UPDATE_NEW_CHAT_MESSAGE = 'UPDATE_NEW_CHAT_MESSAGE';
 const SET_CHAT_HISTORY = 'SET_CHAT_HISTORY';
-const COLLAPSE_ALL_CHATS = 'COLLAPSE_ALL_CHATS'; // New action type
+const COLLAPSE_ALL_CHATS = 'COLLAPSE_ALL_CHATS';
+
+// NEW ACTION TYPE for updating the chat after optimistic update
+const UPDATE_AGENT_CHAT = 'UPDATE_AGENT_CHAT';
 
 // ACTION CREATORS
 const setUserAgents = (userAgents) => ({
@@ -32,6 +35,12 @@ const addAgentChatsList = (agentChatsList) => ({
 const appendAgentChat = (agentId, newChat) => ({
 	type: APPEND_AGENT_CHAT,
 	payload: { agentId, newChat },
+});
+
+// NEW action creator for updating the chat
+const updateAgentChat = (agentId, updatedChat) => ({
+	type: UPDATE_AGENT_CHAT,
+	payload: { agentId, updatedChat },
 });
 
 const toggleChatOpen = (agentId, chatId) => ({
@@ -113,24 +122,44 @@ export const toggleChatOpenThunk = (agentId, chatId) => (dispatch) => {
 export const createNewChat = (userId, agentId, newMessage) => {
 	return async (dispatch) => {
 		const chatId = generateUUID();
-		const message = {
-			message: newMessage,
-			attachment: null,
+		const optimisticChat = {
+			chatId: chatId,
+			agentId: agentId,
+			chatName: '...',
+			isBookmarked: false,
+			isOpen: true,
+			isPinned: false,
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			// message: newMessage,
+			// attachment: null,
+			// isOpen: true,
+			// optimistic: true,
+			// type: 'human',
 		};
+		const optimisticMessage = {
+			content: newMessage,
+			type: 'human',
+		};
+		console.log('Optimistic chat:', optimisticChat);
+
+		// Optimistically add the chat to both chatLists and chatHistory
+		dispatch(appendAgentChat(agentId, optimisticChat));
+		dispatch(setChatHistory(chatId, [optimisticMessage]));
 
 		let attempt = 0;
 		let response = null;
 		const maxAttempts = 3;
-		const delay = 2000; // Delay in milliseconds
+		const delay = 2000;
 
 		while (attempt < maxAttempts) {
 			try {
 				response = await axios.post(
 					`http://localhost:8000/user/${userId}/agent/${agentId}/create_chat/${chatId}`,
-					message,
+					{ message: newMessage, attachment: null },
 					{ timeout: delay }
 				);
-				break; // Exit loop on success
+				break;
 			} catch (error) {
 				attempt++;
 				console.error(`Attempt ${attempt} failed:`, error.message);
@@ -142,12 +171,15 @@ export const createNewChat = (userId, agentId, newMessage) => {
 				}
 			}
 		}
-		// Creating chat only after response is received, this might affect user experience.
-		// Need to render chat before the response is received.
-		// And then refresh it with the response data.
+
+		// Update the optimistic chat with response data if available
 		if (response) {
 			console.log('New chat created response:', response.data);
-			dispatch(appendAgentChat(agentId, response.data.newChat));
+			dispatch(updateAgentChat(agentId, response.data.newChat));
+			// Optionally update chatHistory with the final data
+			dispatch(
+				setChatHistory(chatId, [optimisticMessage, response.data.message] || [])
+			);
 		}
 	};
 };
@@ -208,6 +240,20 @@ export function chatLists(state = [], action) {
 					};
 				}
 				return item;
+			});
+		}
+
+		// NEW case to update an optimistic chat with final data
+		case UPDATE_AGENT_CHAT: {
+			const { agentId, updatedChat } = action.payload;
+			return state.map((item) => {
+				if (item.agentId !== agentId) return item;
+				return {
+					...item,
+					chatsList: item.chatsList.map((chat) =>
+						chat.chatId === updatedChat.chatId ? updatedChat : chat
+					),
+				};
 			});
 		}
 

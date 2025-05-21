@@ -6,21 +6,22 @@ import AgentMessage from './AgentMessage';
 import ChatMessageInput from './ChatMessageInput';
 
 function Chat({ agentId, chatName, isOpen, chatId }) {
+	console.log('Chat component:', chatId, isOpen);
 	const dispatch = useDispatch();
-	const chatHistory = useSelector((state) => state.chatHistory[chatId] || []);
-	console.log('Chat history:', chatHistory);
+	const chatHistory = useSelector((state) => state.chatHistory[chatId]); // undefined if not fetched
 
 	useEffect(() => {
-		if (isOpen) {
+		if (isOpen && !chatHistory) {
 			dispatch(fetchChatHistory(chatId));
 			console.log('Fetching chat history for chatId:', chatId);
 		}
-	}, [isOpen, chatId, dispatch]);
+	}, [isOpen, chatId, dispatch, chatHistory]);
 
 	const handleToggle = () => {
 		console.log('Click! (handle toggle)');
 		dispatch(toggleChatOpenThunk(agentId, chatId));
 	};
+
 	return (
 		<div className={`chat-window ${isOpen ? 'open' : 'folded'}`}>
 			<div
@@ -40,7 +41,7 @@ function Chat({ agentId, chatName, isOpen, chatId }) {
 				className={`chat-viewer ${isOpen ? '' : 'hidden'}`}
 				style={{ paddingBottom: '25%' }}
 			>
-				{isOpen && chatHistory.length > 0
+				{isOpen && chatHistory && chatHistory.length > 0
 					? chatHistory.map((message, index) => {
 							switch (message.type) {
 								case 'human': {
@@ -57,6 +58,8 @@ function Chat({ agentId, chatName, isOpen, chatId }) {
 										</div>
 									);
 								}
+								default:
+									return null;
 							}
 					  })
 					: isOpen && <div>Loading chat history...</div>}
@@ -70,9 +73,6 @@ function Chat({ agentId, chatName, isOpen, chatId }) {
 					}}
 				/>
 			)}
-			{/* <div className={`chat-message-input ${isOpen ? '' : 'hidden'}`}>
-				Chat message input{' '}
-			</div> */}
 		</div>
 	);
 }
