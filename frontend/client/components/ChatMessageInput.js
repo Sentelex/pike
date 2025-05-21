@@ -5,7 +5,6 @@ import SendButton from './SendButton';
 export default function ChatMessageInput({ onSendMessage, isOpen }) {
 	const [message, setMessage] = useState('');
 	const textareaRef = useRef(null);
-	const dispatch = useDispatch();
 
 	// Adjust the textarea height dynamically (limit to 5 lines)
 	const adjustTextareaHeight = () => {
@@ -33,11 +32,7 @@ export default function ChatMessageInput({ onSendMessage, isOpen }) {
 	const handleSendClick = () => {
 		//OK
 		if (message.trim()) {
-			const newUserMessage = {
-				type: 'human',
-				content: message,
-			};
-			onSendMessage(newUserMessage);
+			onSendMessage(message);
 			setMessage('');
 			// Reset the textarea height
 			if (textareaRef.current) {
