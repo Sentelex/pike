@@ -142,10 +142,11 @@ export const createNewChat = (userId, agentId, newMessage) => {
 				}
 			}
 		}
-
+		// Creating chat only after response is received, this might affect user experience.
+		// Need to render chat before the response is received.
+		// And then refresh it with the response data.
 		if (response) {
 			console.log('New chat created response:', response.data);
-			// KEEP FOR TESTING: appending chat NOT from response
 			dispatch(appendAgentChat(agentId, response.data.newChat));
 		}
 	};

@@ -49,15 +49,15 @@ export default function ChatMessageInput({ onSend, isOpen }) {
 	};
 
 	return (
-		<div className={`create-chat-message-area ${isOpen ? '' : 'hidden'}`}>
+		<div className={`chat-message-input-area ${isOpen ? '' : 'hidden'}`}>
 			<textarea
 				ref={textareaRef}
 				value={message}
 				onChange={handleChange}
 				onKeyDown={handleKeyDown}
-				placeholder='Type your message...'
+				placeholder='Follow up on this chat'
 				rows={1}
-				className='create-chat-message-input'
+				className='chat-message-input-textarea'
 			/>
 			<div
 				style={{

@@ -5,7 +5,7 @@ import UserMessage from './UserMessage';
 import AgentMessage from './AgentMessage';
 import ChatMessageInput from './ChatMessageInput';
 
-export default function Chat({ agentId, chatName, isOpen, chatId }) {
+function Chat({ agentId, chatName, isOpen, chatId }) {
 	const dispatch = useDispatch();
 	const chatHistory = useSelector((state) => state.chatHistory[chatId] || []);
 	console.log('Chat history:', chatHistory);
@@ -13,6 +13,7 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 	useEffect(() => {
 		if (isOpen) {
 			dispatch(fetchChatHistory(chatId));
+			console.log('Fetching chat history for chatId:', chatId);
 		}
 	}, [isOpen, chatId, dispatch]);
 
@@ -35,7 +36,10 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 			>
 				{chatName}
 			</div>
-			<div className={`chat-viewer ${isOpen ? '' : 'hidden'}`}>
+			<div
+				className={`chat-viewer ${isOpen ? '' : 'hidden'}`}
+				style={{ paddingBottom: '25%' }}
+			>
 				{isOpen && chatHistory.length > 0
 					? chatHistory.map((message, index) => {
 							switch (message.type) {
@@ -72,3 +76,5 @@ export default function Chat({ agentId, chatName, isOpen, chatId }) {
 		</div>
 	);
 }
+
+export default React.memo(Chat);

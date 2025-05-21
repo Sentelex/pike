@@ -6,15 +6,18 @@ import { RiChatNewLine } from 'react-icons/ri';
 import { BiMessageSquareAdd } from 'react-icons/bi';
 import { TbMessagePlus } from 'react-icons/tb';
 import { createNewChat } from '../store';
+import PopupBlanket from './PopupBlanket';
 
 export default function CreateChatButton({
-	isOpen,
-	setIsOpen,
+	// isOpen,
+	// setIsOpen,
 	agentId,
-	newMessage,
-	setNewMessage,
+	// newMessage,
+	// setNewMessage,
 	handleScrollToBottom,
 }) {
+	const [isOpen, setIsOpen] = useState(false);
+	const [newMessage, setNewMessage] = useState('');
 	const storedChatMessage = useSelector((state) => state.newChatMessage);
 	const agents = useSelector((state) => state.agents);
 	const dispatch = useDispatch();
@@ -31,7 +34,7 @@ export default function CreateChatButton({
 				window.getComputedStyle(textarea).lineHeight,
 				10
 			);
-			console.log('lineHeight:', lineHeight);
+			// console.log('lineHeight:', lineHeight);
 			const maxHeight = lineHeight * 5; // limit to 5 lines
 			textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
 			textarea.style.overflowY =
@@ -95,58 +98,67 @@ export default function CreateChatButton({
 	};
 
 	return (
-		<div
-			id='create-chat-button'
-			className={isOpen ? 'expanded' : 'collapsed'}
-			onClick={handleButtonClick}
-		>
-			{isOpen ? (
-				<>
-					<textarea
-						ref={textareaRef} // Attach the ref to the textarea
-						name='createChatPrompt'
-						inputMode='text'
-						autoComplete='off'
-						placeholder={
-							isFullyExpanded
-								? `Start a new chat with ${returnAgentName(agentId)}`
-								: ''
-						}
-						className={`create-chat-input ${isFullyExpanded ? 'fade-in' : ''}`}
-						value={isFullyExpanded ? newMessage : ''}
-						onChange={handleChange}
-						onKeyDown={handleKeyDown}
-						rows={1}
-					/>
+		<>
+			<div
+				id='create-chat-button'
+				className={isOpen ? 'expanded' : 'collapsed'}
+				onClick={handleButtonClick}
+			>
+				{isOpen ? (
+					<>
+						<textarea
+							ref={textareaRef} // Attach the ref to the textarea
+							name='createChatPrompt'
+							inputMode='text'
+							autoComplete='off'
+							placeholder={
+								isFullyExpanded
+									? `Start a new chat with ${returnAgentName(agentId)}`
+									: ''
+							}
+							className={`create-chat-input ${
+								isFullyExpanded ? 'fade-in' : ''
+							}`}
+							value={isFullyExpanded ? newMessage : ''}
+							onChange={handleChange}
+							onKeyDown={handleKeyDown}
+							rows={1}
+						/>
+						<div
+							style={{
+								minHeight: '100%',
+								display: 'flex',
+								alignSelf: 'flex-end',
+							}}
+						>
+							<SendButton
+								onClick={handleSendClick}
+								disabled={!newMessage.trim()} // Disable if no message
+								isFullyExpanded={isFullyExpanded}
+							/>
+						</div>
+					</>
+				) : (
 					<div
 						style={{
-							minHeight: '100%',
 							display: 'flex',
-							alignSelf: 'flex-end',
+							alignItems: 'center',
+							paddingRight: '10px',
+							gap: '5px',
 						}}
 					>
-						<SendButton
-							onClick={handleSendClick}
-							disabled={!newMessage.trim()} // Disable if no message
-							isFullyExpanded={isFullyExpanded}
-						/>
+						<div className={'button-icon-wrapper'}>
+							<TbMessagePlus style={{ transform: 'scaleX(-1)' }} />
+						</div>
+						New Chat
 					</div>
-				</>
-			) : (
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						paddingRight: '10px',
-						gap: '5px',
-					}}
-				>
-					<div className={'button-icon-wrapper'}>
-						<TbMessagePlus style={{ transform: 'scaleX(-1)' }} />
-					</div>
-					New Chat
-				</div>
-			)}
-		</div>
+				)}
+			</div>
+			<PopupBlanket
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+				newMessage={newMessage}
+			/>
+		</>
 	);
 }
