@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleChatOpenThunk, fetchChatHistory } from '../store';
+import {
+	toggleChatOpenThunk,
+	fetchChatHistory,
+	appendChatMessage,
+} from '../store';
 import UserMessage from './UserMessage';
 import AgentMessage from './AgentMessage';
 import ChatMessageInput from './ChatMessageInput';
@@ -20,6 +24,10 @@ function Chat({ agentId, chatName, isOpen, chatId }) {
 	const handleToggle = () => {
 		console.log('Click! (handle toggle)');
 		dispatch(toggleChatOpenThunk(agentId, chatId));
+	};
+
+	const handleSendMessage = (message) => {
+		dispatch(appendChatMessage(chatId, message));
 	};
 
 	return (
@@ -65,13 +73,7 @@ function Chat({ agentId, chatName, isOpen, chatId }) {
 					: isOpen && <div>Loading chat history...</div>}
 			</div>
 			{isOpen && (
-				<ChatMessageInput
-					isOpen={isOpen}
-					onSend={(msg) => {
-						console.log('Send message:', msg);
-						// perform your send action here, e.g., dispatch(createMessage(...))
-					}}
-				/>
+				<ChatMessageInput isOpen={isOpen} onSendMessage={handleSendMessage} />
 			)}
 		</div>
 	);
