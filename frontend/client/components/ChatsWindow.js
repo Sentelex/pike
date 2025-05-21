@@ -1,42 +1,21 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import { fetchAgentChatsList, collapseAllChats } from '../store';
 import Chat from './Chat';
 import CreateChatButton from './CreateChatButton';
 import CollapseChatsButton from './CollapseChatsButton';
-import { appendChatMessage } from '../store';
+import { smoothScrollTo } from '../utils/scroll'; // Import the utility
 
 function ChatsWindow() {
 	console.log('ChatsWindow');
 	const dispatch = useDispatch();
 
 	const { agentId: agentIdParam } = useParams();
-	// KEEP FOR TESTING:
-	// const agentId = parseInt(agentIdParam, 10);
 	const agentId = agentIdParam;
 	const chatLists = useSelector((state) => state.chatLists);
 	const agentChatList = chatLists.find((list) => list.agentId === agentId);
 	const chatAreaRef = useRef(null);
-
-	const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
-
-	const smoothScrollTo = (element, target, duration = 200) => {
-		const start = element.scrollTop;
-		const change = target - start;
-		const startTime = performance.now();
-
-		const animateScroll = (currentTime) => {
-			const elapsed = currentTime - startTime;
-			const progress = Math.min(elapsed / duration, 1);
-			const easedProgress = easeInOutQuad(progress);
-			element.scrollTop = start + change * easedProgress;
-			if (progress < 1) {
-				requestAnimationFrame(animateScroll);
-			}
-		};
-		requestAnimationFrame(animateScroll);
-	};
 
 	const handleScrollToBottom = () => {
 		if (chatAreaRef.current) {
@@ -82,7 +61,6 @@ function ChatsWindow() {
 
 	const handleCollapseChats = () => {
 		dispatch(collapseAllChats(agentId));
-		// handleScrollToTop();
 		// Wait a short time for state update then scroll to bottom (last chat)
 		setTimeout(() => {
 			handleScrollToBottom();
@@ -92,11 +70,7 @@ function ChatsWindow() {
 	return (
 		<>
 			<CreateChatButton
-				// isOpen={isCreateChatOpen}
-				// setIsOpen={setIsCreateChatOpen}
 				agentId={agentId}
-				// newMessage={newMessage}
-				// setNewMessage={setNewMessage}
 				handleScrollToBottom={handleScrollToBottom}
 			/>
 			<CollapseChatsButton onCollapseChats={handleCollapseChats} />

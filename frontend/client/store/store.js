@@ -205,6 +205,34 @@ export const fetchChatHistory = (chatId) => {
 	};
 };
 
+// NEW THUNK CREATOR for sending chat messages
+export const sendChatMessage = (chatId, message) => {
+	return async (dispatch) => {
+		// Optimistically add the user's new message to the history
+		const newUserMessage = {
+			type: 'human',
+			content: message,
+		};
+		dispatch(appendChatMessage(chatId, newUserMessage));
+
+		try {
+			// Make an API call to post the new message to the server
+			const { data } = await axios.post(
+				`http://localhost:8000/chat/${chatId}/response`,
+				{ message, attachment: null }
+			);
+			console.log('Response to new Message:', data);
+			// Dispatch the API response directly since it's already in the correct format
+			if (data) {
+				dispatch(appendChatMessage(chatId, data));
+			}
+		} catch (error) {
+			console.error('Failed to send chat message:', error);
+			// Optionally, handle rollback of the optimistic update here
+		}
+	};
+};
+
 // Agents Reducers
 export function agents(state = [], action) {
 	switch (action.type) {
