@@ -7,11 +7,10 @@ import CreateChatButton from './CreateChatButton';
 import PopupBlanket from './PopupBlanket';
 import CollapseChatsButton from './CollapseChatsButton';
 
-export default function ChatsWindow() {
+function ChatsWindow() {
+	console.log('ChatsWindow');
 	const dispatch = useDispatch();
 
-	const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
-	const [newMessage, setNewMessage] = useState('');
 	const { agentId: agentIdParam } = useParams();
 	// KEEP FOR TESTING:
 	// const agentId = parseInt(agentIdParam, 10);
@@ -92,17 +91,12 @@ export default function ChatsWindow() {
 
 	return (
 		<>
-			<PopupBlanket
-				isOpen={isCreateChatOpen}
-				setIsOpen={setIsCreateChatOpen}
-				newMessage={newMessage}
-			/>
 			<CreateChatButton
-				isOpen={isCreateChatOpen}
-				setIsOpen={setIsCreateChatOpen}
+				// isOpen={isCreateChatOpen}
+				// setIsOpen={setIsCreateChatOpen}
 				agentId={agentId}
-				newMessage={newMessage}
-				setNewMessage={setNewMessage}
+				// newMessage={newMessage}
+				// setNewMessage={setNewMessage}
 				handleScrollToBottom={handleScrollToBottom}
 			/>
 			<CollapseChatsButton onCollapseChats={handleCollapseChats} />
@@ -115,7 +109,7 @@ export default function ChatsWindow() {
 					id='chat-area'
 					key={agentId}
 					ref={chatAreaRef}
-					style={{ paddingBottom: '50px' }}
+					style={{ paddingBottom: '10%' }}
 				>
 					{renderChatList()}
 				</div>
@@ -123,3 +117,5 @@ export default function ChatsWindow() {
 		</>
 	);
 }
+
+export default React.memo(ChatsWindow);
