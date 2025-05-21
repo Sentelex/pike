@@ -13,6 +13,7 @@ const TOGGLE_CHAT_OPEN = 'TOGGLE_CHAT_OPEN';
 const UPDATE_NEW_CHAT_MESSAGE = 'UPDATE_NEW_CHAT_MESSAGE';
 const SET_CHAT_HISTORY = 'SET_CHAT_HISTORY';
 const COLLAPSE_ALL_CHATS = 'COLLAPSE_ALL_CHATS';
+const APPEND_CHAT_MESSAGE = 'APPEND_CHAT_MESSAGE';
 
 // NEW ACTION TYPE for updating the chat after optimistic update
 const UPDATE_AGENT_CHAT = 'UPDATE_AGENT_CHAT';
@@ -57,6 +58,11 @@ const setChatHistory = (chatId, messages) => ({
 export const collapseAllChats = (agentId) => ({
 	type: COLLAPSE_ALL_CHATS,
 	payload: { agentId },
+});
+
+export const appendChatMessage = (chatId, message) => ({
+	type: APPEND_CHAT_MESSAGE,
+	payload: { chatId, message },
 });
 
 //THUNK CREATORS
@@ -310,6 +316,14 @@ export function chatHistory(state = {}, action) {
 			return {
 				...state,
 				[chatId]: messages,
+			};
+		}
+		case APPEND_CHAT_MESSAGE: {
+			const { chatId, message } = action.payload;
+			const existingMessages = state[chatId] || [];
+			return {
+				...state,
+				[chatId]: [...existingMessages, message],
 			};
 		}
 		default:

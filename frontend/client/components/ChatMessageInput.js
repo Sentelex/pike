@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import SendButton from './SendButton';
 
-export default function ChatMessageInput({ onSend, isOpen }) {
+export default function ChatMessageInput({ onSendMessage, isOpen }) {
 	const [message, setMessage] = useState('');
 	const textareaRef = useRef(null);
+	const dispatch = useDispatch();
 
 	// Adjust the textarea height dynamically (limit to 5 lines)
 	const adjustTextareaHeight = () => {
@@ -31,7 +33,11 @@ export default function ChatMessageInput({ onSend, isOpen }) {
 	const handleSendClick = () => {
 		//OK
 		if (message.trim()) {
-			onSend(message);
+			const newUserMessage = {
+				type: 'human',
+				content: message,
+			};
+			onSendMessage(newUserMessage);
 			setMessage('');
 			// Reset the textarea height
 			if (textareaRef.current) {

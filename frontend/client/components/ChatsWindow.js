@@ -4,8 +4,8 @@ import { useParams } from 'react-router';
 import { fetchAgentChatsList, collapseAllChats } from '../store';
 import Chat from './Chat';
 import CreateChatButton from './CreateChatButton';
-import PopupBlanket from './PopupBlanket';
 import CollapseChatsButton from './CollapseChatsButton';
+import { appendChatMessage } from '../store';
 
 function ChatsWindow() {
 	console.log('ChatsWindow');
