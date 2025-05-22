@@ -27,7 +27,7 @@ def host_resolvable(url: str) -> bool:
         raise e
 
 @lcct.tool
-def parse_webpage(website: str, embedded: bool = True) -> str:
+def parse_webpage(website: str) -> str:
     """
     Parse a webpage and return its textual content.
 
@@ -35,8 +35,6 @@ def parse_webpage(website: str, embedded: bool = True) -> str:
     ----------
     website : str
         The URL of the webpage to parse.
-    embedded : bool, optional
-        If True, include embedded content such as image alt text and meta descriptions (default is True).
 
     Returns
     -------
