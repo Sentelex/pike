@@ -59,47 +59,35 @@ function Chat({ chatId, agentId, chatName, isOpen }) {
 			>
 				{chatName}
 			</div>
+			{/* <div className='chat-viewer-wrapper'> */}
 			<div
-				className='chat-viewer-wrapper'
-				style={{
-					minHeight: '100%',
-					width: '100%',
-					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'flex-start',
-					alignItems: 'stretch',
-					alignSelf: 'stretch',
-				}}
+				ref={chatViewerRef}
+				className={`chat-viewer ${isOpen ? '' : 'hidden'}`}
 			>
-				<div
-					ref={chatViewerRef}
-					className={`chat-viewer ${isOpen ? '' : 'hidden'}`}
-					style={{ paddingBottom: '25%', width: '100%' }}
-				>
-					{isOpen && chatHistory && chatHistory.length > 0
-						? chatHistory.map((message, index) => {
-								switch (message.type) {
-									case 'human': {
-										return (
-											<div key={index} className='message-wrapper user'>
-												<UserMessage message={message} />
-											</div>
-										);
-									}
-									case 'ai': {
-										return (
-											<div key={index} className='message-wrapper agent'>
-												<AgentMessage message={message} />
-											</div>
-										);
-									}
-									default:
-										return null;
+				{isOpen && chatHistory && chatHistory.length > 0
+					? chatHistory.map((message, index) => {
+							switch (message.type) {
+								case 'human': {
+									return (
+										<div key={index} className='message-wrapper user'>
+											<UserMessage message={message} />
+										</div>
+									);
 								}
-						  })
-						: isOpen && <div>Loading chat history...</div>}
-				</div>
+								case 'ai': {
+									return (
+										<div key={index} className='message-wrapper agent'>
+											<AgentMessage message={message} />
+										</div>
+									);
+								}
+								default:
+									return null;
+							}
+					  })
+					: isOpen && <div>Loading chat history...</div>}
 			</div>
+			{/* </div> */}
 			{isOpen && (
 				<ChatMessageInput isOpen={isOpen} onSendMessage={handleSendMessage} />
 			)}
