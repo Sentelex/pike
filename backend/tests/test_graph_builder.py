@@ -79,7 +79,8 @@ def test_build_graph_with_mocked_tools(state, monkeypatch):
         return_value="result from dummy tool")
 
     # Patch the graph_builder to use only our dummy_tool for the 'default' graph
-    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [dummy_tool])
+    monkeypatch.setitem(gb.SKILL_LOOKUP, "dummy_tool", dummy_tool)
+    monkeypatch.setitem(gb.AGENT_LOOKUP, "default", ["dummy_tool"])
     response_messages = [
         lcm.AIMessage(
             content="dummy input",
@@ -119,8 +120,10 @@ def test_gemini_model_calls_tool(monkeypatch):
         """A special multipy tool."""
         return a * b / 6
 
-    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default",
-                        [special_add, special_multiply])
+    monkeypatch.setitem(gb.SKILL_LOOKUP, "special_add", special_add)
+    monkeypatch.setitem(gb.SKILL_LOOKUP, "special_multiply", special_multiply)
+    monkeypatch.setitem(gb.AGENT_LOOKUP, "default", ["special_add", "special_multiply"])
+
 
     model = lc_google.ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", google_api_key=api_key

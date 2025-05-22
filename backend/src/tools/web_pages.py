@@ -26,7 +26,7 @@ def host_resolvable(url: str) -> bool:
         e.msg = f"Host {host} is not resolvable: {e}"
         raise e
 
-@lcct.tool
+@lcct.tool("Webpage Parser")
 def parse_webpage(website: str) -> str:
     """
     Parse a webpage and return its textual content.
