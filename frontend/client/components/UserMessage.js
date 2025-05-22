@@ -2,8 +2,6 @@ import React from 'react';
 
 export default function UserMessage({ message }) {
 	const renderContent = (content, index) => {
-		// KEEP:
-		// if (typeof content !== 'object') return content;
 		switch (content.type) {
 			case 'text':
 				return (

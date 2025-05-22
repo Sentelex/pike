@@ -15,10 +15,9 @@ const SET_CHAT_HISTORY = 'SET_CHAT_HISTORY';
 const COLLAPSE_ALL_CHATS = 'COLLAPSE_ALL_CHATS';
 const APPEND_CHAT_MESSAGE = 'APPEND_CHAT_MESSAGE';
 
-// NEW ACTION TYPE for updating the chat after optimistic update
+// ACTION CREATORS
 const UPDATE_AGENT_CHAT = 'UPDATE_AGENT_CHAT';
 
-// ACTION CREATORS
 const setUserAgents = (userAgents) => ({
 	type: SET_USER_AGENTS,
 	payload: userAgents,
@@ -38,7 +37,6 @@ const appendAgentChat = (agentId, newChat) => ({
 	payload: { agentId, newChat },
 });
 
-// NEW action creator for updating the chat
 const updateAgentChat = (agentId, updatedChat) => ({
 	type: UPDATE_AGENT_CHAT,
 	payload: { agentId, updatedChat },
@@ -54,7 +52,7 @@ const setChatHistory = (chatId, messages) => ({
 	payload: { chatId, messages },
 });
 
-// New action creator to collapse all chats except the most recent one
+// Collapse all chats except the most recent one
 export const collapseAllChats = (agentId) => ({
 	type: COLLAPSE_ALL_CHATS,
 	payload: { agentId },
@@ -110,18 +108,6 @@ export const fetchAgentChatsList = (userId, agentId) => {
 };
 
 export const toggleChatOpenThunk = (agentId, chatId) => (dispatch) => {
-	// IN PROGRESS: this will call API to update chat's "isOpen" status:
-
-	// Step 1: Update mock memory in-place
-	// const agent = mockAgentChatLists.find((a) => a.agentId === agentId);
-	// if (!agent) return;
-
-	// const chat = agent.chatsList.find((c) => c.id === chatId);
-	// if (!chat) return;
-
-	// chat.isOpen = !chat.isOpen;
-
-	// Step 2: Dispatch store update
 	dispatch(toggleChatOpen(agentId, chatId));
 };
 
@@ -137,11 +123,6 @@ export const createNewChat = (userId, agentId, newMessage) => {
 			isPinned: false,
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
-			// message: newMessage,
-			// attachment: null,
-			// isOpen: true,
-			// optimistic: true,
-			// type: 'human',
 		};
 		const optimisticMessage = {
 			content: newMessage,
@@ -182,7 +163,6 @@ export const createNewChat = (userId, agentId, newMessage) => {
 		if (response) {
 			console.log('New chat created response:', response.data);
 			dispatch(updateAgentChat(agentId, response.data.newChat));
-			// Optionally update chatHistory with the final data
 			dispatch(
 				setChatHistory(chatId, [optimisticMessage, response.data.message] || [])
 			);
@@ -205,7 +185,6 @@ export const fetchChatHistory = (chatId) => {
 	};
 };
 
-// NEW THUNK CREATOR for sending chat messages
 export const sendChatMessage = (chatId, message) => {
 	return async (dispatch) => {
 		// Optimistically add the user's new message to the history
@@ -216,24 +195,21 @@ export const sendChatMessage = (chatId, message) => {
 		dispatch(appendChatMessage(chatId, newUserMessage));
 
 		try {
-			// Make an API call to post the new message to the server
 			const { data } = await axios.post(
 				`http://localhost:8000/chat/${chatId}/response`,
 				{ message, attachment: null }
 			);
 			console.log('Response to new Message:', data);
-			// Dispatch the API response directly since it's already in the correct format
 			if (data) {
 				dispatch(appendChatMessage(chatId, data));
 			}
 		} catch (error) {
 			console.error('Failed to send chat message:', error);
-			// Optionally, handle rollback of the optimistic update here
 		}
 	};
 };
 
-// Agents Reducers
+// Reducers
 export function agents(state = [], action) {
 	switch (action.type) {
 		case SET_USER_AGENTS:
@@ -277,7 +253,7 @@ export function chatLists(state = [], action) {
 			});
 		}
 
-		// NEW case to update an optimistic chat with final data
+		// Update an optimistic chat with final data
 		case UPDATE_AGENT_CHAT: {
 			const { agentId, updatedChat } = action.payload;
 			return state.map((item) => {
@@ -312,7 +288,6 @@ export function chatLists(state = [], action) {
 				if (agent.agentId !== agentId) return agent;
 				if (!agent.chatsList || agent.chatsList.length === 0) return agent;
 				const chatsCount = agent.chatsList.length;
-				// Collapse all chats except the most recent one
 				const updatedChatsList = agent.chatsList.map((chat, index) => {
 					if (index < chatsCount - 1) {
 						return { ...chat, isOpen: false };

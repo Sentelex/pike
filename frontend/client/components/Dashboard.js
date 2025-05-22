@@ -54,7 +54,6 @@ export default function Dashboard() {
 	//Actual page:
 	return (
 		<div id='app-frame'>
-			{/* <div id='user-icon'>A</div> */}
 			<UserDashboardButton />
 			<div key={12} id='left-panel'>
 				Left panel

@@ -8,7 +8,6 @@ export default function ChatMessageInput({ onSendMessage, isOpen }) {
 
 	// Adjust the textarea height dynamically (limit to 5 lines)
 	const adjustTextareaHeight = () => {
-		//OK
 		const textarea = textareaRef.current;
 		if (textarea) {
 			textarea.style.height = 'auto';
@@ -24,7 +23,6 @@ export default function ChatMessageInput({ onSendMessage, isOpen }) {
 	};
 
 	const handleChange = (e) => {
-		//OK
 		setMessage(e.target.value);
 		adjustTextareaHeight();
 	};
@@ -62,7 +60,6 @@ export default function ChatMessageInput({ onSendMessage, isOpen }) {
 			/>
 			<div
 				style={{
-					// minHeight: '100%',
 					display: 'flex',
 					alignSelf: 'flex-end',
 				}}

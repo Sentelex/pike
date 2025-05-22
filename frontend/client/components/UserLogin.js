@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom';
 
 export default function UserLogin() {
-	//Actual page:
 	const navigate = useNavigate();
 
 	const [formData, setFormData] = useState({
@@ -20,7 +19,7 @@ export default function UserLogin() {
 		const { name, value } = e.target;
 		setFormData((prevState) => ({
 			...prevState,
-			[name]: value, // Update the field based on its name
+			[name]: value,
 		}));
 	};
 	const handleLogin = () => {
@@ -35,7 +34,7 @@ export default function UserLogin() {
 						<input
 							className='input-field'
 							type='text'
-							name='username' // Set the name attribute for differentiation
+							name='username' 
 							value={formData.username}
 							onChange={handleChange}
 							placeholder='Username'
@@ -44,7 +43,7 @@ export default function UserLogin() {
 						<input
 							className='input-field'
 							type='password'
-							name='password' // Set the name attribute for differentiation
+							name='password' 
 							value={formData.password}
 							onChange={handleChange}
 							placeholder='Password'
