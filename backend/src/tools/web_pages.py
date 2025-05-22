@@ -49,6 +49,8 @@ def parse_webpage(website: str, embedded: bool = True) -> str:
         If the URL does not conform to expected requirements/sanitize properly.
     requests.HTTPError
         If the HTTP request for the webpage fails.
+    socket.gaierror
+        If the host of the URL is not resolvable.
     """
     sanitized_url = pyd.HttpUrl(website)
     host_resolvable(sanitized_url) # Throw a host unresolvable error to short-circuit response
