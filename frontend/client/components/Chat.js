@@ -11,7 +11,7 @@ import AgentMessage from './AgentMessage';
 import ChatMessageInput from './ChatMessageInput';
 import { smoothScrollTo } from '../utils/scroll';
 
-function Chat({ agentId, chatName, isOpen, chatId }) {
+function Chat({ chatId, agentId, chatName, isOpen }) {
 	console.log('Chat component:', chatId, isOpen);
 	const dispatch = useDispatch();
 	const chatHistory = useSelector((state) => state.chatHistory[chatId]); // undefined if not fetched

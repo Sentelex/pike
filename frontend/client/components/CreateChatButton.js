@@ -34,7 +34,6 @@ export default function CreateChatButton({
 				window.getComputedStyle(textarea).lineHeight,
 				10
 			);
-			// console.log('lineHeight:', lineHeight);
 			const maxHeight = lineHeight * 5; // limit to 5 lines
 			textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
 			textarea.style.overflowY =
