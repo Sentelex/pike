@@ -1,9 +1,11 @@
 import pydantic as pyd
 import uuid as u
 import datetime as dt
+import typing as t
 import json
 
 import langchain_core.messages as lcm
+import langgraph.graph.message as lggm
 
 class ChatData(pyd.BaseModel):
     """
@@ -28,7 +30,7 @@ class ChatHistory(pyd.BaseModel):
     """
     Message history of a chat.
     """
-    messages: list[lcm.BaseMessage]
+    messages: t.Annotated[list[lcm.BaseMessage],lggm.add_messages]
 
 class Chat(pyd.BaseModel):
     """
