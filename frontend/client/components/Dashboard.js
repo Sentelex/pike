@@ -56,7 +56,6 @@ export default function Dashboard() {
 		<div id='app-frame'>
 			<UserDashboardButton />
 			<div key={12} id='left-panel'>
-				Left panel
 				<AddNewAgentButton
 					selected={selectedAgentId === 'add-agent'}
 					onSelect={() => selectAgentId('add-agent')}

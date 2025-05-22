@@ -75,7 +75,7 @@ function ChatsWindow() {
 			/>
 			<CollapseChatsButton onCollapseChats={handleCollapseChats} />
 			<div id='top-panel'>
-				<div id='filter-menu'>Filter menu</div>
+				{/* <div id='filter-menu'>Filter menu</div> */}
 				<div id='chats-search-bar'>Search bar</div>
 			</div>
 			<div id='main-panel'>
