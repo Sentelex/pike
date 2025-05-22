@@ -5,7 +5,7 @@ import { fetchAgentChatsList, collapseAllChats } from '../store';
 import Chat from './Chat';
 import CreateChatButton from './CreateChatButton';
 import CollapseChatsButton from './CollapseChatsButton';
-import { smoothScrollTo } from '../utils/scroll'; // Import the utility
+import { smoothScrollTo } from '../utils/scroll';
 
 function ChatsWindow() {
 	console.log('ChatsWindow');

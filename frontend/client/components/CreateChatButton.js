@@ -9,11 +9,7 @@ import { createNewChat } from '../store';
 import PopupBlanket from './PopupBlanket';
 
 export default function CreateChatButton({
-	// isOpen,
-	// setIsOpen,
 	agentId,
-	// newMessage,
-	// setNewMessage,
 	handleScrollToBottom,
 }) {
 	const [isOpen, setIsOpen] = useState(false);
@@ -23,9 +19,8 @@ export default function CreateChatButton({
 	const dispatch = useDispatch();
 
 	const [isFullyExpanded, setIsFullyExpanded] = useState(false);
-	const textareaRef = useRef(null); // Create a ref for the textarea
+	const textareaRef = useRef(null);
 
-	// Adjust the textarea height as the user types
 	const adjustTextareaHeight = () => {
 		const textarea = textareaRef.current;
 		if (textarea) {
@@ -91,8 +86,8 @@ export default function CreateChatButton({
 
 	const handleKeyDown = (e) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault(); // Prevent default behavior of adding a new line
-			handleSendClick(); // Call the send message function
+			e.preventDefault(); 
+			handleSendClick(); 
 		}
 	};
 
@@ -106,7 +101,7 @@ export default function CreateChatButton({
 				{isOpen ? (
 					<>
 						<textarea
-							ref={textareaRef} // Attach the ref to the textarea
+							ref={textareaRef} 
 							name='createChatPrompt'
 							inputMode='text'
 							autoComplete='off'
@@ -132,7 +127,7 @@ export default function CreateChatButton({
 						>
 							<SendButton
 								onClick={handleSendClick}
-								disabled={!newMessage.trim()} // Disable if no message
+								disabled={!newMessage.trim()}
 								isFullyExpanded={isFullyExpanded}
 							/>
 						</div>
