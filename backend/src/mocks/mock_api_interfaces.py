@@ -144,7 +144,7 @@ def mock_chat_history():
 
 def mock_chat_history_alt() -> dict:
     return {
-        " messages": [
+        "messages": [
             lcm.HumanMessage(
                 content="This is a basic human input message to the chat."),
             lcm.AIMessage(
