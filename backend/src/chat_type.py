@@ -14,7 +14,6 @@ class Chat(pyd.BaseModel):
     """
     id: u.UUID
     agent: u.UUID
-    user: u.UUID
     name: str = f"Chat"
     created: dt.datetime = dt.datetime.now()
     last_update: dt.datetime = dt.datetime.now()
