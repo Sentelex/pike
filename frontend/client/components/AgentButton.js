@@ -16,24 +16,26 @@ export default function AgentButton({ agent, selected, onSelect }) {
 	};
 
 	return (
-		<div
-			className={`agent-button ${selected ? 'selected' :''}`}
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
-			onClick={handleClick}
-		>
-			{hovered ? (
-				<>
-					<div className='a-b-name'>{agent.agentName}</div>
-					<div className='a-b-settings' onClick={handleGoToAgentSettings}>
-						<IoMdSettings />
-					</div>
-				</>
-			) : (
-				<>
-					<div className='a-b-name'>{agent.agentName}</div>
-				</>
-			)}
+		<div className='agent-button-wrapper'>
+			<div
+				className={`agent-button ${selected ? 'selected' : ''}`}
+				onMouseEnter={() => setHovered(true)}
+				onMouseLeave={() => setHovered(false)}
+				onClick={handleClick}
+			>
+				{hovered ? (
+					<>
+						<div className='a-b-name'>{agent.agentName}</div>
+						<div className='a-b-settings' onClick={handleGoToAgentSettings}>
+							<IoMdSettings />
+						</div>
+					</>
+				) : (
+					<>
+						<div className='a-b-name'>{agent.agentName}</div>
+					</>
+				)}
+			</div>
 		</div>
 	);
 }

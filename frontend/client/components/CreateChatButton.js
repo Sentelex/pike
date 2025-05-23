@@ -8,10 +8,7 @@ import { TbMessagePlus } from 'react-icons/tb';
 import { createNewChat } from '../store';
 import PopupBlanket from './PopupBlanket';
 
-export default function CreateChatButton({
-	agentId,
-	handleScrollToBottom,
-}) {
+export default function CreateChatButton({ agentId, handleScrollToBottom }) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [newMessage, setNewMessage] = useState('');
 	const storedChatMessage = useSelector((state) => state.newChatMessage);
@@ -86,8 +83,8 @@ export default function CreateChatButton({
 
 	const handleKeyDown = (e) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault(); 
-			handleSendClick(); 
+			e.preventDefault();
+			handleSendClick();
 		}
 	};
 
@@ -101,7 +98,7 @@ export default function CreateChatButton({
 				{isOpen ? (
 					<>
 						<textarea
-							ref={textareaRef} 
+							ref={textareaRef}
 							name='createChatPrompt'
 							inputMode='text'
 							autoComplete='off'
@@ -136,6 +133,7 @@ export default function CreateChatButton({
 					<div
 						style={{
 							display: 'flex',
+							justifyContent: 'center',
 							alignItems: 'center',
 							paddingRight: '10px',
 							gap: '5px',
