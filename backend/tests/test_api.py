@@ -87,7 +87,7 @@ def test_get_agent():
 def test_create_chat():
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
-    mock_chat_alt = mai.mock_chat_alt()
+    mock_chat_alt = mai.chat_agent_1_alt()
     mock_response = mai.mock_chat_response()
     chatId = mock_chat_alt["chatId"]
     response = client.post(
