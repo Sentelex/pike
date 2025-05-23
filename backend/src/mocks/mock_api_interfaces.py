@@ -106,7 +106,7 @@ def mock_chat_alt():
 
 def mock_chat_interface_2():
     return {
-        "chatId": "81bddc2b-36e6-495a-a8e4-d5207a50f121",
+        "chatId": "91bddc2b-36e6-495a-a8e4-d5207a50f121",
         "chatName": "First Chat - Agent 2",
         "isOpen": False,
         "isPinned": False,
@@ -119,7 +119,7 @@ def mock_chat_interface_2():
 
 def mock_chat_alt_2():
     return {
-        "chatId": "cabddc2b-36e6-495a-a8e4-d5207a50f122",
+        "chatId": "dabddc2b-36e6-495a-a8e4-d5207a50f122",
         "chatName": "Second Chat - Agent 2",
         "isOpen": True,
         "isPinned": False,
