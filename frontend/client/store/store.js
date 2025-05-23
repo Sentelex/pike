@@ -288,8 +288,11 @@ export function chatLists(state = [], action) {
 				if (agent.agentId !== agentId) return agent;
 				if (!agent.chatsList || agent.chatsList.length === 0) return agent;
 				const chatsCount = agent.chatsList.length;
+				const popLastChat = 0;
+				// 1 = Collapse all but the last chat
+				// 0 = Collapse all chats
 				const updatedChatsList = agent.chatsList.map((chat, index) => {
-					if (index < chatsCount - 1) {
+					if (index < chatsCount - popLastChat) {
 						return { ...chat, isOpen: false };
 					}
 					return chat;
