@@ -11,11 +11,13 @@ export default function AddNewAgentButton({ onSelect, selected }) {
 	};
 
 	return (
-		<div
-			className={`add-new-agent-button ${selected ? 'selected' : ''}`}
-			onClick={handleClick}
-		>
-			+ Add Agent
+		<div className='agent-button-wrapper'>
+			<div
+				className={`add-new-agent-button ${selected ? 'selected' : ''}`}
+				onClick={handleClick}
+			>
+				+ Add Agent
+			</div>
 		</div>
 	);
 }
