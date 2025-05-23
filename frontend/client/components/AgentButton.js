@@ -23,6 +23,10 @@ export default function AgentButton({ agent, selected, onSelect }) {
 				onMouseLeave={() => setHovered(false)}
 				onClick={handleClick}
 			>
+				<img
+					src='/agent-icon-2.png'
+					style={{ height: '45px', width: '45px' }}
+				/>
 				{hovered ? (
 					<>
 						<div className='a-b-name'>{agent.agentName}</div>

@@ -456,7 +456,7 @@ div#create-chat-button.collapsed:active {
 	background-color: white;
 	border: 1px solid var(--color-border-gray);
 	/* box-shadow: 0 0 0 1px var(--color-border-gray); */
-	/* transition: all 0.1s ease; */
+
 	height: var(--agent-button-height);
 	/* width: 50px; */
 	width: calc(90% - 10px);
@@ -471,6 +471,7 @@ div#create-chat-button.collapsed:active {
 .agent-button.selected:hover {
 	border: 2px solid black;
 	background-color: var(--color-gray-2);
+	transition: all 0.08s ease;
 }
 
 .add-new-agent-button:active,
@@ -506,7 +507,7 @@ div#create-chat-button.collapsed:active {
 	height: auto;
 	/* border: solid 1px red; */
 	height: fit-content;
-	color: gray;
+	color: rgb(150, 150, 150);
 	z-index: 1;
 }
 
@@ -647,9 +648,9 @@ div#create-chat-button.collapsed:active {
 	border-radius: 12px;
 }
 
-.chat-window.folded:hover {
-	/* border: solid 1px var(--color-dark-gray); */
-}
+/* .chat-window.folded:hover {
+	border: solid 1px var(--color-dark-gray);
+} */
 
 .hidden {
 	display: none;
