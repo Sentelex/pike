@@ -17,3 +17,5 @@ def test_get_available_skills_real():
         assert isinstance(tool, dict)
         assert "name" in tool
         assert "description" in tool
+        assert "id" in tool
+        assert "icon" in tool
