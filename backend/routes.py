@@ -138,7 +138,8 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -
         new_message=lcm.HumanMessage(body.message),
         attachment=body.attachment
     )
-    return chat_to_interface(ct.CHAT_CACHE[chatId])
+    message = ct.get_response(chatId, body.attachment)
+    return {'newChat': chat_to_interface(ct.CHAT_CACHE[chatId]), 'messages': message}
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/add")
