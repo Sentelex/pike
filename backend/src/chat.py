@@ -8,7 +8,6 @@ import datetime as dt
 import langchain_core.messages as lcm
 import langgraph.graph.message as lgm
 import langchain_google_genai as lcg
-import langgraph.prebuilt as lgp
 import src.tools as tools
 
 
@@ -25,15 +24,17 @@ TOOL_LIST_LOOKUP = {
         tools.summarize_text,
     ],
 }
-
-CHAT_CACHE: dict[u.UUID, 'Chat'] = {}
-ATTACHMENT_CACHE: dict[str, str] = {}
 AGENT_MODEL_LOOKUP = {
     "default": lcg.ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", google_api_key=api_key
     ),
 }
-AGENT_CACHE = {}
+global CHAT_CACHE
+global ATTACHMENT_CACHE
+global AGENT_CACHE
+CHAT_CACHE: dict[u.UUID, 'Chat'] = {}
+ATTACHMENT_CACHE: dict[str, str] = {}
+AGENT_CACHE: dict[u.UUID, 'Agent'] = {}
 
 
 class Chat(pdc.BaseModel):
@@ -53,31 +54,3 @@ class Chat(pdc.BaseModel):
     opened: bool = True
     pinned: bool = False
     bookmarked: bool = False
-
-
-def get_response(chat_id: u.UUID, attachment: str) -> dict:
-    """
-    Converts a Chat object to a dictionary suitable for API response.
-    """
-    if chat_id not in CHAT_CACHE:
-        raise ValueError(f"Chat with ID {chat_id} not found.")
-    chat = CHAT_CACHE[chat_id]
-    if attachment is not None:
-        attachment_id = u.uuid4()
-        ATTACHMENT_CACHE[attachment_id] = attachment
-        CHAT_CACHE[chat.id].attachment = attachment_id
-    if chat.agent_id not in AGENT_CACHE:
-        model = AGENT_MODEL_LOOKUP.get(
-            chat.agent_id, AGENT_MODEL_LOOKUP["default"])
-        agent = lgp.create_react_agent(
-            model=model,
-            tools=TOOL_LIST_LOOKUP.get(
-                chat.agent_id, TOOL_LIST_LOOKUP["default"]),
-        )
-        AGENT_CACHE[chat.agent_id] = agent
-    else:
-        agent = AGENT_CACHE[chat.agent_id]
-    chat = agent.invoke(chat)
-    chat.last_update = dt.datetime.now()
-    CHAT_CACHE[chat.id] = chat
-    return CHAT_CACHE[chat.id].messages[-1]

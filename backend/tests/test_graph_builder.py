@@ -1,5 +1,5 @@
 import pytest
-import backend.src._graph_builder_dep as gb
+import backend.src.graph_builder as gb
 import backend.src.chat as ch
 from typing import Callable
 import langgraph.graph as lgg

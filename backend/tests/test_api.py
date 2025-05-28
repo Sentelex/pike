@@ -1,6 +1,11 @@
 from fastapi.testclient import TestClient
 import src.mocks.mock_api_interfaces as mai
+import src.chat as ct
 import pike as pike
+import uuid as u
+import unittest.mock
+import src.mocks.mock_model as mm
+import langchain_core.messages as lcm
 
 client = TestClient(pike.api)
 
@@ -84,23 +89,26 @@ def test_get_agent():
     assert data["agentId"] == mock_agent_alt["agentId"]
 
 
-def test_create_chat():
+def test_create_chat(monkeypatch):
+    # Monkeypatch AGENT_MODEL_LOOKUP['default'] to use MockModel
+    mock_response = mai.mock_chat_response()
+    monkeypatch.setitem(ct.AGENT_MODEL_LOOKUP, "default", mm.MockLLM(responses=[lcm.AIMessage(**mock_response)]))
+
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
-    mock_response = mai.mock_chat_response()
-    chatId = mai.mock_chat_alt()["chatId"]
+    chat_id = mai.mock_chat_alt()["chatId"]
     response = client.post(
-        f"/user/{mock_user_info['userId']}/agent/{mock_agent_interface['agentId']}/create_chat/{chatId}",
+        f"/user/{mock_user_info['userId']}/agent/{mock_agent_interface['agentId']}/create_chat/{chat_id}",
         json={"message": "Hello"}
     )
     assert response.status_code == 200
     response = response.json()
-    assert response["newChat"]["chatId"] == chatId
+    assert response["newChat"]["chatId"] == chat_id
     assert response["newChat"]["agentId"] == mock_agent_interface["agentId"]
     assert response["newChat"]["isOpen"] is True
     assert response["newChat"]["isPinned"] is False
     assert response["newChat"]["isBookmarked"] is False
-    assert response["message"] == mock_response
+    assert response["message"]['content'] == mock_response['content']
 
 
 def test_add_agent_to_user():
