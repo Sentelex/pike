@@ -18,3 +18,5 @@ def chat(mock_message):
         id=u.uuid4(),
         agent_id=u.uuid4()
     )
+
+@pytest.fixture

@@ -1,13 +1,14 @@
 import json
+import uuid as u
+import datetime as dt
 
 # from typing import Callable, List
 import langchain_core.messages as lcm
 import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
-import src.state as st
 import src.tools as tools
-import langgraph.checkpoint.memory as lgcm
+import src.chat as ct
 
 
 TOOL_LIST_LOOKUP = {
@@ -22,7 +23,7 @@ TOOL_LIST_LOOKUP = {
 }
 
 
-def tools_node(state: st.State, tools: list[callable]):
+def tools_node(state: ct.Chat, tools: list[callable]):
     tools_by_name = {tool.name: tool for tool in tools}
     outputs = []
     # Iterate through the tool calls in the last message of the state
@@ -39,7 +40,7 @@ def tools_node(state: st.State, tools: list[callable]):
     return {"messages": outputs}
 
 
-def assistant_node(state: st.State, model: lcr.RunnableConfig):
+def assistant_node(state: ct.Chat, model: lcr.RunnableConfig):
     system_prompt = lcm.SystemMessage(
         "You are a helpful assistant with tools at your disposal. If you can use a tool try to use a tool."
     )
@@ -47,30 +48,31 @@ def assistant_node(state: st.State, model: lcr.RunnableConfig):
     return {"messages": [response]}
 
 
-def tool_condition(state: st.State):
+def tool_condition(state: ct.Chat):
     # Check if the last message is a tool call
     last_message = state.messages[-1]
+    if 'tool_calls' not in last_message:
+        return "end"
     return "tools" if last_message.tool_calls else "end"
 
 
-def add_new_message(state: st.StateFull) -> st.StateFull:
-    return {"full_messages": [state.new_message]}
+def add_new_message(state: ct.Chat) -> ct.Chat:
+    return {"messages": [state.new_message]}
 
 
-def truncate_history(s: st.StateFull, max_messages: int = 10) -> st.State:
+def truncate_history(s: ct.Chat, max_messages: int = 10) -> ct.Chat:
     """
     Truncate the history of messages to the last max_messages.
     """
-    if len(s.full_messages) >= max_messages:
-        return {"messages": s.full_messages[-max_messages:]}
+    if len(s.messages) >= max_messages:
+        return {"messages": s.messages[-max_messages:]}
     else:
-        return {"messages": s.full_messages}
+        return {"messages": s.messages}
 
 
-def build_graph(model, graph_id: str) -> lgg.StateGraph:
-    tools = TOOL_LIST_LOOKUP.get(graph_id, [])
+def build_graph(model, tools) -> lgg.StateGraph:
     _model = model.bind_tools(tools)
-    _graph = lgg.StateGraph(st.State)
+    _graph = lgg.StateGraph(ct.Chat)
     _graph.add_node("message", add_new_message)
     _graph.add_node("truncate_history",
                     lambda s: truncate_history(s, max_messages=10))
@@ -84,3 +86,31 @@ def build_graph(model, graph_id: str) -> lgg.StateGraph:
     )
     _graph.add_edge("tools", "agent")
     return _graph.compile()
+
+
+def get_response(chat_id: u.UUID, attachment: str) -> dict:
+    """
+    Converts a Chat object to a dictionary suitable for API response.
+    """
+    if chat_id not in ct.CHAT_CACHE:
+        raise ValueError(f"Chat with ID {chat_id} not found.")
+    chat = ct.CHAT_CACHE[chat_id]
+    if attachment is not None:
+        attachment_id = u.uuid4()
+        ct.ATTACHMENT_CACHE[attachment_id] = attachment
+        ct.CHAT_CACHE[chat.id].attachment = attachment_id
+    if chat.agent_id not in ct.AGENT_CACHE:
+        model = ct.AGENT_MODEL_LOOKUP.get(
+            chat.agent_id, ct.AGENT_MODEL_LOOKUP["default"])
+        agent = build_graph(
+            model=model,
+            tools=TOOL_LIST_LOOKUP.get(
+                chat.agent_id, TOOL_LIST_LOOKUP["default"]),
+        )
+        ct.AGENT_CACHE[chat.agent_id] = agent
+    else:
+        agent = ct.AGENT_CACHE[chat.agent_id]
+    chat = ct.Chat(**agent.invoke(chat))
+    chat.last_update = dt.datetime.now()
+    ct.CHAT_CACHE[chat.id] = chat
+    return ct.CHAT_CACHE[chat.id].messages[-1]

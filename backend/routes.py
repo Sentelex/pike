@@ -6,8 +6,8 @@ import langchain_core.messages as lcm
 
 import src.mocks.mock_api_interfaces as mapi
 import src.mocks.backend_mocks as bm
-import backend.src.chat as ct
-import backend.src._graph_builder_dep as gb
+import src.chat as ct
+import src.graph_builder as gb
 
 pike_router = fapi.APIRouter()
 
@@ -138,8 +138,9 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -
         new_message=lcm.HumanMessage(body.message),
         attachment=body.attachment
     )
-    message = ct.get_response(chatId, body.attachment)
-    return {'newChat': chat_to_interface(ct.CHAT_CACHE[chatId]), 'messages': message}
+    message = gb.get_response(chatId, body.attachment)
+    return {'newChat': chat_to_interface(ct.CHAT_CACHE[chatId]),
+            'message': message}
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/add")
@@ -155,7 +156,7 @@ def get_response(chatId: u.UUID, body: ChatInput) -> dict:
     """
     Sends input to the agent and receives output dictionary with responses.
     """
-    return ct.get_response(chatId, body.attachment)
+    return gb.get_response(chatId, body.attachment)
 
 
 @pike_router.delete("/user/{userId}/agent/{agentId}/delete")
