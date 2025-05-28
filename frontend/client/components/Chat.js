@@ -16,6 +16,7 @@ function Chat({ chatId, agentId, chatName, isOpen }) {
 	const dispatch = useDispatch();
 	const chatHistory = useSelector((state) => state.chatHistory[chatId]); // undefined if not fetched
 	const chatViewerRef = useRef(null);
+	const isFirstLoad = useRef(true); // New ref to track initial load
 
 	useEffect(() => {
 		if (isOpen && !chatHistory) {
@@ -27,11 +28,18 @@ function Chat({ chatId, agentId, chatName, isOpen }) {
 	useEffect(() => {
 		// Smooth scroll the chat viewer to the bottom whenever chatHistory changes
 		if (chatViewerRef.current) {
-			smoothScrollTo(
-				chatViewerRef.current,
-				chatViewerRef.current.scrollHeight,
-				500
-			);
+			if (isFirstLoad.current) {
+				// Instantly scroll to the bottom on initial load
+				chatViewerRef.current.scrollTop = chatViewerRef.current.scrollHeight;
+				isFirstLoad.current = false;
+			} else {
+				// Smooth scroll on subsequent updates
+				smoothScrollTo(
+					chatViewerRef.current,
+					chatViewerRef.current.scrollHeight,
+					500
+				);
+			}
 		}
 	}, [chatHistory]);
 
