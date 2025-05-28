@@ -1,6 +1,6 @@
 import pytest
-import src.graph_builder as gb
-import src.state as st
+import backend.src._graph_builder_dep as gb
+import backend.src.chat as ch
 from typing import Callable
 import langgraph.graph as lgg
 import langchain_core.messages as lcm
@@ -10,38 +10,28 @@ import unittest.mock
 import src.mocks.mock_model as mm
 import os
 import langchain_core.tools as lcct
-import langchain_google_genai as lc_google
+import langchain_google_genai as lcg
 import dotenv
+import uuid as u
 
 
 def simple_graph(node: Callable):
-    graph_builder = lgg.StateGraph(st.State)
+    graph_builder = lgg.StateGraph(ch.Chat)
     graph_builder.add_node("test_node", node)
     graph_builder.add_edge(lgg.START, "test_node")
     graph_builder.add_edge("test_node", lgg.END)
     return graph_builder.compile()
 
 
-def test_add_message_node(full_state):
-    assert len(full_state.full_messages) == 0
+def test_add_message_node(chat):
+    assert len(chat.messages) == 0
     _graph = simple_graph(gb.add_new_message)
-    updated_state = _graph.invoke(full_state)
-    assert len(updated_state["full_messages"]) == 1
-    assert updated_state["full_messages"][0] == full_state.new_message
+    updated_chat = _graph.invoke(chat)
+    assert len(updated_chat["messages"]) == 1
+    assert updated_chat["messages"][0] == chat.new_message
 
 
-def test_trunc_node(full_state):
-    full_state.full_messages = [
-        lcm.BaseMessage(content=f"Test message {i}", type="text") for i in range(20)
-    ]
-    assert len(full_state.full_messages) == 20
-    _graph = simple_graph(gb.truncate_history)
-    updated_state = _graph.invoke(full_state)
-    assert len(updated_state["full_messages"]) == 20
-    assert len(updated_state["messages"]) == 10
-
-
-def test_tools_node(state):
+def test_tools_node(chat):
     mock_tool = unittest.mock.MagicMock(return_value="value1 and value2")
 
     @lcct.tool
@@ -55,7 +45,7 @@ def test_tools_node(state):
         return mock_tool(arg1, arg2)
 
     # Add a valid message with the required 'role' and 'content' keys
-    state.messages[-1] = lcm.AIMessage(
+    chat.messages = [lcm.AIMessage(
         content="Tool call executed",
         tool_calls=[
             lcm.ToolCall(
@@ -64,15 +54,15 @@ def test_tools_node(state):
                 id="tool-call-id-1",
             )
         ],
-    )
+    )]
     _graph = simple_graph(lambda s: gb.tools_node(s, tools=[test_tool]))
-    updated_state = _graph.invoke(state)
+    updated_chat = _graph.invoke(chat)
     mock_tool.assert_called_once_with("value1", "value2")
-    assert updated_state["messages"][-1].content.strip(
+    assert updated_chat["messages"][-1].content.strip(
         '"') == "value1 and value2"
 
 
-def test_build_graph_with_mocked_tools(state, monkeypatch):
+def test_build_graph_with_mocked_tools(chat, monkeypatch):
     dummy_tool = unittest.mock.MagicMock()
     dummy_tool.name = "dummy_tool"
     dummy_tool.invoke = unittest.mock.MagicMock(
@@ -95,10 +85,10 @@ def test_build_graph_with_mocked_tools(state, monkeypatch):
     ]
     mock_model = mm.MockLLM(responses=response_messages)
     graph = gb.build_graph(model=mock_model, graph_id="default")
-    updated_state = graph.invoke(state)
+    updated_chat = graph.invoke(chat)
     dummy_tool.invoke.assert_called_once_with({"file_path": "dummy_path.pdf"})
-    assert len(updated_state["messages"]) == 4
-    assert updated_state["messages"][-2].content.strip(
+    assert len(updated_chat["messages"]) == 4
+    assert updated_chat["messages"][-2].content.strip(
         '"') == "result from dummy tool"
 
 
@@ -122,16 +112,16 @@ def test_gemini_model_calls_tool(monkeypatch):
     monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default",
                         [special_add, special_multiply])
 
-    model = lc_google.ChatGoogleGenerativeAI(
+    model = lcg.ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", google_api_key=api_key
     )
     mock_message = lcm.HumanMessage(
         content="make a special addition of 2 and 5 and then special multiply by 4"
     )
-    state = st.StateFull(new_message=mock_message)
+    chat = ch.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
     graph = gb.build_graph(model=model, graph_id="default")
-    result_state = graph.invoke(state)
-    assert len(result_state["messages"]) == 6
-    assert isinstance(result_state["messages"][2], lcm.ToolMessage)
-    assert isinstance(result_state["messages"][4], lcm.ToolMessage)
-    assert "8" in result_state["messages"][-1].content
+    result_chat = graph.invoke(chat)
+    assert len(result_chat["messages"]) == 6
+    assert isinstance(result_chat["messages"][2], lcm.ToolMessage)
+    assert isinstance(result_chat["messages"][4], lcm.ToolMessage)
+    assert "8" in result_chat["messages"][-1].content

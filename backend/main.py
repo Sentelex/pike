@@ -1,4 +1,6 @@
-import src.graph_builder as gb
+import uuid as u
+import langchain_core.messages as lcm
+import backend.src.chat as ct
 
 
 def print_stream(stream):
@@ -9,19 +11,12 @@ def print_stream(stream):
 
 
 if __name__ == "__main__":
-    model = "Some Model"
-    graph = gb.build_graph(model, graph_id="default")
+    chat = ct.Chat(
+        new_message=lcm.HumanMessage(
+            content="Summarize this: I love langgraph because it's powerful."),
+        messages=[],
+        id=u.uuid4(),
+        agent_id=u.uuid4(),
+    )
 
-    # Example user input
-    user_input = {
-        "messages": [
-            ("user", "Summarize this: I love langgraph because it's powerful.")
-        ],
-        "attachment": None,
-        "graph_id": "default",
-    }
-
-    # Stream the response from the graph, passing the user input
-    response = graph.stream(user_input, stream_mode="values")
-
-    print_stream(response)
+    print_stream(ct.get_response(chat_id=chat.id, attachment=None))
