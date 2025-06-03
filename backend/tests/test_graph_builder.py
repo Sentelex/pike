@@ -84,7 +84,7 @@ def test_build_graph_with_mocked_tools(chat, monkeypatch):
         lcm.AIMessage(content="tool call completed"),
     ]
     mock_model = mm.MockLLM(responses=response_messages)
-    graph = gb.build_graph(model=mock_model, graph_id="default")
+    graph = gb.build_graph(model=mock_model, tools=[dummy_tool])
     updated_chat = graph.invoke(chat)
     dummy_tool.invoke.assert_called_once_with({"file_path": "dummy_path.pdf"})
     assert len(updated_chat["messages"]) == 4
