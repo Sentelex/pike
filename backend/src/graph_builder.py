@@ -51,10 +51,7 @@ def assistant_node(state: ct.Chat, model: lcr.RunnableConfig):
 def tool_condition(state: ct.Chat):
     # Check if the last message is a tool call
     last_message = state.messages[-1]
-    if 'tool_calls' not in last_message:
-        return "end"
     return "tools" if last_message.tool_calls else "end"
-
 
 def add_new_message(state: ct.Chat) -> ct.Chat:
     return {"messages": [state.new_message]}
