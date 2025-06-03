@@ -62,14 +62,13 @@ def test_tools_node(chat):
         '"') == "value1 and value2"
 
 
-def test_build_graph_with_mocked_tools(chat, monkeypatch):
+def test_build_graph_with_mocked_tools(chat):
     dummy_tool = unittest.mock.MagicMock()
     dummy_tool.name = "dummy_tool"
     dummy_tool.invoke = unittest.mock.MagicMock(
         return_value="result from dummy tool")
 
     # Patch the graph_builder to use only our dummy_tool for the 'default' graph
-    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default", [dummy_tool])
     response_messages = [
         lcm.AIMessage(
             content="dummy input",
@@ -93,7 +92,7 @@ def test_build_graph_with_mocked_tools(chat, monkeypatch):
 
 
 @pytest.mark.skip_in_pipeline
-def test_gemini_model_calls_tool(monkeypatch):
+def test_gemini_model_calls_tool():
     # Ensure API key is loaded
     dotenv.load_dotenv()
     api_key = os.getenv("GOOGLE_API_KEY")
@@ -109,9 +108,6 @@ def test_gemini_model_calls_tool(monkeypatch):
         """A special multipy tool."""
         return a * b / 6
 
-    monkeypatch.setitem(gb.TOOL_LIST_LOOKUP, "default",
-                        [special_add, special_multiply])
-
     model = lcg.ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", google_api_key=api_key
     )
@@ -119,7 +115,7 @@ def test_gemini_model_calls_tool(monkeypatch):
         content="make a special addition of 2 and 5 and then special multiply by 4"
     )
     chat = ch.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
-    graph = gb.build_graph(model=model, graph_id="default")
+    graph = gb.build_graph(model=model, tools=[special_add, special_multiply])
     result_chat = graph.invoke(chat)
     assert len(result_chat["messages"]) == 6
     assert isinstance(result_chat["messages"][2], lcm.ToolMessage)
