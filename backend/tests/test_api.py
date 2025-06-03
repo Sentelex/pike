@@ -1,14 +1,23 @@
-from fastapi.testclient import TestClient
+import pytest
+import fastapi.testclient as ft
+import langchain_core.messages as lcm
 import src.mocks.mock_api_interfaces as mai
 import src.chat as ct
-import pike as pike
-import uuid as u
-import unittest.mock
 import src.mocks.mock_model as mm
-import langchain_core.messages as lcm
+import src.mocks.backend_mocks as bm
+import pike as pike
 
-client = TestClient(pike.api)
+client = ft.TestClient(pike.api)
 
+
+@pytest.fixture
+def patch_chat_cache(monkeypatch):
+    """
+    Patch the global CHAT_CACHE to contain MOCK_CHAT_STORE for testing.
+    """
+    # Patch CHAT_CACHE to be a copy of MOCK_CHAT_STORE
+    monkeypatch.setattr(ct, "CHAT_CACHE", bm.MOCK_CHAT_STORE.copy())
+    yield
 
 def ensure_unique_value(
     dict_with_id_list: list[dict], input_key: str = "ID"
@@ -59,7 +68,7 @@ def test_get_user_chats():
                for chat in data)
 
 
-def test_get_chat_history():
+def test_get_chat_history(patch_chat_cache):
     mock_chat = mai.mock_chat_interface()
     mock_chat_history = mai.mock_chat_history()
     response = client.get(f"/chat/{mock_chat['chatId']}/history")
@@ -159,14 +168,14 @@ def test_remove_chat_from_user():
     assert ensure_unique_value(data, "chatId")
 
 
-def test_modify_chat_status():
+def test_modify_chat_status(patch_chat_cache):
     mock_chat = mai.mock_chat_interface()
-    chat_flags = {"pinned": True, "bookmarked": False, "open": True}
+    chat_flags = {"pinned": True, "bookmarked": False, "opened": True}
     response = client.put(
-        f"/chat/{mock_chat['chatId']}/status", json={"chat_flags": chat_flags}
+        f"/chat/{mock_chat['chatId']}/status", json=chat_flags
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["pinned"] is True
-    assert data["bookmarked"] is False
-    assert data["open"] is True
+    assert data["isPinned"] is True
+    assert data["isBookmarked"] is False
+    assert data["isOpen"] is True

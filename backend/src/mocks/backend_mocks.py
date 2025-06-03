@@ -4,7 +4,7 @@ from . import mock_api_interfaces as mapi
 import backend.src.chat as ct
 
 MOCK_USER_STORE = {
-    "6b96666e-8b3a-4996-932d-3aa75c08c16f": {
+    u.UUID("6b96666e-8b3a-4996-932d-3aa75c08c16f"): {
         "name": "Michael Luch",
         "agents": [mapi.mock_agent_interface(), mapi.mock_agent_alt()],
         "chats": ["81bddc2b-36e6-495a-a8e4-d5207a50f121",
@@ -15,7 +15,7 @@ MOCK_USER_STORE = {
 }
 
 MOCK_CHAT_STORE = {
-    "81bddc2b-36e6-495a-a8e4-d5207a50f121":
+    u.UUID("81bddc2b-36e6-495a-a8e4-d5207a50f121"):
         ct.Chat(
             id="81bddc2b-36e6-495a-a8e4-d5207a50f121",
             agent_id="0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
@@ -28,7 +28,7 @@ MOCK_CHAT_STORE = {
             messages=mapi.mock_chat_history()["messages"],
             new_message=mapi.mock_chat_response(),
         ),
-    "cabddc2b-36e6-495a-a8e4-d5207a50f122":
+    u.UUID("cabddc2b-36e6-495a-a8e4-d5207a50f122"):
         ct.Chat(
             id="cabddc2b-36e6-495a-a8e4-d5207a50f122",
             agent_id="0e3c04dd-268a-45d8-8834-fd0e3e0c9f47",
@@ -41,7 +41,7 @@ MOCK_CHAT_STORE = {
             messages=mapi.mock_chat_history_alt()["messages"],
             new_message=mapi.mock_chat_response(),
         ),
-    "c73782f0-30c2-472f-9d90-99c423eba897":
+    u.UUID("c73782f0-30c2-472f-9d90-99c423eba897"):
         ct.Chat(
             id="c73782f0-30c2-472f-9d90-99c423eba897",
             agent_id="bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
@@ -54,7 +54,7 @@ MOCK_CHAT_STORE = {
             messages=mapi.mock_chat_history()["messages"],
             new_message=mapi.mock_chat_response(),
         ),
-    "80e89465-5117-477c-9b2e-e21b274bab48":
+    u.UUID("80e89465-5117-477c-9b2e-e21b274bab48"):
         ct.Chat(
             id="80e89465-5117-477c-9b2e-e21b274bab48",
             agent_id="bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
