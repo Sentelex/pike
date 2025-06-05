@@ -127,7 +127,7 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput
     Generates a new chat with a chatId, attached to a specific user with a specific agent
     employed within the chat and a first message.
     """
-    ct.CHAT_CACHE[chatId] = ct.Chat(
+    _ = ct.Chat(
         id=chatId,
         agent_id=agentId,
     )

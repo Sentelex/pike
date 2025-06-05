@@ -1,6 +1,5 @@
 import pytest
 import langchain_core.messages as lcm
-import backend.src.chat as ch
 import uuid as u
 
 
@@ -12,7 +11,8 @@ def mock_message():
 
 @pytest.fixture
 def chat(mock_message):
-    return ch.Chat(
+    """Fixture to provide a mock chat."""
+    return ct.Chat(
         messages=[],
         new_message=mock_message,
         id=u.uuid4(),
