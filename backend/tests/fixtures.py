@@ -1,6 +1,7 @@
 import pytest
 import langchain_core.messages as lcm
 import uuid as u
+import src.chat as ct
 
 
 @pytest.fixture

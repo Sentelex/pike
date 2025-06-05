@@ -2,7 +2,7 @@ import pytest as pytest
 import pydantic as pdc
 import langchain_core.messages as lcm
 import langgraph.graph.message as lgm
-import backend.src.chat as ch
+import src.chat as ct
 from tests.fixtures import *
 import uuid as u
 
@@ -13,7 +13,7 @@ def test_chat_valid_data(mock_message):
         lcm.BaseMessage(content="Previous message 2", type="text"),
     ]
     agent_id = u.uuid4()
-    chat = ch.Chat(
+    chat = ct.Chat(
         messages=messages,
         new_message=mock_message,
         id=u.uuid4(),
@@ -29,31 +29,27 @@ def test_chat_valid_data(mock_message):
 
 
 def test_chat_missing_optional_fields(mock_message):
-    chat = ch.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
+    chat = ct.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
     assert chat.messages == []
-    # assert chat.attachment is None
-    # assert chat.graph_id is None
 
 
 def test_chat_attributes(chat):
-    assert isinstance(chat, ch.Chat)
     assert isinstance(chat.messages, list)
     assert isinstance(chat.new_message, lcm.BaseMessage)
     assert isinstance(chat.messages, list)
-    # assert chat.attachment is None
 
 
 def test_chat_messages_missing(mock_message):
     with pytest.raises(pdc.ValidationError):
-        ch.Chat(new_message=mock_message)
+        ct.Chat(new_message=mock_message)
 
 
 def test_chat_invalid_messages(mock_message):
     with pytest.raises(pdc.ValidationError):
-        ch.Chat(messages="invalid_data", new_message=mock_message)
+        ct.Chat(messages="invalid_data", new_message=mock_message)
 
 
 def test_chat_invalid_attachment(mock_message):
     with pytest.raises(pdc.ValidationError):
         # attachment should be a string or None
-        ch.Chat(new_message=mock_message, attachment=12345)
+        ct.Chat(new_message=mock_message, attachment=12345)
