@@ -12,11 +12,6 @@ import src.graph_builder as gb
 pike_router = fapi.APIRouter()
 
 
-class ChatInput(pyd.BaseModel):
-    message: str
-    attachment: dict | None = None
-
-
 def chat_to_interface(chat: ct.Chat) -> dict:
     """
     Converts a Chat object to a dictionary suitable for API response.
@@ -127,7 +122,7 @@ def get_agent(agentId: u.UUID) -> dict:
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/create_chat/{chatId}")
-def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -> dict:
+def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput) -> dict:
     """
     Generates a new chat with a chatId, attached to a specific user with a specific agent
     employed within the chat and a first message.
@@ -135,10 +130,8 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ChatInput) -
     ct.CHAT_CACHE[chatId] = ct.Chat(
         id=chatId,
         agent_id=agentId,
-        new_message=lcm.HumanMessage(body.message),
-        attachment=body.attachment
     )
-    message = gb.get_response(chatId, body.attachment)
+    message = get_response(chatId, body)
     return {'newChat': chat_to_interface(ct.CHAT_CACHE[chatId]),
             'message': message}
 
@@ -152,11 +145,11 @@ def add_agent_to_user(userId: str, agentId: u.UUID) -> list[dict]:
 
 
 @pike_router.post("/chat/{chatId}/response")
-def get_response(chatId: u.UUID, body: ChatInput) -> dict:
+def get_response(chatId: u.UUID, body: ct.ChatInput) -> dict:
     """
     Sends input to the agent and receives output dictionary with responses.
     """
-    return gb.get_response(chatId, body.attachment)
+    return dict(gb.get_response(chatId, body))
 
 
 @pike_router.delete("/user/{userId}/agent/{agentId}/delete")

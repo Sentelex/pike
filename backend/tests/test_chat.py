@@ -12,25 +12,27 @@ def test_chat_valid_data(mock_message):
         lcm.BaseMessage(content="Previous message 1", type="text"),
         lcm.BaseMessage(content="Previous message 2", type="text"),
     ]
+    agent_id = u.uuid4()
     chat = ch.Chat(
         messages=messages,
         new_message=mock_message,
         id=u.uuid4(),
-        agent_id=u.uuid4(),
-        attachment="example.pdf",
-        graph_id="graph123",
+        agent_id=agent_id,
+        # attachment="example.pdf",
+        # graph_id="graph123",
     )
     assert chat.messages == messages
     assert chat.new_message == mock_message
-    assert chat.attachment == "example.pdf"
-    assert chat.graph_id == "graph123"
+    assert chat.agent_id == agent_id
+    # assert chat.attachment == "example.pdf"
+    # assert chat.graph_id == "graph123"
 
 
 def test_chat_missing_optional_fields(mock_message):
     chat = ch.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
     assert chat.messages == []
-    assert chat.attachment is None
-    assert chat.graph_id is None
+    # assert chat.attachment is None
+    # assert chat.graph_id is None
 
 
 def test_chat_attributes(chat):
@@ -38,7 +40,7 @@ def test_chat_attributes(chat):
     assert isinstance(chat.messages, list)
     assert isinstance(chat.new_message, lcm.BaseMessage)
     assert isinstance(chat.messages, list)
-    assert chat.attachment is None
+    # assert chat.attachment is None
 
 
 def test_chat_messages_missing(mock_message):

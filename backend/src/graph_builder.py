@@ -10,6 +10,8 @@ import langgraph.graph as lgg
 import src.tools as tools
 import src.chat as ct
 
+import src.mocks.mock_api_interfaces as mapi
+
 
 TOOL_LIST_LOOKUP = {
     "default": [
@@ -85,17 +87,29 @@ def build_graph(model, tools) -> lgg.StateGraph:
     return _graph.compile()
 
 
-def get_response(chat_id: u.UUID, attachment: str) -> dict:
+def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
     """
     Converts a Chat object to a dictionary suitable for API response.
     """
     if chat_id not in ct.CHAT_CACHE:
         raise ValueError(f"Chat with ID {chat_id} not found.")
+    
+    message_content = []
+    additional_kwargs = {}
+    if input.message:
+        message_content.append({"type" : "text", "text": input.message})
+    if input.attachment:
+        additional_kwargs = additional_kwargs | {"attachment_id": u.uuid(4)}
+        message_content.append(input.attachment)
+    message = lcm.HumanMessage(
+        content = message_content,
+        additional_kwargs = additional_kwargs
+    )
+ 
     chat = ct.CHAT_CACHE[chat_id]
-    if attachment is not None:
-        attachment_id = u.uuid4()
-        ct.ATTACHMENT_CACHE[attachment_id] = attachment
-        ct.CHAT_CACHE[chat.id].attachment = attachment_id
+    chat.new_message = message
+
+
     if chat.agent_id not in ct.AGENT_CACHE:
         model = ct.AGENT_MODEL_LOOKUP.get(
             chat.agent_id, ct.AGENT_MODEL_LOOKUP["default"])

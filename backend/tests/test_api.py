@@ -132,14 +132,14 @@ def test_add_agent_to_user():
     assert ensure_unique_value(data, "agentId")
 
 
-def test_get_response():
+def test_get_response(patch_chat_cache):
     chat_id = mai.mock_chat_interface()["chatId"]
     response = client.post(
         f"/chat/{chat_id}/response", json={"message": "Hello"})
-    mock_response = mai.mock_chat_response()
+    mock_response = dict(lcm.AIMessage(content="Hello! How can I help you today?"))
     assert response.status_code == 200
     data = response.json()
-    assert data == mock_response
+    assert data['content'] == mock_response['content']
 
 
 def test_remove_agent_from_user():
