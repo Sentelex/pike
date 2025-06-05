@@ -1,6 +1,6 @@
 import pytest
 import backend.src.graph_builder as gb
-import backend.src.chat as ch
+import backend.src.chat as ct
 from typing import Callable
 import langgraph.graph as lgg
 import langchain_core.messages as lcm
@@ -16,7 +16,7 @@ import uuid as u
 
 
 def simple_graph(node: Callable):
-    graph_builder = lgg.StateGraph(ch.Chat)
+    graph_builder = lgg.StateGraph(ct.Chat)
     graph_builder.add_node("test_node", node)
     graph_builder.add_edge(lgg.START, "test_node")
     graph_builder.add_edge("test_node", lgg.END)
@@ -114,7 +114,7 @@ def test_gemini_model_calls_tool():
     mock_message = lcm.HumanMessage(
         content="make a special addition of 2 and 5 and then special multiply by 4"
     )
-    chat = ch.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
+    chat = ct.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
     graph = gb.build_graph(model=model, tools=[special_add, special_multiply])
     result_chat = graph.invoke(chat)
     assert len(result_chat["messages"]) == 6
