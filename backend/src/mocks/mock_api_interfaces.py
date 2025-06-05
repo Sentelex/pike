@@ -1,6 +1,8 @@
+import urllib.parse
 import langchain_core.messages as lcm
 import base64
 import datetime as dt
+import urllib
 import copy
 
 
@@ -51,20 +53,24 @@ def mock_agent_alt():
     return agent_alt
 
 
+def encode_url_safe_utf8(image_path):
+    """Encodes binary file to a URL-safe UTF-8 string."""
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        url_safe_string = urllib.parse.quote(encoded_string, safe="")
+        return url_safe_string
+
+
 def mock_jpeg_attachment():
-    file_path = "bsckend/data/squeaky_bone.jpg"
-    with open(file_path, "rb") as image_file:
-        image_data = image_file.read()
-        encoded_image = base64.urlsafe_b64encode(image_data).decode("utf-8")
-    return encoded_image
+    file_path = "backend/data/squeaky_bone.jpg"
+    return urllib.parse.unquote(encode_url_safe_utf8(file_path))
+
 
 
 def mock_pdf_attachment():
     file_path = "backend/data/dummy.pdf"
-    with open(file_path, "rb") as pdf_file:
-        pdf_data = pdf_file.read()
-        encoded_pdf = base64.urlsafe_b64encode(pdf_data).decode("utf-8")
-    return encoded_pdf
+    return urllib.parse.unquote(encode_url_safe_utf8(file_path))
+
 
 
 def mock_chat_interface():
@@ -118,6 +124,11 @@ def mock_chat_alt_2():
         "agentId": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
     }
 
+def pad_base64(input_str: str)->str:
+    missing_padding = len(input_str) %4
+    if missing_padding:
+        input_str += '=' * (4-missing_padding)
+    return input_str
 
 def mock_chat_history():
     return {
@@ -134,10 +145,15 @@ def mock_chat_history():
                     },
                     {
                         "type": "image",
-                        "attachment_id": "d0e478dd-dd1b-4e55-9beb-ec6c2c3f18d7",
+                        "source_type" : "base64",
+                        "data" : pad_base64(mock_jpeg_attachment()),
+                        "mime_type": "image/jpeg"
                     },
                 ]
             ),
+            lcm.AIMessage(
+                content=["Do you mean the dog or the dog toy?"]
+            )
         ]
     }
 

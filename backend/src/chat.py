@@ -37,20 +37,27 @@ ATTACHMENT_CACHE: dict[str, str] = {}
 AGENT_CACHE: dict[u.UUID, 'Agent'] = {}
 
 
+class ChatInput(pdc.BaseModel):
+    message: str
+    attachment: dict | None = None
+
+
 class Chat(pdc.BaseModel):
-    new_message: lcm.BaseMessage
+    id: u.UUID
+    agent_id: u.UUID
+    created: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
+    last_update: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
+
+    opened: bool = True
+    pinned: bool = False
+    bookmarked: bool = False
+
+    name: str = "Chat"
+
+    new_message: Optional[lcm.BaseMessage] = None
     messages: Annotated[
         list[lcm.BaseMessage],
         pdc.Field(default_factory=list),
         lgm.add_messages
     ]
-    attachment: Optional[str] = None  # Default to None for optional fields
-    graph_id: Optional[str] = None  # Default to None for optional fields
-    id: u.UUID
-    agent_id: u.UUID
-    name: str = "Chat"
-    created: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
-    last_update: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
-    opened: bool = True
-    pinned: bool = False
-    bookmarked: bool = False
+

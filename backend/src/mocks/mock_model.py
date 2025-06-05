@@ -49,12 +49,10 @@ class MockLLM:
                input: Union[str, List[lc_messages.BaseMessage]],
                **kwargs: Any) -> lc_messages.BaseMessage:
         """Mock invoke method that returns responses and simulates tool calls."""
-        if isinstance(input,list):
-            test = self.text_from_messages(input)
-            input_text = " ".join(test)
-        elif isinstance(input,str):
-            input_text = input
-
+        if type(input) not in [str, list, dict]:
+            raise ValueError("Unsupported input type to MockLLM")
+        input_text = " ".join(self.text_from_messages(input))
+        
         response = self.responses[self.call_count % len(self.responses)]
         self.call_count += 1
 
