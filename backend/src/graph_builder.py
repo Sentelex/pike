@@ -6,29 +6,7 @@ import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
 import src.state as st
-import src.tools as tools
-import langgraph.checkpoint.memory as lgcm
-
-
-AGENT_LOOKUP = {
-    "default": [
-        'Action Item Extractor',
-        'PDF Parser',
-        'Stock Price Fetcher',
-        'File Parser',
-        'Webpage Parser',
-        'Text Summarizer',
-    ],
-}
-
-SKILL_LOOKUP = {
-    'Action Item Extractor': tools.get_action_items,
-    'PDF Parser': tools.parse_pdf,
-    'Stock Price Fetcher': tools.get_stock_price,
-    'File Parser': tools.parse_file,
-    'Webpage Parser': tools.parse_webpage,
-    'Text Summarizer': tools.summarize_text,
-}
+import src.tool_registry as tr
 
 
 def tools_node(state: st.State, tools: list[callable]):
@@ -77,7 +55,7 @@ def truncate_history(s: st.StateFull, max_messages: int = 10) -> st.State:
 
 
 def build_graph(model, graph_id: str) -> lgg.StateGraph:
-    tools = [SKILL_LOOKUP[k] for k in AGENT_LOOKUP.get(graph_id, 'default')]
+    tools = [tr.SKILL_LOOKUP[k] for k in tr.AGENT_LOOKUP.get(graph_id, 'default')]
     _model = model.bind_tools(tools)
     _graph = lgg.StateGraph(st.State)
     _graph.add_node("message", add_new_message)

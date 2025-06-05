@@ -79,8 +79,8 @@ def test_build_graph_with_mocked_tools(state, monkeypatch):
         return_value="result from dummy tool")
 
     # Patch the graph_builder to use only our dummy_tool for the 'default' graph
-    monkeypatch.setitem(gb.SKILL_LOOKUP, "dummy_tool", dummy_tool)
-    monkeypatch.setitem(gb.AGENT_LOOKUP, "default", ["dummy_tool"])
+    monkeypatch.setitem(gb.tr.SKILL_LOOKUP, "dummy_tool", dummy_tool)
+    monkeypatch.setitem(gb.tr.AGENT_LOOKUP, "default", ["dummy_tool"])
     response_messages = [
         lcm.AIMessage(
             content="dummy input",
