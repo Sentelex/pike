@@ -1,7 +1,7 @@
 import uuid as u
 import datetime as dt
 from . import mock_api_interfaces as mapi
-import backend.src.chat as ct
+import src.chat as ct
 
 MOCK_USER_STORE = {
     u.UUID("6b96666e-8b3a-4996-932d-3aa75c08c16f"): {

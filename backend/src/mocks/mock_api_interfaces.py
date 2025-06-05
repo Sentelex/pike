@@ -62,13 +62,13 @@ def encode_url_safe_utf8(image_path):
 
 
 def mock_jpeg_attachment():
-    file_path = "backend/data/squeaky_bone.jpg"
+    file_path = "../backend/data/squeaky_bone.jpg"
     return urllib.parse.unquote(encode_url_safe_utf8(file_path))
 
 
 
 def mock_pdf_attachment():
-    file_path = "backend/data/dummy.pdf"
+    file_path = "../backend/data/dummy.pdf"
     return urllib.parse.unquote(encode_url_safe_utf8(file_path))
 
 
