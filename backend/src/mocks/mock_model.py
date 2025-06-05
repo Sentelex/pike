@@ -18,18 +18,42 @@ class MockLLM:
         self.tools = tools
         return self
 
+    def text_from_messages(self, input: str | list | dict,
+                            search_keys: list | None = None) -> list[str]:
+        expanded = [item for item in input]
+        keep_expanding = True
+        if search_keys is None:
+            search_keys = ["text"]
+        while keep_expanding:
+            keep_expanding = False
+            new_expanded = []
+            for index in range(len(expanded)):
+                if isinstance(expanded[index],str):
+                    new_expanded.append(expanded[index])
+                elif isinstance(expanded[index],lc_messages.BaseMessage):
+                    new_expanded.append(expanded[index].content)
+                    keep_expanding=True
+                elif isinstance(expanded[index],list):
+                    new_expanded.extend(expanded[index])
+                    keep_expanding=True
+                elif isinstance(expanded[index],dict):
+                    new_expanded.extend([expanded[index].get(k,"") for k in search_keys])
+                    keep_expanding=True
+                else:
+                    raise ValueError("Unsupported input type to MockLLM")
+            expanded=new_expanded
+        return expanded       
+
+
     def invoke(self,
                input: Union[str, List[lc_messages.BaseMessage]],
                **kwargs: Any) -> lc_messages.BaseMessage:
         """Mock invoke method that returns responses and simulates tool calls."""
-        if isinstance(input, list):
-            # Combine message contents if given a chat-style input
-            input_text = " ".join(
-                [msg.content for msg in input if isinstance(msg, lc_messages.BaseMessage)])
-        elif isinstance(input, str):
+        if isinstance(input,list):
+            test = self.text_from_messages(input)
+            input_text = " ".join(test)
+        elif isinstance(input,str):
             input_text = input
-        else:
-            raise ValueError("Unsupported input type to MockLLM")
 
         response = self.responses[self.call_count % len(self.responses)]
         self.call_count += 1
