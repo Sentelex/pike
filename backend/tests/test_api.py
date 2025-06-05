@@ -1,4 +1,5 @@
 import pytest
+import uuid as u
 import fastapi.testclient as ft
 import langchain_core.messages as lcm
 import src.mocks.mock_api_interfaces as mai
@@ -6,6 +7,7 @@ import src.chat as ct
 import src.mocks.mock_model as mm
 import src.mocks.backend_mocks as bm
 import pike as pike
+
 
 client = ft.TestClient(pike.api)
 
@@ -18,6 +20,7 @@ def patch_chat_cache(monkeypatch):
     # Patch CHAT_CACHE to be a copy of MOCK_CHAT_STORE
     monkeypatch.setattr(ct, "CHAT_CACHE", bm.MOCK_CHAT_STORE.copy())
     yield
+
 
 def ensure_unique_value(
     dict_with_id_list: list[dict], input_key: str = "ID"
@@ -101,7 +104,8 @@ def test_get_agent():
 def test_create_chat(monkeypatch):
     # Monkeypatch AGENT_MODEL_LOOKUP['default'] to use MockModel
     mock_response = mai.mock_chat_response()
-    monkeypatch.setitem(ct.AGENT_MODEL_LOOKUP, "default", mm.MockLLM(responses=[lcm.AIMessage(**mock_response)]))
+    monkeypatch.setitem(ct.AGENT_MODEL_LOOKUP, "default", mm.MockLLM(
+        responses=[lcm.AIMessage(**mock_response)]))
 
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()
@@ -132,11 +136,20 @@ def test_add_agent_to_user():
     assert ensure_unique_value(data, "agentId")
 
 
-def test_get_response(patch_chat_cache):
-    chat_id = mai.mock_chat_interface()["chatId"]
+def test_get_response(monkeypatch):
+    mock_response = mai.mock_chat_response()
+    monkeypatch.setitem(ct.AGENT_MODEL_LOOKUP, "default", mm.MockLLM(
+        responses=[lcm.AIMessage(**mock_response)]))
+    chat = ct.Chat(
+        messages=[],
+        new_message=lcm.BaseMessage(content="Test message", type="text"),
+        id=u.uuid4(),
+        agent_id=u.uuid4()
+    )
+    chat_id = chat.id
     response = client.post(
-        f"/chat/{chat_id}/response", json={"message": "Hello"})
-    mock_response = dict(lcm.AIMessage(content="Hello! How can I help you today?"))
+        f"/chat/{chat_id}/response", json={"message": "Hello"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert data['content'] == mock_response['content']

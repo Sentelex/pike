@@ -45,19 +45,19 @@ class ChatInput(pdc.BaseModel):
 class Chat(pdc.BaseModel):
     id: u.UUID
     agent_id: u.UUID
-    created: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
-    last_update: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
-
-    opened: bool = True
-    pinned: bool = False
-    bookmarked: bool = False
-
-    name: str = "Chat"
-
-    new_message: Optional[lcm.BaseMessage] = None
     messages: Annotated[
         list[lcm.BaseMessage],
         pdc.Field(default_factory=list),
         lgm.add_messages
     ]
+    name: str = "Chat"
+    new_message: Optional[lcm.BaseMessage] = None
+    opened: bool = True
+    pinned: bool = False
+    bookmarked: bool = False
+    created: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
+    last_update: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
 
+    def model_post_init(self, __context: Optional[dict] = None) -> None:
+        global CHAT_CACHE
+        CHAT_CACHE[self.id] = self
