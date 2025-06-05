@@ -11,6 +11,7 @@ import langgraph.graph as lgg
 import src.tools as tools
 import src.chat as ct
 import src.model as ml
+import src.tool_registry as tr
 
 
 AGENT_LOOKUP = {
