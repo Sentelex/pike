@@ -124,6 +124,27 @@ def test_create_chat(monkeypatch):
     assert response["message"]['content'] == mock_response['content']
 
 
+def test_create_chat_openai(monkeypatch):
+    # Monkeypatch AGENT_MODEL_LOOKUP['default_oai'] to use MockLLM
+    mock_response = mai.mock_chat_response()
+    monkeypatch.setitem(ct.AGENT_MODEL_LOOKUP, "default_oai", mm.MockLLM(
+        responses=[lcm.AIMessage(**mock_response)]))
+
+    mock_user_info = mai.mock_user_info()
+    chat_id = u.uuid4()
+    agent_id = "default_oai"
+
+    response = client.post(
+        f"/user/{mock_user_info['userId']}/agent/{agent_id}/create_chat/{chat_id}",
+        json={"message": "Hello"}
+    )
+    assert response.status_code == 200
+    response = response.json()
+    assert response["newChat"]["agentId"] == agent_id
+    assert "default_oai" in ct.AGENT_MODEL_LOOKUP
+    assert response["message"]['content'] == mock_response['content']
+
+
 def test_add_agent_to_user():
     mock_user_info = mai.mock_user_info()
     mock_agent_interface = mai.mock_agent_interface()

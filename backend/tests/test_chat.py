@@ -18,14 +18,10 @@ def test_chat_valid_data(mock_message):
         new_message=mock_message,
         id=u.uuid4(),
         agent_id=agent_id,
-        # attachment="example.pdf",
-        # graph_id="graph123",
     )
     assert chat.messages == messages
     assert chat.new_message == mock_message
     assert chat.agent_id == agent_id
-    # assert chat.attachment == "example.pdf"
-    # assert chat.graph_id == "graph123"
 
 
 def test_chat_missing_optional_fields(mock_message):
@@ -53,3 +49,5 @@ def test_chat_invalid_attachment(mock_message):
     with pytest.raises(pdc.ValidationError):
         # attachment should be a string or None
         ct.Chat(new_message=mock_message, attachment=12345)
+        
+

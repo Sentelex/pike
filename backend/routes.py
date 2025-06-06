@@ -122,7 +122,7 @@ def get_agent(agentId: u.UUID) -> dict:
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/create_chat/{chatId}")
-def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput) -> dict:
+def create_chat(userId: str, agentId: str, chatId: u.UUID, body: ct.ChatInput) -> dict:
     """
     Generates a new chat with a chatId, attached to a specific user with a specific agent
     employed within the chat and a first message.
