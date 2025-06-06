@@ -9,3 +9,4 @@ pymupdf
 reportlab
 uvicorn
 beautifulsoup4
+langchain-openai

@@ -4,6 +4,7 @@ import base64
 import datetime as dt
 import urllib
 import copy
+import os
 
 
 def mock_model_interface():
@@ -62,15 +63,19 @@ def encode_url_safe_utf8(image_path):
 
 
 def mock_jpeg_attachment():
-    file_path = "../backend/data/squeaky_bone.jpg"
+    file_path = "backend/data/squeaky_bone.jpg"
+    cwd = os.getcwd()
+    if cwd.endswith("backend"):
+        file_path = file_path[len("backend/"):]
     return urllib.parse.unquote(encode_url_safe_utf8(file_path))
-
 
 
 def mock_pdf_attachment():
-    file_path = "../backend/data/dummy.pdf"
+    file_path = "backend/data/dummy.pdf"
+    cwd = os.getcwd()
+    if cwd.endswith("backend"):
+        file_path = file_path[len("backend/"):]
     return urllib.parse.unquote(encode_url_safe_utf8(file_path))
-
 
 
 def mock_chat_interface():
@@ -124,11 +129,13 @@ def mock_chat_alt_2():
         "agentId": "bf2e3e0c-268a-45d8-8834-fd0e3e0c9f48",
     }
 
-def pad_base64(input_str: str)->str:
-    missing_padding = len(input_str) %4
+
+def pad_base64(input_str: str) -> str:
+    missing_padding = len(input_str) % 4
     if missing_padding:
         input_str += '=' * (4-missing_padding)
     return input_str
+
 
 def mock_chat_history():
     return {
@@ -145,8 +152,8 @@ def mock_chat_history():
                     },
                     {
                         "type": "image",
-                        "source_type" : "base64",
-                        "data" : pad_base64(mock_jpeg_attachment()),
+                        "source_type": "base64",
+                        "data": pad_base64(mock_jpeg_attachment()),
                         "mime_type": "image/jpeg"
                     },
                 ]

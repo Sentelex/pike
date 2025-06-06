@@ -7,22 +7,7 @@ import langchain_core.messages as lcm
 import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
-import src.tools as tools
 import src.chat as ct
-
-import src.mocks.mock_api_interfaces as mapi
-
-
-TOOL_LIST_LOOKUP = {
-    "default": [
-        tools.get_action_items,
-        tools.parse_pdf,
-        tools.get_stock_price,
-        tools.parse_file,
-        tools.parse_webpage,
-        tools.summarize_text,
-    ],
-}
 
 
 def tools_node(state: ct.Chat, tools: list[callable]):
@@ -54,6 +39,7 @@ def tool_condition(state: ct.Chat):
     # Check if the last message is a tool call
     last_message = state.messages[-1]
     return "tools" if last_message.tool_calls else "end"
+
 
 def add_new_message(state: ct.Chat) -> ct.Chat:
     return {"messages": [state.new_message]}
@@ -93,30 +79,29 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
     """
     if chat_id not in ct.CHAT_CACHE:
         raise ValueError(f"Chat with ID {chat_id} not found.")
-    
+
     message_content = []
     additional_kwargs = {}
     if input.message:
-        message_content.append({"type" : "text", "text": input.message})
+        message_content.append({"type": "text", "text": input.message})
     if input.attachment:
         additional_kwargs = additional_kwargs | {"attachment_id": u.uuid(4)}
         message_content.append(input.attachment)
     message = lcm.HumanMessage(
-        content = message_content,
-        additional_kwargs = additional_kwargs
+        content=message_content,
+        additional_kwargs=additional_kwargs
     )
- 
+
     chat = ct.CHAT_CACHE[chat_id]
     chat.new_message = message
-
 
     if chat.agent_id not in ct.AGENT_CACHE:
         model = ct.AGENT_MODEL_LOOKUP.get(
             chat.agent_id, ct.AGENT_MODEL_LOOKUP["default"])
         agent = build_graph(
             model=model,
-            tools=TOOL_LIST_LOOKUP.get(
-                chat.agent_id, TOOL_LIST_LOOKUP["default"]),
+            tools=ct.TOOL_LIST_LOOKUP.get(
+                chat.agent_id, ct.TOOL_LIST_LOOKUP["default"]),
         )
         ct.AGENT_CACHE[chat.agent_id] = agent
     else:
