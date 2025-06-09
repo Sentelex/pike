@@ -67,6 +67,9 @@ class Agent(pdc.BaseModel):
         return self.graph.invoke(state)
 
 
+import backend.src.registry as rg
+
+
 def tools_node(state: st.State, tools: list[callable]):
     tools_by_name = {tool.name: tool for tool in tools}
     outputs = []
@@ -111,7 +114,7 @@ def truncate_history(s: ct.Chat, max_messages: int = 10) -> ct.Chat:
         return {"messages": s.messages}
 
 
-#     tools = [SKILL_LOOKUP[k] for k in AGENT_LOOKUP.get(graph_id, 'default')] (This goes elsewhere than build_graph now)
+#         tools = [rg.SKILL_LOOKUP[k]["tool"] for k in rg.AGENT_LOOKUP.get(graph_id, 'default')] (This goes elsewhere than build_graph now)
 
 
 def build_graph(model, tools) -> lgg.StateGraph:

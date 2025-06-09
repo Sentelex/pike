@@ -1,21 +1,13 @@
 import fitz
 import unicodedata
-import os
-import uuid
-import src.utils as ut
+import langchain_core.tools as lcct
 
 
 def get_pdf_attachment(id: str):
     pass
 
 
-@ut.tool_with_metadata(
-    name="PDF Parser",
-    metadata={
-            "uuid": str(uuid.uuid4()),
-            "icon": "https://plus.unsplash.com/premium_photo-1677723530050-a1b18109fdd0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGRmJTIwaWNvbnxlbnwwfHwwfHx8MA%3D%3D",
-        }
-)
+@lcct.tool("PDF Parser")
 def parse_pdf(attachment_id: str) -> str:
     """
     Extracts and returns the full text content from a PDF file using PyMuPDF.

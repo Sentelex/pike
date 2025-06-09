@@ -1,11 +1,11 @@
 import pytest
 import json
-import src.graph_builder as gb
+import src.registry as rg
 import src.skill_interface as si
 
 
 def test_get_available_skills_real():
-    if not gb.SKILL_LOOKUP:
+    if not rg.SKILL_LOOKUP:
         pytest.skip("Skipping test because SKILL_LOOKUP is empty")
 
     response = si.get_available_skills()
