@@ -1,13 +1,12 @@
 import uuid as u
 import copy
 import fastapi as fapi
-import pydantic as pyd
-import langchain_core.messages as lcm
 
 import src.mocks.mock_api_interfaces as mapi
 import src.mocks.backend_mocks as bm
 import src.chat as ct
 import src.graph_builder as gb
+import os
 
 pike_router = fapi.APIRouter()
 
@@ -37,6 +36,21 @@ def get_public_agents() -> list[dict]:
     Get a list of all public agent types.
     """
     return [mapi.mock_agent_interface()]
+
+
+@pike_router.post("/create_agent/{agentId}")
+def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
+    """
+    Get a list of all public agent types.
+    """
+    gb.AGENT_CACHE[agentId] = gb.Agent(
+            id=agentId,
+            name=body.name,
+            description=body.description,
+            model=ct.MODEL_INTERFACE[body.model],
+            tools=body.tools
+    )
+    return {'status': 'success', 'agentId': agentId}
 
 
 @pike_router.get("/user/{userId}")
@@ -122,11 +136,20 @@ def get_agent(agentId: u.UUID) -> dict:
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/create_chat/{chatId}")
-def create_chat(userId: str, agentId: str, chatId: u.UUID, body: ct.ChatInput) -> dict:
+def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput) -> dict:
     """
     Generates a new chat with a chatId, attached to a specific user with a specific agent
     employed within the chat and a first message.
     """
+    if agentId not in gb.AGENT_CACHE:
+        model_name = 'google' if os.getenv("GOOGLE_API_KEY") is not None else 'openai'
+        gb.AGENT_CACHE[agentId] = gb.Agent(
+            id=agentId,
+            name="Default Agent",
+            description="This is a default agent.",
+            model=ct.MODEL_INTERFACE["google"],
+            tools=gb.TOOL_LIST_LOOKUP["default"]
+        )
     _ = ct.Chat(
         id=chatId,
         agent_id=agentId,

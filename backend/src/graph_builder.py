@@ -1,13 +1,58 @@
 import json
 import uuid as u
 import datetime as dt
+import pydantic as pdc
+from typing import Sequence, Optional
 
-# from typing import Callable, List
 import langchain_core.messages as lcm
 import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
+import src.tools as tools
 import src.chat as ct
+
+TOOL_LIST_LOOKUP = {
+    "default": [
+        tools.get_action_items,
+        tools.parse_pdf,
+        tools.get_stock_price,
+        tools.parse_file,
+        tools.parse_webpage,
+        tools.summarize_text,
+    ]
+}
+
+global AGENT_CACHE
+AGENT_CACHE: dict[u.UUID, 'Agent'] = {}
+
+
+class AgentConfig(pdc.BaseModel):
+    name: str
+    description: str | None = None
+    model: str | None = None
+    tools: Sequence[str] = pdc.Field(default_factory=list)
+
+
+class Agent(pdc.BaseModel):
+    id: u.UUID
+    name: str
+    description: str | None = None
+    tools: list
+    model: object
+    graph: object = None
+
+    def model_post_init(self, __context: Optional[dict] = None) -> None:
+        if len(self.tools) == 0:
+            self.tools = TOOL_LIST_LOOKUP['default']
+        self.graph = build_graph(self.model, self.tools)
+
+    def invoke(self, state: ct.Chat) -> dict:
+        """
+        Invoke the agent's graph with the current chat state.
+        """
+        if not self.graph:
+            raise ValueError("Graph is not initialized.")
+        return self.graph.invoke(state)
 
 
 def tools_node(state: ct.Chat, tools: list[callable]):
@@ -95,17 +140,17 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
     chat = ct.CHAT_CACHE[chat_id]
     chat.new_message = message
 
-    if chat.agent_id not in ct.AGENT_CACHE:
-        model = ct.AGENT_MODEL_LOOKUP.get(
-            chat.agent_id, ct.AGENT_MODEL_LOOKUP["default"])
+    if chat.agent_id not in AGENT_CACHE:
+        model = ct.MODEL_INTERFACE.get(
+            chat.agent_id, ct.MODEL_INTERFACE["default"])
         agent = build_graph(
             model=model,
-            tools=ct.TOOL_LIST_LOOKUP.get(
-                chat.agent_id, ct.TOOL_LIST_LOOKUP["default"]),
+            tools=TOOL_LIST_LOOKUP.get(
+                chat.agent_id, TOOL_LIST_LOOKUP["default"]),
         )
-        ct.AGENT_CACHE[chat.agent_id] = agent
+        AGENT_CACHE[chat.agent_id] = agent
     else:
-        agent = ct.AGENT_CACHE[chat.agent_id]
+        agent = AGENT_CACHE[chat.agent_id]
     chat = ct.Chat(**agent.invoke(chat))
     chat.last_update = dt.datetime.now()
     ct.CHAT_CACHE[chat.id] = chat
