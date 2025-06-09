@@ -6,7 +6,7 @@ import langchain_core.runnables as lcr
 import langgraph.graph as lgg
 
 import src.state as st
-import src.tool_registry as tr
+import backend.src.registry as rg
 
 
 def tools_node(state: st.State, tools: list[callable]):
@@ -55,7 +55,7 @@ def truncate_history(s: st.StateFull, max_messages: int = 10) -> st.State:
 
 
 def build_graph(model, graph_id: str) -> lgg.StateGraph:
-    tools = [tr.SKILL_LOOKUP[k] for k in tr.AGENT_LOOKUP.get(graph_id, 'default')]
+    tools = [rg.SKILL_LOOKUP[k]["tool"] for k in rg.AGENT_LOOKUP.get(graph_id, 'default')]
     _model = model.bind_tools(tools)
     _graph = lgg.StateGraph(st.State)
     _graph.add_node("message", add_new_message)
