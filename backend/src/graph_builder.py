@@ -41,7 +41,7 @@ class Agent(pdc.BaseModel):
     model: object
     graph: object = None
 
-    def model_post_init(self) -> None:
+    def model_post_init(self, __context: Optional[dict] = None) -> None:
         if len(self.tools) == 0:
             self.tools = TOOL_LIST_LOOKUP['default']
         self.graph = build_graph(self.model, self.tools)

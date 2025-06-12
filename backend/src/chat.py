@@ -52,6 +52,6 @@ class Chat(pdc.BaseModel):
     created: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
     last_update: dt.datetime = pdc.Field(default_factory=dt.datetime.now)
 
-    def model_post_init(self) -> None:
+    def model_post_init(self, __context: Optional[dict] = None) -> None:
         global CHAT_CACHE
         CHAT_CACHE[self.id] = self
