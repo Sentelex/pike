@@ -153,7 +153,6 @@ def test_create_chat(monkeypatch):
     mock_response = mai.mock_chat_response()
     monkeypatch.setitem(ct.MODEL_INTERFACE, "openai", mm.MockLLM(
         responses=[lcm.AIMessage(**mock_response)]))
-    # Create google agent
     agent_id = u.uuid4()
     agent_config = {
         "name": "Test Agent",

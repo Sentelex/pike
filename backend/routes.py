@@ -41,16 +41,19 @@ def get_public_agents() -> list[dict]:
 @pike_router.post("/create_agent/{agentId}")
 def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
     """
-    Get a list of all public agent types.
+    Create a new agent with the given configuration and add it to the agent cache.
     """
-    gb.AGENT_CACHE[agentId] = gb.Agent(
+    if agentId not in gb.AGENT_CACHE:
+        gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name=body.name,
             description=body.description,
             model=ct.MODEL_INTERFACE[body.model],
             tools=body.tools
-    )
-    return {'status': 'success', 'agentId': agentId}
+        )
+        return {'status': 'success', 'agentId': agentId}
+    else:
+        return {'status': 'agent exists', 'agentId': agentId}
 
 
 @pike_router.get("/user/{userId}")
@@ -142,12 +145,12 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput
     employed within the chat and a first message.
     """
     if agentId not in gb.AGENT_CACHE:
-        model_name = 'google' if os.getenv("GOOGLE_API_KEY") is not None else 'openai'
+        model_name = os.getenv("DEFAULT_MODEL")
         gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name="Default Agent",
             description="This is a default agent.",
-            model=ct.MODEL_INTERFACE["google"],
+            model=ct.MODEL_INTERFACE[model_name],
             tools=gb.TOOL_LIST_LOOKUP["default"]
         )
     _ = ct.Chat(
