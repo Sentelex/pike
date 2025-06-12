@@ -145,7 +145,7 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput
     employed within the chat and a first message.
     """
     if agentId not in gb.AGENT_CACHE:
-        model_name = os.getenv("DEFAULT_MODEL")
+        model_name = os.getenv("DEFAULT_MODEL_PROVIDER")
         gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name="Default Agent",
