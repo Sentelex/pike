@@ -10,6 +10,7 @@ import langgraph.graph as lgg
 
 import src.tools as tools
 import src.chat as ct
+import src.model as ml
 
 TOOL_LIST_LOOKUP = {
     "default": [
@@ -29,7 +30,7 @@ AGENT_CACHE: dict[u.UUID, 'Agent'] = {}
 class AgentConfig(pdc.BaseModel):
     name: str
     description: str | None = None
-    model: str | None = None
+    model: ml.Model
     tools: Sequence[str] = pdc.Field(default_factory=list)
 
 
@@ -38,13 +39,13 @@ class Agent(pdc.BaseModel):
     name: str
     description: str | None = None
     tools: list
-    model: object
+    model: ml.Model
     graph: object = None
 
     def model_post_init(self, __context: Optional[dict] = None) -> None:
         if len(self.tools) == 0:
             self.tools = TOOL_LIST_LOOKUP['default']
-        self.graph = build_graph(self.model, self.tools)
+        self.graph = build_graph(self.model.model_instance, self.tools)
 
     def invoke(self, state: ct.Chat) -> dict:
         """
@@ -141,16 +142,16 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
     chat.new_message = message
 
     if chat.agent_id not in AGENT_CACHE:
-        model = ct.MODEL_INTERFACE.get(
-            chat.agent_id, ct.MODEL_INTERFACE["default"])
-        agent = build_graph(
-            model=model,
+        AGENT_CACHE[chat.agent_id] = Agent(
+            id=chat.agent_id,
+            name="Default Agent",
+            description="This is a default agent.",
+            model=ml.get_default_model(),
             tools=TOOL_LIST_LOOKUP.get(
-                chat.agent_id, TOOL_LIST_LOOKUP["default"]),
+                chat.agent_id, TOOL_LIST_LOOKUP["default"])
         )
-        AGENT_CACHE[chat.agent_id] = agent
-    else:
-        agent = AGENT_CACHE[chat.agent_id]
+
+    agent = AGENT_CACHE[chat.agent_id]
     chat = ct.Chat(**agent.invoke(chat))
     chat.last_update = dt.datetime.now()
     ct.CHAT_CACHE[chat.id] = chat

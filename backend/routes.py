@@ -6,7 +6,7 @@ import src.mocks.mock_api_interfaces as mapi
 import src.mocks.backend_mocks as bm
 import src.chat as ct
 import src.graph_builder as gb
-import os
+import src.model as ml
 
 pike_router = fapi.APIRouter()
 
@@ -44,11 +44,15 @@ def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
     Create a new agent with the given configuration and add it to the agent cache.
     """
     if agentId not in gb.AGENT_CACHE:
+        if body.model.provider is None:
+            _model = ml.get_default_model()
+        else:
+            _model = ml.Model(**dict(body.model))
         gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name=body.name,
             description=body.description,
-            model=ct.MODEL_INTERFACE[body.model],
+            model=_model,
             tools=body.tools
         )
         return {'status': 'success', 'agentId': agentId}
@@ -145,12 +149,11 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput
     employed within the chat and a first message.
     """
     if agentId not in gb.AGENT_CACHE:
-        model_name = os.getenv("DEFAULT_MODEL_PROVIDER")
         gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name="Default Agent",
             description="This is a default agent.",
-            model=ct.MODEL_INTERFACE[model_name],
+            model=ml.get_default_model(),
             tools=gb.TOOL_LIST_LOOKUP["default"]
         )
     _ = ct.Chat(

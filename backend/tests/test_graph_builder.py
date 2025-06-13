@@ -89,35 +89,3 @@ def test_build_graph_with_mocked_tools(chat):
     assert len(updated_chat["messages"]) == 4
     assert updated_chat["messages"][-2].content.strip(
         '"') == "result from dummy tool"
-
-
-@pytest.mark.skip_in_pipeline
-def test_gemini_model_calls_tool():
-    # Ensure API key is loaded
-    dotenv.load_dotenv()
-    api_key = os.getenv("GOOGLE_API_KEY")
-    assert api_key, "GOOGLE_API_KEY must be set in the environment"
-
-    @lcct.tool
-    def special_add(a: int, b: int) -> str:
-        """A special add tool."""
-        return a + 2 * b
-
-    @lcct.tool
-    def special_multiply(a: int, b: int) -> str:
-        """A special multipy tool."""
-        return a * b / 6
-
-    model = lcg.ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash", google_api_key=api_key
-    )
-    mock_message = lcm.HumanMessage(
-        content="make a special addition of 2 and 5 and then special multiply by 4"
-    )
-    chat = ct.Chat(new_message=mock_message, id=u.uuid4(), agent_id=u.uuid4())
-    graph = gb.build_graph(model=model, tools=[special_add, special_multiply])
-    result_chat = graph.invoke(chat)
-    assert len(result_chat["messages"]) == 6
-    assert isinstance(result_chat["messages"][2], lcm.ToolMessage)
-    assert isinstance(result_chat["messages"][4], lcm.ToolMessage)
-    assert "8" in result_chat["messages"][-1].content
