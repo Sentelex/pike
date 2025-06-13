@@ -2,12 +2,16 @@ import pytest
 import uuid as u
 import fastapi.testclient as ft
 import langchain_core.messages as lcm
+import langchain_google_genai as lcg
+import langchain_openai as loai
 import src.mocks.mock_api_interfaces as mai
 import src.chat as ct
 import src.mocks.mock_model as mm
 import src.mocks.backend_mocks as bm
+import src.model as model
 import pike as pike
 import src.graph_builder as gb
+from fixtures import agent_config
 
 
 client = ft.TestClient(pike.api)
@@ -102,15 +106,11 @@ def test_get_agent():
     assert data["agentId"] == mock_agent_alt["agentId"]
 
 
-@pytest.mark.parametrize("model_name", ["google", "openai"])
-def test_create_agent(monkeypatch, model_name):
+@pytest.mark.parametrize(("provider", "model"), [("google", "gemini-2.0-flash"), ("openai", "gpt-4o-mini")])
+def test_create_agent(monkeypatch, provider, model, agent_config):
     agent_id = u.uuid4()
-    agent_config = {
-        "name": "Test Agent",
-        "description": "A test agent",
-        "model": model_name,
-        "tools": []
-    }
+    agent_config["model"]["provider"] = provider
+    agent_config["model"]["name"] = model
     # Post to the create_agent endpoint
     response = client.post(
         f"/create_agent/{agent_id}",
@@ -122,15 +122,17 @@ def test_create_agent(monkeypatch, model_name):
     assert data["status"] == "success"
     assert data["agentId"] == str(agent_id)
     assert agent_id in gb.AGENT_CACHE
-    assert gb.AGENT_CACHE[agent_id].model == ct.MODEL_INTERFACE[model_name]
+    assert gb.AGENT_CACHE[agent_id].model.name == model
 
 
-def test_create_chat_defualt(monkeypatch):
-    # Monkeypatch AGENT_MODEL_LOOKUP['default'] to use MockModel
+def test_create_chat_default(monkeypatch):
+    # Monkeypatch ChatGoogleGenerativeAI to use MockModel
     mock_response = mai.mock_chat_response()
-    monkeypatch.setitem(ct.MODEL_INTERFACE, "google", mm.MockLLM(
-        responses=[lcm.AIMessage(**mock_response)]))
-    # Create google agent
+    mock_model = mm.MockLLM(responses=[lcm.AIMessage(**mock_response)])
+    monkeypatch.setattr(lcg, "ChatGoogleGenerativeAI", lambda *_args, **_kwargs: mock_model)
+    monkeypatch.setattr(loai, "ChatOpenAI", lambda *_args, **_kwargs: mock_model)
+
+    # Create chat without agent config (uses default)
     agent_id = u.uuid4()
     mock_user_info = mai.mock_user_info()
     chat_id = mai.mock_chat_alt()["chatId"]
@@ -148,18 +150,13 @@ def test_create_chat_defualt(monkeypatch):
     assert response["message"]['content'] == mock_response['content']
 
 
-def test_create_chat(monkeypatch):
-    # Monkeypatch AGENT_MODEL_LOOKUP['default'] to use MockModel
+def test_create_chat(monkeypatch, agent_config):
+    # Monkeypatch ChatOpenAI to use MockModel
     mock_response = mai.mock_chat_response()
-    monkeypatch.setitem(ct.MODEL_INTERFACE, "openai", mm.MockLLM(
-        responses=[lcm.AIMessage(**mock_response)]))
+    mock_model = mm.MockLLM(responses=[lcm.AIMessage(**mock_response)])
+    monkeypatch.setattr(lcg, "ChatGoogleGenerativeAI", lambda *_args, **_kwargs: mock_model)
+
     agent_id = u.uuid4()
-    agent_config = {
-        "name": "Test Agent",
-        "description": "A test agent",
-        "model": "openai",
-        "tools": []
-    }
     # Post to the create_agent endpoint
     response = client.post(
         f"/create_agent/{agent_id}",
@@ -194,9 +191,12 @@ def test_add_agent_to_user():
 
 
 def test_get_response(monkeypatch):
+    # Monkeypatch both Google and OpenAI models to use MockModel
     mock_response = mai.mock_chat_response()
-    monkeypatch.setitem(ct.MODEL_INTERFACE, "default", mm.MockLLM(
-        responses=[lcm.AIMessage(**mock_response)]))
+    mock_model = mm.MockLLM(responses=[lcm.AIMessage(**mock_response)])
+    monkeypatch.setattr(lcg, "ChatGoogleGenerativeAI", lambda *_args, **_kwargs: mock_model)
+    monkeypatch.setattr(loai, "ChatOpenAI", lambda *_args, **_kwargs: mock_model)
+
     chat = ct.Chat(
         messages=[],
         new_message=lcm.BaseMessage(content="Test message", type="text"),

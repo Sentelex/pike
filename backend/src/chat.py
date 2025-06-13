@@ -1,30 +1,11 @@
 from typing import Annotated, Optional
-import dotenv
-import os
 import pydantic as pdc
 import uuid as u
 import datetime as dt
 
 import langchain_core.messages as lcm
 import langgraph.graph.message as lgm
-import langchain_google_genai as lcg
-import langchain_openai as loai
 
-
-dotenv.load_dotenv()
-google_api_key = os.getenv("GOOGLE_API_KEY")
-openai_api_key = os.getenv("OPENAI_API_KEY")
-if openai_api_key:
-    os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-else:
-    os.environ["OPENAI_API_KEY"] = ""
-
-MODEL_INTERFACE = {
-    "google": lcg.ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash", google_api_key=google_api_key
-    ),
-    "openai": loai.ChatOpenAI(model="gpt-4o"),
-}
 global CHAT_CACHE
 global ATTACHMENT_CACHE
 CHAT_CACHE: dict[u.UUID, 'Chat'] = {}
