@@ -1,30 +1,40 @@
+import langchain_core.tools as lcct
 import fitz
 import unicodedata
-import langchain_core.tools as lcct
+from ..models import skill as sk
 
 
 def get_pdf_attachment(id: str):
+    """Mock: Return a fake PDF attachment."""
     pass
 
 
-@lcct.tool("PDF Parser")
-def parse_pdf(attachment_id: str) -> str:
-    """
-    Extracts and returns the full text content from a PDF file using PyMuPDF.
+class PDFParserSkill(sk.Skill):
+    name: str = "PDF Parser"
+    description: str = (
+        "Extract and return the full text content from PDF files using PyMuPDF"
+    )
+    icon: str = "📄"
 
-    Parameters:
-    - attachment_id (str): UUID reference to the PDF file.
+    def parse_pdf(attachment_id: str) -> str:
+        """
+        Extract and return the full text content from a PDF file.
 
-    Returns:
-    - str: Extracted text from the PDF.
-    """
-    attachment = get_pdf_attachment(attachment_id)
+        Parameters:
+        - attachment_id (str): UUID reference to the PDF file.
 
-    # Fix: use stream=... and filetype='pdf'
-    with fitz.open(stream=attachment, filetype="pdf") as doc:
-        if doc.is_encrypted:
-            doc.authenticate("")  # encrypted pdfs openable with no password
+        Returns:
+        - str: Extracted and normalized text content from the PDF.
+        """
+        # TODO: Implement get_pdf_attachment in a utility module
+        attachment = None  # Placeholder for get_pdf_attachment(attachment_id)
 
-        text = "\n".join(page.get_text() for page in doc)
-        normalized_text = unicodedata.normalize("NFC", text)
-        return normalized_text.strip()
+        with fitz.open(stream=attachment, filetype="pdf") as doc:
+            if doc.is_encrypted:
+                doc.authenticate("")  # encrypted pdfs openable with no password
+
+            text = "\n".join(page.get_text() for page in doc)
+            normalized_text = unicodedata.normalize("NFC", text)
+            return normalized_text.strip()
+
+    tool: lcct.Tool = lcct.tool("PDF Parser")(parse_pdf)
