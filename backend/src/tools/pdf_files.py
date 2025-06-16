@@ -27,7 +27,7 @@ class PDFParserSkill(sk.Skill):
         - str: Extracted and normalized text content from the PDF.
         """
         # TODO: Implement get_pdf_attachment in a utility module
-        attachment = None  # Placeholder for get_pdf_attachment(attachment_id)
+        attachment = get_pdf_attachment(attachment_id)
 
         with fitz.open(stream=attachment, filetype="pdf") as doc:
             if doc.is_encrypted:

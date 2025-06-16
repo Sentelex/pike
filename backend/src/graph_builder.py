@@ -11,28 +11,28 @@ import langgraph.graph as lgg
 import src.tools as tools
 import src.chat as ct
 import src.model as ml
-import src.tool_registry as tr
+import src.registry as rg
 
 
-AGENT_LOOKUP = {
-    "default": [
-        "Action Item Extractor",
-        "PDF Parser",
-        "Stock Price Fetcher",
-        "File Parser",
-        "Webpage Parser",
-        "Text Summarizer",
-    ],
-}
+# AGENT_LOOKUP = {
+#     "default": [
+#         "Action Item Extractor",
+#         "PDF Parser",
+#         "Stock Price Fetcher",
+#         "File Parser",
+#         "Webpage Parser",
+#         "Text Summarizer",
+#     ],
+# }
 
-SKILL_LOOKUP = {
-    "Action Item Extractor": tools.get_action_items,
-    "PDF Parser": tools.parse_pdf,
-    "Stock Price Fetcher": tools.get_stock_price,
-    "File Parser": tools.parse_file,
-    "Webpage Parser": tools.parse_webpage,
-    "Text Summarizer": tools.summarize_text,
-}
+# SKILL_LOOKUP = {
+#     "Action Item Extractor": tools.get_action_items,
+#     "PDF Parser": tools.parse_pdf,
+#     "Stock Price Fetcher": tools.get_stock_price,
+#     "File Parser": tools.parse_file,
+#     "Webpage Parser": tools.parse_webpage,
+#     "Text Summarizer": tools.summarize_text,
+# }
 
 global AGENT_CACHE
 AGENT_CACHE: dict[u.UUID, "Agent"] = {}
@@ -55,7 +55,7 @@ class Agent(pdc.BaseModel):
 
     def model_post_init(self, __context: Optional[dict] = None) -> None:
         if len(self.tools) == 0:
-            self.tools = AGENT_LOOKUP["default"]
+            self.tools = rg.AGENT_LOOKUP["default"]
         self.graph = build_graph(self.model.model_instance, self.tools)
 
     def invoke(self, state: ct.Chat) -> dict:
@@ -67,10 +67,7 @@ class Agent(pdc.BaseModel):
         return self.graph.invoke(state)
 
 
-import backend.src.registry as rg
-
-
-def tools_node(state: st.State, tools: list[callable]):
+def tools_node(state: ct.Chat, tools: list[callable]):
     tools_by_name = {tool.name: tool for tool in tools}
     outputs = []
     # Iterate through the tool calls in the last message of the state
@@ -161,7 +158,7 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=TOOL_LIST_LOOKUP.get(chat.agent_id, TOOL_LIST_LOOKUP["default"]),
+            tools=rg.AGENT_LOOKUP.get(chat.agent_id, rg.AGENT_LOOKUP["default"]),
         )
 
     agent = AGENT_CACHE[chat.agent_id]
