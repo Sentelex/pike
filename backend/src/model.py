@@ -31,7 +31,8 @@ class Model(BaseModel):
 
     def model_post_init(self, __context: Optional[dict] = None) -> None:
         """
-        Post-initialization method that creates the model instance and adds to cache.
+        Pydantic model post-initialization method that creates the model 
+        instance and adds it to cache.
         """
         global MODEL_CACHE
 
