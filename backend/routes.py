@@ -8,6 +8,7 @@ import src.chat as ct
 import src.graph_builder as gb
 import src.model as ml
 import src.models.skill as sk
+import src.registry as rg
 
 pike_router = fapi.APIRouter()
 
@@ -36,15 +37,7 @@ def get_skills() -> list[dict]:
     """
     Get a list of all available skills.
     """
-    return si.get_available_skills()
-
-
-@pike_router.get("/skills")
-def get_skills() -> list[dict]:
-    """
-    Get a list of all available skills.
-    """
-    return si.get_available_skills()
+    return sk.Skill.get_all_skills()
 
 
 @pike_router.get("/agents")
@@ -56,7 +49,8 @@ def get_public_agents() -> list[dict]:
 
 
 @pike_router.post("/create_agent/{agentId}")
-def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
+def create_agent(agentId: u.UUID, 
+                 body: gb.AgentConfig) -> dict:
     """
     Create a new agent with the given configuration and add it to the agent cache.
     """
@@ -65,12 +59,16 @@ def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
             _model = ml.get_default_model()
         else:
             _model = ml.Model(**dict(body.model))
+        tool_names = []
+        if agentId in rg.AGENT_LOOKUP:
+            tool_names = rg.AGENT_LOOKUP[agentId]
+        sk.Skill.store_collection(agentId, tool_names)
         gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name=body.name,
             description=body.description,
             model=_model,
-            tools=body.tools,
+            tools=tool_names,
         )
         return {"status": "success", "agentId": agentId}
     else:

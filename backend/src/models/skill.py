@@ -50,7 +50,7 @@ class SkillMeta(pdc.BaseModel.__class__):
     
         named_skills = [add_skill_or_raise_error(name) for name in skill_names]
         cls._collections[collection_name] = set(named_skills)
-        return True # Successfully stored the collection
+        return cls._collections[collection_name] # Successfully stored the collection
 
 
     @classmethod

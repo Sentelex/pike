@@ -116,7 +116,7 @@ def test_create_agent(monkeypatch, provider, model, agent_config):
         f"/create_agent/{agent_id}",
         json=agent_config
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, f"{response.content}"
     data = response.json()
     assert isinstance(data, dict)
     assert data["status"] == "success"

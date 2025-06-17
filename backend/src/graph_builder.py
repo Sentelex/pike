@@ -13,6 +13,7 @@ import src.chat as ct
 import src.model as ml
 import src.registry as rg
 import src.models.skill as sk
+import src.model as ml
 
 global AGENT_CACHE
 AGENT_CACHE: dict[u.UUID, "Agent"] = {}
@@ -21,7 +22,7 @@ AGENT_CACHE: dict[u.UUID, "Agent"] = {}
 class AgentConfig(pdc.BaseModel):
     name: str
     description: str | None = None
-    model: str | None = None
+    model: ml.ModelConfig | None = None
     tools: Sequence[str] = pdc.Field(default_factory=list)
 
 
