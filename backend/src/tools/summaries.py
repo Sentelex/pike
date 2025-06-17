@@ -13,4 +13,4 @@ class TextSummarizerSkill(sk.Skill):
         """
         return "This is a summary of the text (mocked)."
 
-    tool: lcct.Tool = lcct.tool("Text Summarizer")(summarize_text)
+    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(summarize_text)

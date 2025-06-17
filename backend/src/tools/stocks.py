@@ -13,4 +13,4 @@ class StockPriceSkill(sk.Skill):
         """
         return f"The stock price of {stock_handle} is $420.42 (mocked)."
 
-    tool: lcct.Tool = lcct.tool("Stock Price Fetcher")(get_stock_price)
+    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(get_stock_price)

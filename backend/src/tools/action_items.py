@@ -19,4 +19,4 @@ class ActionItemSkill(sk.Skill):
         """
         return "Action items content from the text (mocked)."
 
-    tool: lcct.Tool = lcct.tool("Action Item Extractor")(get_action_items)
+    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(get_action_items)

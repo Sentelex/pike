@@ -7,7 +7,7 @@ import src.mocks.backend_mocks as bm
 import src.chat as ct
 import src.graph_builder as gb
 import src.model as ml
-import src.skill_interface as si
+import src.models.skill as sk
 
 pike_router = fapi.APIRouter()
 
@@ -172,7 +172,7 @@ def create_chat(
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=gb.TOOL_LIST_LOOKUP["default"],
+            tools=[skill.tool for skill in sk.Skill.get_collection("default")],
         )
     _ = ct.Chat(
         id=chatId,

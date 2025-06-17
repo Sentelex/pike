@@ -84,4 +84,4 @@ class WebPageParserSkill(sk.Skill):
                 extracted_text.append(extracted_string)
         return "\n".join(extracted_text)
 
-    tool: lcct.Tool = lcct.tool("Webpage Parser")(parse_webpage)
+    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(parse_webpage)

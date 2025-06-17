@@ -1,6 +1,25 @@
+import src.models.skill as sk
 import src.models.skill_loader as sl
 
-skill_set = sl.load_skills()
+AGENT_LOOKUP = None
+SKILL_LOOKUP = None
+
+def initialize_registry():
+    """Initialize the skill registry and load skills."""
+    global AGENT_LOOKUP
+    global SKILL_LOOKUP
+    global skill_set
+    if AGENT_LOOKUP is None:
+        skill_set = sl.load_skills()
+        AGENT_LOOKUP = {"default":[skill.name for skill in skill_set]}
+        SKILL_LOOKUP = {skill.name: skill for skill in skill_set}
+    return skill_set
+
+skill_set = initialize_registry()
+
+for k, v in AGENT_LOOKUP.items():
+    sk.Skill.store_collection(k, v)
+    
 # toolset = [
 #     {
 #         "tool": tools.get_action_items,
@@ -33,10 +52,3 @@ skill_set = sl.load_skills()
 #         "icon": "https://images.unsplash.com/photo-1705490020987-b4565b36c04d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHN1bW1hcml6ZXIlMjBpY29ufGVufDB8fDB8fHww",
 #     },
 # ]
-
-AGENT_LOOKUP = {
-    "default": [skill.name for skill in skill_set],
-}
-
-
-SKILL_LOOKUP = {skill.name: skill for skill in skill_set}

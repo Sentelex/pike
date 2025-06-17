@@ -10,7 +10,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # Now we can import the skill module
-from src.models import skill as sk
+import src.models.skill as sk
 
 
 def load_skills() -> list[sk.Skill]:
@@ -49,7 +49,7 @@ def load_skills() -> list[sk.Skill]:
                 except ImportError as e:
                     print(f"Failed to import module {module_path}: {e}")
                 except Exception as e:
-                    print(f"Error loading skills from {module_path}: {e}")
+                    print(f"Error loading field from {module_path}: {e}")
 
     return skills
 
@@ -59,10 +59,12 @@ if __name__ == "__main__":
     skills = load_skills()
 
     # Print information about each skill
+    print("Skill list:\n\t{skills}")
     print("\nLoaded Skills:")
     print("=" * 80)
     for skill in skills:
-        print(f"\nName: {skill.name}")
+        print(f"\nType: {type(skill)}")
+        print(f"Name: {skill.name}")
         print(f"Description: {skill.description}")
         print(f"ID: {skill.id}")
         print("-" * 80)

@@ -151,10 +151,11 @@ def test_create_chat_default(monkeypatch):
 
 
 def test_create_chat(monkeypatch, agent_config):
-    # Monkeypatch ChatOpenAI to use MockModel
+    # Monkeypatch each chat model to use MockModel
     mock_response = mai.mock_chat_response()
     mock_model = mm.MockLLM(responses=[lcm.AIMessage(**mock_response)])
     monkeypatch.setattr(lcg, "ChatGoogleGenerativeAI", lambda *_args, **_kwargs: mock_model)
+    monkeypatch.setattr(loai, "ChatOpenAI", lambda *_args, **_kwargs: mock_model)
 
     agent_id = u.uuid4()
     # Post to the create_agent endpoint

@@ -54,7 +54,7 @@ def test_parse_webpage_returns_all_test_texts(
         patch_httpurl_accepts_file
 ):
     # Patch requests.get to read the local file instead of making an HTTP request
-    result = wp.parse_webpage(local_test_page_url)
+    result = wp.WebPageParserSkill.parse_webpage(local_test_page_url)
     test_texts = [f'Test_Text_{i}' for i in range(1, 12)] # List of texts expected to be extracted from test_page.html
     for text in test_texts:
         assert text in result, f"{text} not found in parsed content"
@@ -65,23 +65,23 @@ def test_parse_webpage_ignores_scripts(
         patch_httpurl_accepts_file
 ):
     # Patch requests.get to read the local file instead of making an HTTP request
-    result = wp.parse_webpage(local_test_page_url)
+    result = wp.WebPageParserSkill.parse_webpage(local_test_page_url)
     assert 'Test_Text_12' not in result, f"Test_Text_12 should not be found in parsed content"
 
 def test_parse_webpage_raises_for_nonexistent_url():
-    non_existent_url = 'http://localhost:9999/thispagedoesnotexist.html'
+    non_existent_url = 'http://www.google.com/thispagedoesnotexist.html'
     with pytest.raises(requests.HTTPError):
-        wp.parse_webpage(non_existent_url)
+        wp.WebPageParserSkill.parse_webpage(non_existent_url)
 
 def test_parse_webpage_raises_for_wrong_url_scheme():
     wrong_url = 'ftp://example.com/test_page.html'
     with pytest.raises(pyd.ValidationError):
-        wp.parse_webpage(wrong_url)
+        wp.WebPageParserSkill.parse_webpage(wrong_url)
 
 def test_parse_webpage_raises_for_unsanitizable_url():
     unsanitizable_url = 'http://:80'
     with pytest.raises(pyd.ValidationError):
-        wp.parse_webpage(unsanitizable_url)
+        wp.WebPageParserSkill.parse_webpage(unsanitizable_url)
 
 def test_host_resolvable_raises_for_unresolvable_host():
     unresolvable_url = 'http://unresolvable.host'
@@ -91,4 +91,4 @@ def test_host_resolvable_raises_for_unresolvable_host():
 def test_unresolvable_shortcircuits_request():
     unresolvable_url = 'http://unresolvable.host'
     with pytest.raises(socket.gaierror):
-        wp.parse_webpage(unresolvable_url)
+        wp.WebPageParserSkill.parse_webpage(unresolvable_url)

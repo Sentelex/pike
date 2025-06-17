@@ -37,4 +37,4 @@ class PDFParserSkill(sk.Skill):
             normalized_text = unicodedata.normalize("NFC", text)
             return normalized_text.strip()
 
-    tool: lcct.Tool = lcct.tool("PDF Parser")(parse_pdf)
+    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(parse_pdf)

@@ -12,27 +12,7 @@ import src.tools as tools
 import src.chat as ct
 import src.model as ml
 import src.registry as rg
-
-
-# AGENT_LOOKUP = {
-#     "default": [
-#         "Action Item Extractor",
-#         "PDF Parser",
-#         "Stock Price Fetcher",
-#         "File Parser",
-#         "Webpage Parser",
-#         "Text Summarizer",
-#     ],
-# }
-
-# SKILL_LOOKUP = {
-#     "Action Item Extractor": tools.get_action_items,
-#     "PDF Parser": tools.parse_pdf,
-#     "Stock Price Fetcher": tools.get_stock_price,
-#     "File Parser": tools.parse_file,
-#     "Webpage Parser": tools.parse_webpage,
-#     "Text Summarizer": tools.summarize_text,
-# }
+import src.models.skill as sk
 
 global AGENT_CACHE
 AGENT_CACHE: dict[u.UUID, "Agent"] = {}
@@ -55,7 +35,8 @@ class Agent(pdc.BaseModel):
 
     def model_post_init(self, __context: Optional[dict] = None) -> None:
         if len(self.tools) == 0:
-            self.tools = rg.AGENT_LOOKUP["default"]
+            tool_collection = sk.Skill.get_collection("default")
+            self.tools = [skill.tool for skill in sk.Skill.get_collection("default")]
         self.graph = build_graph(self.model.model_instance, self.tools)
 
     def invoke(self, state: ct.Chat) -> dict:
@@ -111,9 +92,6 @@ def truncate_history(s: ct.Chat, max_messages: int = 10) -> ct.Chat:
         return {"messages": s.messages}
 
 
-#         tools = [rg.SKILL_LOOKUP[k]["tool"] for k in rg.AGENT_LOOKUP.get(graph_id, 'default')] (This goes elsewhere than build_graph now)
-
-
 def build_graph(model, tools) -> lgg.StateGraph:
     _model = model.bind_tools(tools)
     _graph = lgg.StateGraph(ct.Chat)
@@ -153,12 +131,13 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
     chat.new_message = message
 
     if chat.agent_id not in AGENT_CACHE:
+        tool_collection = chat.agent_id if chat.agent_id in rg.AGENT_LOOKUP else "default"
         AGENT_CACHE[chat.agent_id] = Agent(
             id=chat.agent_id,
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=rg.AGENT_LOOKUP.get(chat.agent_id, rg.AGENT_LOOKUP["default"]),
+            tools=[skill.tool for skill in sk.Skill.get_collection(tool_collection)],
         )
 
     agent = AGENT_CACHE[chat.agent_id]
