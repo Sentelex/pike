@@ -149,6 +149,7 @@ body,
 	top: calc(var(--top-panel-height) + 15px);
 	right: 30px;
 	cursor: pointer;
+	z-index: 1000;
 }
 
 #collapse-chats-button:hover {
