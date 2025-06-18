@@ -81,16 +81,8 @@ That's the end of the markdown demo! 🎉`;
 
 	const mockMessage = {
 		content: sampleMarkdown,
-		type: 'ai'
+		type: 'ai',
 	};
 
-	return (
-		<div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-			<h2>Markdown Rendering Demo</h2>
-			<p>This component demonstrates the new markdown rendering capabilities:</p>
-			<div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '10px' }}>
-				<AgentMessage message={mockMessage} />
-			</div>
-		</div>
-	);
+	return <AgentMessage message={mockMessage} />;
 }
