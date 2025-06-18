@@ -10,6 +10,7 @@ import UserMessage from './UserMessage';
 import AgentMessage from './AgentMessage';
 import ChatMessageInput from './ChatMessageInput';
 import { smoothScrollTo } from '../utils/scroll';
+import MarkdownDemo from './MarkdownDemo'; // Assuming you have a MarkdownDemo component
 
 function Chat({ chatId, agentId, chatName, isOpen }) {
 	console.log('Chat component:', chatId, isOpen);
@@ -94,6 +95,8 @@ function Chat({ chatId, agentId, chatName, isOpen }) {
 							}
 					  })
 					: isOpen && <div>Loading chat history...</div>}
+
+				<MarkdownDemo />
 			</div>
 			{/* </div> */}
 			{isOpen && (
