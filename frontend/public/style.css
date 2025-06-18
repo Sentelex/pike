@@ -752,6 +752,7 @@ div#create-chat-button.collapsed:active {
 
 /* Optionally, adjust styling of message bubbles if needed */
 .user-message {
+	margin-left: var(--message-offset-margin);
 	margin-right: var(--message-offset-margin);
 	box-sizing: border-box;
 	/* min-height: 75px; */
@@ -762,6 +763,8 @@ div#create-chat-button.collapsed:active {
 }
 
 .agent-message {
+	margin-left: var(--message-offset-margin);
+	margin-right: var(--message-offset-margin);
 	box-sizing: border-box;
 	/* min-height: 75px; */
 	min-width: calc(100% - var(--message-offset-margin) * 2);
