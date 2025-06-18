@@ -159,7 +159,7 @@ def mock_chat_history():
                 ]
             ),
             lcm.AIMessage(
-                content=["Do you mean the dog or the dog toy?"]
+                content="Do you mean the dog or the dog toy?"
             )
         ]
     }
