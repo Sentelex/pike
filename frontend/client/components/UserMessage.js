@@ -5,9 +5,9 @@ export default function UserMessage({ message }) {
 		switch (content.type) {
 			case 'text':
 				return (
-					<p key={index} style={{ margin: '0px', marginBottom: '15px' }}>
+					<div key={index} className="user-text-content">
 						{content.text}
-					</p>
+					</div>
 				);
 			case 'image':
 				return (
@@ -15,6 +15,7 @@ export default function UserMessage({ message }) {
 						key={index}
 						src={'/squeaky_bone.jpg'}
 						alt={content.alt || 'User sent image'}
+						className="user-image-content"
 					/>
 				);
 			default:
@@ -22,11 +23,20 @@ export default function UserMessage({ message }) {
 		}
 	};
 
+	// Handle simple string content with proper line breaks
+	const renderSimpleContent = (content) => {
+		return (
+			<div className="user-text-content">
+				{content}
+			</div>
+		);
+	};
+
 	return (
 		<div className='user-message'>
 			{Array.isArray(message.content)
 				? message.content.map((content, index) => renderContent(content, index))
-				: message.content}
+				: renderSimpleContent(message.content)}
 		</div>
 	);
 }
