@@ -283,8 +283,8 @@ div#create-chat-button.collapsed:active {
 	line-height: 1.5;
 	overflow-x: hidden;
 	outline: none;
-	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
-		'Lucida Sans', Arial, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+		sans-serif;
 	transition: opacity 0.05s ease;
 	/* transition: color 0.1s ease-in-out;  */
 	/* transition: height 0.2s ease; */
@@ -733,8 +733,8 @@ div#create-chat-button.collapsed:active {
 	line-height: 1.5;
 	overflow-x: hidden;
 	outline: none;
-	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
-		'Lucida Sans', Arial, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+		sans-serif;
 	transition: opacity 0.05s ease;
 	/* transition: color 0.1s ease-in-out;  */
 	/* transition: height 0.2s ease; */
