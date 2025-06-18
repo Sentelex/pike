@@ -27,17 +27,16 @@ export default function AgentButton({ agent, selected, onSelect }) {
 					src='/agent-icon-2.png'
 					style={{ height: '45px', width: '45px' }}
 				/>
+				<div className='a-b-name'>
+					<span>{agent.agentName}</span>
+				</div>
 				{hovered ? (
-					<>
-						<div className='a-b-name'>{agent.agentName}</div>
-						<div className='a-b-settings' onClick={handleGoToAgentSettings}>
-							<IoMdSettings />
-						</div>
-					</>
+					<div className='a-b-settings' onClick={handleGoToAgentSettings}>
+						<IoMdSettings />
+					</div>
 				) : (
-					<>
-						<div className='a-b-name'>{agent.agentName}</div>
-					</>
+					''
+					// <div className='a-b-settings'></div>
 				)}
 			</div>
 		</div>
