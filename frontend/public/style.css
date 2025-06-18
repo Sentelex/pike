@@ -420,6 +420,7 @@ div#create-chat-button.collapsed:active {
 }
 
 .agent-button-wrapper {
+	cursor: pointer;
 	height: calc(var(--agent-button-height) + 2px);
 	display: flex;
 	flex-direction: column;
@@ -446,6 +447,7 @@ div#create-chat-button.collapsed:active {
 	/* margin-top: 3px; */
 	padding-left: 10px;
 	padding-right: 10px;
+	user-select: none;
 }
 
 .agent-button {
@@ -466,6 +468,7 @@ div#create-chat-button.collapsed:active {
 	margin-top: 3px;
 	padding-left: 10px;
 	padding-right: 10px;
+	user-select: none;
 }
 
 .add-new-agent-button.selected,
@@ -500,30 +503,53 @@ div#create-chat-button.collapsed:active {
 	display: flex;
 	align-items: center;
 	height: 100%;
-	text-overflow: ellipsis;
+	/* text-overflow: ellipsis; */
+	/* width: 150px; */
+	overflow: hidden;
 	/* flex: 1 1 auto;  */
 	min-width: 0;
 }
 
 .a-b-name span {
-	display: block;
+	display: inline-block;
 	width: 100%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
+/* .agent-button:hover .a-b-name span {
+	animation: crawl 1s linear forwards;
+	animation-delay: 0.2s;
+} */
+
+/* @keyframes crawl {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+} */
+
 .a-b-settings {
 	cursor: pointer;
 	display: flex;
 	align-items: center;
+	margin-left: auto;
 	justify-content: center;
 	height: 100%;
-	/* border: solid 1px red; */
-	/* height: fit-content; */
 	width: 20px;
 	color: rgb(150, 150, 150);
 	z-index: 1;
+	opacity: 0; /* initially hidden */
+	pointer-events: none; /* disable hover events when hidden */
+	transition: opacity 0.1s ease;
+}
+
+.agent-button:hover .a-b-settings {
+	opacity: 1; /* fade in on hover */
+	pointer-events: auto; /* enable clicking */
 }
 
 .a-b-settings:hover {
