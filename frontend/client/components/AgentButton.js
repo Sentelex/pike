@@ -27,7 +27,7 @@ export default function AgentButton({ agent, selected, onSelect }) {
 				<div className='agent-icon-wrapper'>
 					<img
 						src='/agent-icon-2.png'
-						style={{ height: '100%', width: '100%', objectFit: 'cover' }}
+						style={{ minHeight: '100%', minWidth: '100%', objectFit: 'cover' }}
 					/>
 				</div>
 				<div className='a-b-name'>

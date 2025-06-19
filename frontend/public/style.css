@@ -132,6 +132,15 @@ body,
 	position: relative;
 }
 
+#pinned-chats {
+	font-size: medium;
+	font-weight: 500;
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	padding-left: 30px;
+}
+
 #collapse-chats-button {
 	overflow: hidden;
 	position: fixed;
@@ -221,12 +230,18 @@ div#create-chat-button.collapsed:active {
 		width: calc((100vw - var(--left-panel-width)));
 		right: calc((100% - 90%) / 2);
 	}
+	#left-panel {
+		width: calc(var(--left-panel-width) - 50px);
+	}
 }
 
 @media screen and (max-width: 550px) {
 	#create-chat-button.expanded {
 		width: 90vw;
 		right: 1%;
+	}
+	#left-panel {
+		width: calc(var(--left-panel-width) - 100px);
 	}
 }
 
