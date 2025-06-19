@@ -559,6 +559,16 @@ div#create-chat-button.collapsed:active {
 	transform: scale(1.1);
 }
 
+.a-b-settings:active {
+	transform: scale(0.95);
+	transition: all 0.1s ease;
+}
+
+.agent-button:has(.a-b-settings:active) {
+	transform: none !important;
+	transition: none !important;
+}
+
 .pinned-chat-button {
 	cursor: pointer;
 	display: flex;
