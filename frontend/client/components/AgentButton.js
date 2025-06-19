@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IoMdSettings } from 'react-icons/io';
+import { LuSettings2 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 
 export default function AgentButton({ agent, selected, onSelect }) {
@@ -32,7 +33,7 @@ export default function AgentButton({ agent, selected, onSelect }) {
 				</div>
 				{hovered ? (
 					<div className='a-b-settings' onClick={handleGoToAgentSettings}>
-						<IoMdSettings />
+						<LuSettings2 />
 					</div>
 				) : (
 					''

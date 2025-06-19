@@ -546,6 +546,7 @@ div#create-chat-button.collapsed:active {
 	opacity: 0; /* initially hidden */
 	pointer-events: none; /* disable hover events when hidden */
 	transition: opacity 0.1s ease;
+	transition: all 0.07s ease;
 }
 
 .agent-button:hover .a-b-settings {
@@ -555,6 +556,7 @@ div#create-chat-button.collapsed:active {
 
 .a-b-settings:hover {
 	color: black;
+	transform: scale(1.1);
 }
 
 .pinned-chat-button {
@@ -619,6 +621,10 @@ div#create-chat-button.collapsed:active {
 	/* margin-bottom: 4px; */
 	padding: 10px;
 	/* z-index: 1; */
+}
+
+.chat-window.folded .chat-summary {
+	height: 40px;
 }
 
 .chat-summary:hover {
