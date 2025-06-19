@@ -28,6 +28,7 @@ export default function Dashboard() {
 		return userAgents.length > 0 ? (
 			userAgents.map((agent, index) => (
 				<AgentButton
+					order={index}
 					key={index}
 					agent={agent}
 					onSelect={selectAgentId}
@@ -61,8 +62,8 @@ export default function Dashboard() {
 					onSelect={() => selectAgentId('add-agent')}
 				/>
 				{renderUserAgents(userAgents)}
-				<div id='pinned-chats'>Pinned chats:</div>
-				{renderPinnedChats(pinnedChats)}
+				{/* <div id='pinned-chats'>Pinned chats:</div>
+				{renderPinnedChats(pinnedChats)} */}
 			</div>
 			<div id='main-area'>
 				<Routes>

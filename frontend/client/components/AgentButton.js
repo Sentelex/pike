@@ -3,7 +3,7 @@ import { IoMdSettings } from 'react-icons/io';
 import { LuSettings2 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 
-export default function AgentButton({ agent, selected, onSelect }) {
+export default function AgentButton({ order, agent, selected, onSelect }) {
 	const navigate = useNavigate();
 	const [hovered, setHovered] = useState(false);
 
@@ -16,6 +16,8 @@ export default function AgentButton({ agent, selected, onSelect }) {
 		onSelect(agent.agentId);
 	};
 
+	console.log('order', order);
+
 	return (
 		<div className='agent-button-wrapper'>
 			<div
@@ -26,7 +28,7 @@ export default function AgentButton({ agent, selected, onSelect }) {
 			>
 				<div className='agent-icon-wrapper'>
 					<img
-						src='/agent-icon-2.png'
+						src={order % 2 === 1 ? '/agent-icon-1.png' : '/agent-icon-2.png'}
 						style={{ minHeight: '100%', minWidth: '100%', objectFit: 'cover' }}
 					/>
 				</div>
