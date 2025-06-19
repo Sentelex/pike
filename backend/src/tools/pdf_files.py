@@ -1,6 +1,7 @@
 import langchain_core.tools as lcct
 import fitz
 import unicodedata
+from ..models import icon_process as ip
 from ..models import skill as sk
 
 
@@ -9,12 +10,15 @@ def get_pdf_attachment(id: str):
     pass
 
 
+#  Candidate Icon:
+#  https://plus.unsplash.com/premium_photo-1677723530050-a1b18109fdd0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGRmJTIwaWNvbnxlbnwwfHwwfHx8MA%3D%3D
+
 class PDFParserSkill(sk.Skill):
     name: str = "PDF Parser"
     description: str = (
         "Extract and return the full text content from PDF files using PyMuPDF"
     )
-    icon: str = "📄"
+    icon: str = ip.encode_icon_url_safe_utf8("pdf-file-svgrepo-com.svg")
 
     def parse_pdf(attachment_id: str) -> str:
         """

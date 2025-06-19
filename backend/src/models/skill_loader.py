@@ -1,4 +1,4 @@
-import importlib
+import importlib as il
 import inspect
 import os
 import sys
@@ -25,27 +25,23 @@ def load_skills() -> list[sk.Skill]:
     for root, _, files in os.walk(tools_dir):
         for file in files:
             if file.endswith(".py") and not file.startswith("__"):
-                # Convert file path to module path
+                # Convert file path to module paths for import
                 rel_path = os.path.relpath(
                     os.path.join(root, file), os.path.dirname(os.path.dirname(__file__))
                 )
-                # Construct the full module path including 'src'
                 module_path = rel_path.replace(os.path.sep, ".").replace(".py", "")
 
                 try:
-                    # Import the module
-                    module = importlib.import_module(f"src.{module_path}")
+                    module = il.import_module(f"src.{module_path}")
 
-                    # Find all Skill subclasses in the module
+                    # Find all Skill subclasses in the module and instantiate singletons
                     for name, obj in inspect.getmembers(module):
                         if (
                             inspect.isclass(obj)
                             and issubclass(obj, sk.Skill)
                             and obj != sk.Skill
                         ):
-                            # Create the singleton instance through the metaclass
-                            skill = obj()
-                            skills.append(skill)
+                            skills.append(obj())
                 except ImportError as e:
                     print(f"Failed to import module {module_path}: {e}")
                 except Exception as e:
@@ -55,23 +51,21 @@ def load_skills() -> list[sk.Skill]:
 
 
 if __name__ == "__main__":
+    SRC_PATH = il.resources.files("src")
+    TOOLS_PATH = os.path.join(SRC_PATH, "tools")
+    files = [entry for entry in os.listdir(TOOLS_PATH) if os.path.isfile(os.path.join(TOOLS_PATH, entry)) 
+             and entry.endswith(".py") and not entry.startswith("__")]
     # Load all skills
     skills = load_skills()
 
     # Print information about each skill
-    print("Skill list:\n\t{skills}")
-    print("\nLoaded Skills:")
+    print(f"\nLoaded Skills: {len(skills)} (of {len(files)} expected.)")
     print("=" * 80)
-    for skill in skills:
-        print(f"\nType: {type(skill)}")
+    for index, skill in enumerate(skills):
+        print(f"Skill {index + 1} of {len(skills)} ({len(files)} expected):")
+        print(f"Type: {type(skill)}")
         print(f"Name: {skill.name}")
         print(f"Description: {skill.description}")
         print(f"ID: {skill.id}")
         print("-" * 80)
 
-# f2223d53-3459-560b-9fd5-7b4a765663a6 Action Item Extractor
-# 006abd29-148e-5084-a176-cecf42518fe4 Stock Price Fetcher
-# b63efdf8-ab6d-56e8-8076-fe378da379a6 Other File Parser
-# 9ec92ca4-2a61-5b79-a4e7-46456f458ce5 PDF Parser
-# 0cbcbbf6-b8b1-59e7-a3aa-44e2b8ed9f91 Webpage Parser
-# 1d165e36-df74-5796-a333-72b400e15d18 Text Summarizer

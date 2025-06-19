@@ -1,11 +1,14 @@
 import langchain_core.tools as lcct
+from ..models import icon_process as ip
 from ..models import skill as sk
 
+#  Candidate Icon:
+#  https://plus.unsplash.com/premium_photo-1677401495278-8c7fffe00792?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZmlsZSUyMGljb258ZW58MHx8MHx8fDA%3D
 
 class TextParserSkill(sk.Skill):
     name: str = "File Parser"
     description: str = "Parse and return the content of a text file"
-    icon: str = "📝"
+    icon: str = ip.encode_icon_url_safe_utf8("text-page-svgrepo-com.svg")
 
     def parse_file(self, file: str) -> str:
         """Mock: Return fake parsed content from text file."""

@@ -1,11 +1,14 @@
 import langchain_core.tools as lcct
+from ..models import icon_process as ip
 from ..models import skill as sk
 
+# Candidate Icon:
+# https://images.unsplash.com/photo-1662027008658-b615840c7deb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dG9kbyUyMGljb258ZW58MHx8MHx8fDA%3D
 
 class ActionItemSkill(sk.Skill):
     name: str = "Action Item Extractor"
     description: str = "Extract actionable items from text content"
-    icon: str = "✅"
+    icon: str = ip.encode_icon_url_safe_utf8("check-mark-notepad-svgrepo-com.svg")
 
     def get_action_items(text: str) -> str:
         """
