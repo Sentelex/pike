@@ -24,10 +24,12 @@ export default function AgentButton({ agent, selected, onSelect }) {
 				onMouseLeave={() => setHovered(false)}
 				onClick={handleClick}
 			>
-				<img
-					src='/agent-icon-2.png'
-					style={{ height: '45px', width: '45px' }}
-				/>
+				<div className='agent-icon-wrapper'>
+					<img
+						src='/agent-icon-2.png'
+						style={{ height: '100%', width: '100%', objectFit: 'cover' }}
+					/>
+				</div>
 				<div className='a-b-name'>
 					<span>{agent.agentName}</span>
 				</div>

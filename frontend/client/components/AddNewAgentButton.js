@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { IoMdSettings } from 'react-icons/io';
+import React from 'react';
+import { TbMoodPlus } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 
 export default function AddNewAgentButton({ onSelect, selected }) {
@@ -16,7 +16,12 @@ export default function AddNewAgentButton({ onSelect, selected }) {
 				className={`add-new-agent-button ${selected ? 'selected' : ''}`}
 				onClick={handleClick}
 			>
-				+ Add Agent
+				<div className='agent-icon-wrapper'>
+					<TbMoodPlus style={{ fontSize: 'x-large' }} />
+				</div>
+				<div className='a-b-name'>
+					<span>Add Agent</span>
+				</div>
 			</div>
 		</div>
 	);

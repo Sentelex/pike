@@ -11,6 +11,7 @@
 	--open-chat-window-width: 75%;
 	--message-offset-margin: 40px;
 	--agent-button-height: 60px;
+	--agent-icon-diameter: 45px;
 	/* --color-green: rgb(0, 206, 52);
 	--color-green-shear: rgba(0, 206, 52, 0.305);
 	--color-dark-green: rgb(0, 180, 45); */
@@ -433,31 +434,16 @@ div#create-chat-button.collapsed:active {
 }
 
 .add-new-agent-button {
-	cursor: pointer;
-	display: flex;
-	align-items: center; /* Vertical centering */
-	justify-content: space-between; /* Horizontal centering (optional) */
-	/* align-items: center; */
-	border-radius: 22px;
-	background-color: white;
-	border: 1px solid var(--color-border-gray);
-	/* box-shadow: 0 0 0 1px var(--color-border-gray); */
-	height: var(--agent-button-height);
-	/* width: 50px; */
-	width: calc(90% - 10px);
-	/* margin-top: 3px; */
-	padding-left: 10px;
-	padding-right: 10px;
-	user-select: none;
+	margin-top: none;
 }
 
+.add-new-agent-button,
 .agent-button {
 	cursor: pointer;
 	display: flex;
 	align-items: center; /* Vertical centering */
 	justify-content: flex-start; /* Horizontal centering (optional) */
 	gap: 10px;
-	/* align-items: center; */
 	border-radius: 22px;
 	background-color: white;
 	border: 1px solid var(--color-border-gray);
@@ -567,6 +553,15 @@ div#create-chat-button.collapsed:active {
 .agent-button:has(.a-b-settings:active) {
 	transform: none !important;
 	transition: none !important;
+}
+
+.agent-icon-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: var(--agent-icon-diameter);
+	width: var(--agent-icon-diameter);
+	/* border: solid 1px gray; */
 }
 
 .pinned-chat-button {
