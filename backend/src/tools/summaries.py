@@ -10,10 +10,11 @@ class TextSummarizerSkill(sk.Skill):
     description: str = "Generate concise summaries of text content"
     icon: str = ip.encode_icon_url_safe_utf8("flipped-book-svgrepo-com.svg")
 
+    @lcct.tool(name.replace(" ","_"))
     def summarize_text(text: str) -> str:
         """
         Mock: Return a fake summary.
         """
         return "This is a summary of the text (mocked)."
 
-    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(summarize_text)
+    tool: lcct.Tool = summarize_text

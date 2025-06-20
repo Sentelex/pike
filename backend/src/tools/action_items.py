@@ -10,6 +10,7 @@ class ActionItemSkill(sk.Skill):
     description: str = "Extract actionable items from text content"
     icon: str = ip.encode_icon_url_safe_utf8("check-mark-notepad-svgrepo-com.svg")
 
+    @lcct.tool((name.replace(" ", "_")))
     def get_action_items(text: str) -> str:
         """
         Extract actionable items from the provided text.
@@ -22,4 +23,4 @@ class ActionItemSkill(sk.Skill):
         """
         return "Action items content from the text (mocked)."
 
-    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(get_action_items)
+    tool: lcct.Tool = get_action_items

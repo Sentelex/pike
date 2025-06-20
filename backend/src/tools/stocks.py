@@ -10,10 +10,11 @@ class StockPriceSkill(sk.Skill):
     description: str = "Fetch and return current stock price information"
     icon: str = ip.encode_icon_url_safe_utf8("stock-svgrepo-com.svg")
 
+    @lcct.tool(name.replace(" ", "_"))
     def get_stock_price(stock_handle: str) -> str:
         """
         Mock: Return fake stock price info.
         """
         return f"The stock price of {stock_handle} is $420.42 (mocked)."
 
-    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(get_stock_price)
+    tool: lcct.Tool = get_stock_price

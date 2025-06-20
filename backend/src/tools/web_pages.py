@@ -3,6 +3,7 @@ import bs4
 import requests as req
 import pydantic as pyd
 import socket
+import typing as t
 from ..models import skill as sk
 from ..models import icon_process as ip
 
@@ -37,6 +38,8 @@ class WebPageParserSkill(sk.Skill):
     description: str = "Parse and extract textual content from web pages"
     icon: str = ip.encode_icon_url_safe_utf8("web-page-website-svgrepo-com.svg")
 
+    parse_webpage: t.ClassVar[lcct.StructuredTool]
+    @lcct.tool(name.replace(" ", "_"))
     def parse_webpage(website: str) -> str:
         """
         Parse a webpage and return its textual content.
@@ -87,4 +90,4 @@ class WebPageParserSkill(sk.Skill):
                 extracted_text.append(extracted_string)
         return "\n".join(extracted_text)
 
-    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(parse_webpage)
+    tool: lcct.StructuredTool = parse_webpage

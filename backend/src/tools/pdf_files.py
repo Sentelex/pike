@@ -1,6 +1,7 @@
 import langchain_core.tools as lcct
 import fitz
 import unicodedata
+import typing as t
 from ..models import icon_process as ip
 from ..models import skill as sk
 
@@ -15,11 +16,11 @@ def get_pdf_attachment(id: str):
 
 class PDFParserSkill(sk.Skill):
     name: str = "PDF Parser"
-    description: str = (
-        "Extract and return the full text content from PDF files using PyMuPDF"
-    )
+    description: str = "Extract and return the full text content from PDF files using PyMuPDF"
     icon: str = ip.encode_icon_url_safe_utf8("pdf-file-svgrepo-com.svg")
 
+    parse_pdf: t.ClassVar[lcct.StructuredTool]
+    @lcct.tool(name.replace(" ", "_"))
     def parse_pdf(attachment_id: str) -> str:
         """
         Extract and return the full text content from a PDF file.
@@ -41,4 +42,4 @@ class PDFParserSkill(sk.Skill):
             normalized_text = unicodedata.normalize("NFC", text)
             return normalized_text.strip()
 
-    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(parse_pdf)
+    tool: lcct.StructuredTool = parse_pdf

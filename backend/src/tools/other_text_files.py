@@ -10,8 +10,9 @@ class AltTextParserSkill(sk.Skill):
     description: str = "Parse and return the content of an other text file"
     icon: str = ip.encode_icon_url_safe_utf8("text-page-svgrepo-com.svg")
 
+    @lcct.tool(name.replace(" ","_"))
     def parse_file(self, file: str) -> str:
         """Mock: Return other fake parsed content from text file."""
         return "Parsed content from the other text file (mocked)."
 
-    tool: lcct.Tool = lcct.tool(name.replace(" ","_"))(parse_file)
+    tool: lcct.Tool = parse_file
