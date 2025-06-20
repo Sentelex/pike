@@ -36,8 +36,9 @@ class Agent(pdc.BaseModel):
 
     def model_post_init(self, __context: Optional[dict] = None) -> None:
         if len(self.tools) == 0:
-            tool_collection = sk.Skill.get_collection("default")
-            self.tools = [skill.tool for skill in sk.Skill.get_collection("default")]
+            #            tool_collection = sk.Skill.get_collection("default")
+            #           self.tools = [skill.tool for skill in sk.Skill.get_collection("default")]
+            tools = sk.Skill.get_tools("default")
         self.graph = build_graph(self.model.model_instance, self.tools)
 
     def invoke(self, state: ct.Chat) -> dict:
@@ -132,13 +133,14 @@ def get_response(chat_id: u.UUID, input: ct.ChatInput) -> lcm.BaseMessage:
     chat.new_message = message
 
     if chat.agent_id not in AGENT_CACHE:
-        tool_collection = chat.agent_id if chat.agent_id in rg.AGENT_LOOKUP else "default"
+#        tool_collection = chat.agent_id if chat.agent_id in rg.AGENT_LOOKUP else "default"
         AGENT_CACHE[chat.agent_id] = Agent(
             id=chat.agent_id,
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=[skill.tool for skill in sk.Skill.get_collection(tool_collection)],
+            tools=sk.Skill.get_tools(chat.agent_id if chat.agent_id in rg.AGENT_LOOKUP else "default"),
+#            tools=[skill.tool for skill in sk.Skill.get_collection(tool_collection)],
         )
 
     agent = AGENT_CACHE[chat.agent_id]

@@ -170,7 +170,8 @@ def create_chat(
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=[skill.tool for skill in sk.Skill.get_collection("default")],
+            tools=sk.Skill.get_tools("default"),
+#            tools=[skill.tool for skill in sk.Skill.get_collection("default")],
         )
     _ = ct.Chat(
         id=chatId,

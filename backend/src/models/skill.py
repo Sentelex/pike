@@ -62,6 +62,15 @@ class SkillMeta(pdc.BaseModel.__class__):
     
 
     @classmethod
+    def get_tools(cls, collection_name: str) -> None | list[lct.StructuredTool]:
+        """Get all tools from a named collection"""
+        skills = cls.get_collection(collection_name)
+        if skills is None:
+            return None
+        return [skill.tool for skill in skills if isinstance(skill.tool, lct.StructuredTool)]
+
+
+    @classmethod
     def get_all_skills(cls) -> list["Skill"]:
         """Get all instantiated skills"""
         return list(cls._instances.values())

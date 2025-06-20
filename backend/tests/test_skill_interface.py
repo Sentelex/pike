@@ -1,7 +1,7 @@
 import pytest
 import json
-import uuid as u
 import src.models.skill_loader as sl
+import langchain_core.tools as lct
 import fastapi.responses as far
 
 
@@ -27,4 +27,5 @@ def test_skills_have_callable_tools():
     tool_list = {skill.name:skill.tool for skill in available_skills}
     for k,v in tool_list.items():
         assert k == v.name
+        assert isinstance(v, lct.StructuredTool)
         assert callable(v.func)
