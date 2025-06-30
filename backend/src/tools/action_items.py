@@ -1,4 +1,5 @@
 import langchain_core.tools as lcct
+import typing as t
 from ..models import icon_process as ip
 from ..models import skill as sk
 
@@ -10,6 +11,7 @@ class ActionItemSkill(sk.Skill):
     description: str = "Extract actionable items from text content"
     icon: str = ip.encode_icon_url_safe_utf8("check-mark-notepad-svgrepo-com.svg")
 
+    get_action_items: t.ClassVar[lcct.StructuredTool]
     @lcct.tool((name.replace(" ", "_")))
     def get_action_items(text: str) -> str:
         """

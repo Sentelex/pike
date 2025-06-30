@@ -1,4 +1,5 @@
 import langchain_core.tools as lcct
+import typing as t
 from ..models import icon_process as ip
 from ..models import skill as sk
 
@@ -10,6 +11,7 @@ class TextSummarizerSkill(sk.Skill):
     description: str = "Generate concise summaries of text content"
     icon: str = ip.encode_icon_url_safe_utf8("flipped-book-svgrepo-com.svg")
 
+    summarize_text: t.ClassVar[lcct.StructuredTool]
     @lcct.tool(name.replace(" ","_"))
     def summarize_text(text: str) -> str:
         """

@@ -1,4 +1,5 @@
 import langchain_core.tools as lcct
+import typing as t
 from ..models import icon_process as ip
 from ..models import skill as sk
 
@@ -10,6 +11,7 @@ class StockPriceSkill(sk.Skill):
     description: str = "Fetch and return current stock price information"
     icon: str = ip.encode_icon_url_safe_utf8("stock-svgrepo-com.svg")
 
+    get_stock_price: t.ClassVar[lcct.StructuredTool]
     @lcct.tool(name.replace(" ", "_"))
     def get_stock_price(stock_handle: str) -> str:
         """

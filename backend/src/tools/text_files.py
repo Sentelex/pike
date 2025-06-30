@@ -1,4 +1,5 @@
 import langchain_core.tools as lcct
+import typing as t
 from ..models import icon_process as ip
 from ..models import skill as sk
 
@@ -10,6 +11,7 @@ class TextParserSkill(sk.Skill):
     description: str = "Parse and return the content of a text file"
     icon: str = ip.encode_icon_url_safe_utf8("text-page-svgrepo-com.svg")
 
+    parse_file: t.ClassVar[lcct.StructuredTool]
     @lcct.tool(name.replace(" ", "_"))
     def parse_file(self, file: str) -> str:
         """Mock: Return fake parsed content from text file."""
