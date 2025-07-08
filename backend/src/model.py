@@ -59,7 +59,7 @@ class Model(BaseModel):
         MODEL_CACHE[self.id] = self
 
 
-def get_default_model():
+def create_default_model():
     provider = os.getenv("DEFAULT_MODEL_PROVIDER")
     if provider == "google":
         return Model(
@@ -77,3 +77,10 @@ def get_default_model():
         )
     else:
         raise ValueError(f"Unsupported DEFAULT_MODEL_PROVIDER: {provider}")
+
+def get_default_model():
+    global MODEL_CACHE
+    if not "default" in MODEL_CACHE:
+        MODEL_CACHE["default"] = create_default_model()
+    return MODEL_CACHE["default"]
+
