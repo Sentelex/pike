@@ -7,6 +7,8 @@ import src.mocks.backend_mocks as bm
 import src.chat as ct
 import src.graph_builder as gb
 import src.model as ml
+import src.models.skill as sk
+import src.registry as rg
 
 pike_router = fapi.APIRouter()
 
@@ -23,11 +25,19 @@ def chat_to_interface(chat: ct.Chat) -> dict:
         "isBookmarked": chat.bookmarked,
         "createdAt": chat.created.isoformat(),
         "updatedAt": chat.last_update.isoformat(),
-        "agentId": str(chat.agent_id)
+        "agentId": str(chat.agent_id),
     }
 
 
 CHAT_STORE_PROXY = copy.deepcopy(bm.MOCK_CHAT_STORE)
+
+
+@pike_router.get("/skills")
+def get_skills() -> list[dict]:
+    """
+    Get a list of all available skills.
+    """
+    return sk.Skill.get_all_skills()
 
 
 @pike_router.get("/agents")
@@ -39,7 +49,8 @@ def get_public_agents() -> list[dict]:
 
 
 @pike_router.post("/create_agent/{agentId}")
-def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
+def create_agent(agentId: u.UUID, 
+                 body: gb.AgentConfig) -> dict:
     """
     Create a new agent with the given configuration and add it to the agent cache.
     """
@@ -48,16 +59,20 @@ def create_agent(agentId: u.UUID, body: gb.AgentConfig) -> dict:
             _model = ml.get_default_model()
         else:
             _model = ml.Model(**dict(body.model))
+        tool_names = []
+        if agentId in rg.AGENT_LOOKUP:
+            tool_names = rg.AGENT_LOOKUP[agentId]
+        sk.Skill.store_collection(agentId, tool_names)
         gb.AGENT_CACHE[agentId] = gb.Agent(
             id=agentId,
             name=body.name,
             description=body.description,
             model=_model,
-            tools=body.tools
+            tools=tool_names,
         )
-        return {'status': 'success', 'agentId': agentId}
+        return {"status": "success", "agentId": agentId}
     else:
-        return {'status': 'agent exists', 'agentId': agentId}
+        return {"status": "agent exists", "agentId": agentId}
 
 
 @pike_router.get("/user/{userId}")
@@ -120,8 +135,7 @@ def get_chat_history(chatId: u.UUID) -> dict:
     """
     if chatId not in ct.CHAT_CACHE:
         raise fapi.HTTPException(
-            status_code=404,
-            detail=f"Chat with ID {chatId} not found."
+            status_code=404, detail=f"Chat with ID {chatId} not found."
         )
     return {"messages": ct.CHAT_CACHE[chatId].messages}
 
@@ -129,7 +143,7 @@ def get_chat_history(chatId: u.UUID) -> dict:
 @pike_router.get("/attachment/{attachmentId}")
 def get_attachment(attachmentId: u.UUID) -> str:
     """
-    Uses an attachmentId to request the data from a specific attachment from the 
+    Uses an attachmentId to request the data from a specific attachment from the
     """
     return mapi.mock_pdf_attachment()
 
@@ -143,7 +157,9 @@ def get_agent(agentId: u.UUID) -> dict:
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/create_chat/{chatId}")
-def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput) -> dict:
+def create_chat(
+    userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput
+) -> dict:
     """
     Generates a new chat with a chatId, attached to a specific user with a specific agent
     employed within the chat and a first message.
@@ -154,15 +170,15 @@ def create_chat(userId: str, agentId: u.UUID, chatId: u.UUID, body: ct.ChatInput
             name="Default Agent",
             description="This is a default agent.",
             model=ml.get_default_model(),
-            tools=gb.TOOL_LIST_LOOKUP["default"]
+            tools=sk.Skill.get_tools("default"),
+#            tools=[skill.tool for skill in sk.Skill.get_collection("default")],
         )
     _ = ct.Chat(
         id=chatId,
         agent_id=agentId,
     )
     message = get_response(chatId, body)
-    return {'newChat': chat_to_interface(ct.CHAT_CACHE[chatId]),
-            'message': message}
+    return {"newChat": chat_to_interface(ct.CHAT_CACHE[chatId]), "message": message}
 
 
 @pike_router.post("/user/{userId}/agent/{agentId}/add")
@@ -207,8 +223,7 @@ def modify_chat_status(chatId: u.UUID, chat_flags: dict) -> dict:
     """
     if chatId not in ct.CHAT_CACHE:
         raise fapi.HTTPException(
-            status_code=404,
-            detail=f"Chat with ID {chatId} not found."
+            status_code=404, detail=f"Chat with ID {chatId} not found."
         )
     for key, value in chat_flags.items():
         setattr(ct.CHAT_CACHE[chatId], key, value)

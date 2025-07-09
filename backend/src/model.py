@@ -21,6 +21,16 @@ global MODEL_CACHE
 MODEL_CACHE: dict[str, 'Model'] = {}
 
 
+class ModelConfig(BaseModel):
+    """
+    Interface for model configuration.
+    """
+    name: str
+    provider: str
+    api_key: str
+    additional_kwargs: Optional[Dict] = {}
+
+
 class Model(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str

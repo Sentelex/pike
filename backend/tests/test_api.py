@@ -116,7 +116,7 @@ def test_create_agent(monkeypatch, provider, model, agent_config):
         f"/create_agent/{agent_id}",
         json=agent_config
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, f"{response.content}"
     data = response.json()
     assert isinstance(data, dict)
     assert data["status"] == "success"
@@ -151,10 +151,11 @@ def test_create_chat_default(monkeypatch):
 
 
 def test_create_chat(monkeypatch, agent_config):
-    # Monkeypatch ChatOpenAI to use MockModel
+    # Monkeypatch each chat model to use MockModel
     mock_response = mai.mock_chat_response()
     mock_model = mm.MockLLM(responses=[lcm.AIMessage(**mock_response)])
     monkeypatch.setattr(lcg, "ChatGoogleGenerativeAI", lambda *_args, **_kwargs: mock_model)
+    monkeypatch.setattr(loai, "ChatOpenAI", lambda *_args, **_kwargs: mock_model)
 
     agent_id = u.uuid4()
     # Post to the create_agent endpoint
