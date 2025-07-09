@@ -25,7 +25,7 @@ def mock_dependencies(monkeypatch):
 
     # Patch Jinja environment and rendering
     class MockTemplate:
-        def render(self, input_text):
+        def render(self, num, input_text):
             rendered = f"Summarize: {input_text}"
             return rendered
 
