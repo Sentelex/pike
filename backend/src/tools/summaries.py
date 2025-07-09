@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 @pt.pike_tool(display="Summarize Text", icon="flipped-book-svgrepo-com.svg")
-def summarize_text(input_text: str) -> str:
+def summarize_text(input_text: str, num: int=5) -> str:
     """
     Generate a concise summary of the given text.
 
@@ -16,6 +16,8 @@ def summarize_text(input_text: str) -> str:
     ----------
     input_text : str
         The text to summarize.
+    num : int
+        The number of iterations to generate the summary.
 
     Returns
     -------
@@ -29,7 +31,7 @@ def summarize_text(input_text: str) -> str:
     template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template("templates/CoD_summarize.j2")
-    prompt = template.render(input_text=input_text)
+    prompt = template.render(num=num, input_text=input_text)
 
     model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
     response = model.invoke(prompt)
