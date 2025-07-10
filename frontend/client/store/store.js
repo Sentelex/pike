@@ -14,6 +14,8 @@ const UPDATE_NEW_CHAT_MESSAGE = 'UPDATE_NEW_CHAT_MESSAGE';
 const SET_CHAT_HISTORY = 'SET_CHAT_HISTORY';
 const COLLAPSE_ALL_CHATS = 'COLLAPSE_ALL_CHATS';
 const APPEND_CHAT_MESSAGE = 'APPEND_CHAT_MESSAGE';
+const SET_THEME = 'SET_THEME';
+const TOGGLE_THEME = 'TOGGLE_THEME';
 
 // ACTION CREATORS
 const UPDATE_AGENT_CHAT = 'UPDATE_AGENT_CHAT';
@@ -61,6 +63,16 @@ export const collapseAllChats = (agentId) => ({
 export const appendChatMessage = (chatId, message) => ({
 	type: APPEND_CHAT_MESSAGE,
 	payload: { chatId, message },
+});
+
+// Theme action creators
+export const setTheme = (theme) => ({
+	type: SET_THEME,
+	payload: theme,
+});
+
+export const toggleTheme = () => ({
+	type: TOGGLE_THEME,
 });
 
 //THUNK CREATORS
@@ -288,11 +300,8 @@ export function chatLists(state = [], action) {
 				if (agent.agentId !== agentId) return agent;
 				if (!agent.chatsList || agent.chatsList.length === 0) return agent;
 				const chatsCount = agent.chatsList.length;
-				const popLastChat = 0;
-				// 1 = Collapse all but the last chat
-				// 0 = Collapse all chats
 				const updatedChatsList = agent.chatsList.map((chat, index) => {
-					if (index < chatsCount - popLastChat) {
+					if (index < chatsCount - 1) {
 						return { ...chat, isOpen: false };
 					}
 					return chat;
@@ -332,6 +341,18 @@ export function chatHistory(state = {}, action) {
 				[chatId]: [...existingMessages, message],
 			};
 		}
+		default:
+			return state;
+	}
+}
+
+// Theme reducer - default to dark mode
+export function theme(state = 'dark', action) {
+	switch (action.type) {
+		case SET_THEME:
+			return action.payload;
+		case TOGGLE_THEME:
+			return state === 'light' ? 'dark' : 'light';
 		default:
 			return state;
 	}
