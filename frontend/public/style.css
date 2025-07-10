@@ -817,18 +817,35 @@ div#create-chat-button.collapsed:active {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	cursor: pointer;
+	cursor: default !important;
 	color: var(--text-primary);
 	font-size: 20px;
 	transition: all 0.3s ease;
 	box-shadow: 0 2px 8px var(--shadow-light);
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	pointer-events: auto;
+	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .theme-toggle:hover {
 	background-color: var(--bg-button-hover);
 	transform: scale(1.05);
+	cursor: default !important;
+	user-select: none;
 }
 
 .theme-toggle:active {
 	transform: scale(0.95);
+	cursor: default !important;
+	user-select: none;
+}
+
+.theme-toggle:focus {
+	outline: none;
+	cursor: default !important;
+	user-select: none;
 }
