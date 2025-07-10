@@ -7,9 +7,14 @@ import {
 	Switch,
 	useNavigate,
 } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../utils/themeUtils';
 
 export default function UserLogin() {
 	const navigate = useNavigate();
+
+	// Initialize theme
+	useTheme();
 
 	const [formData, setFormData] = useState({
 		username: '',
@@ -27,6 +32,7 @@ export default function UserLogin() {
 	};
 	return (
 		<div id='app-frame'>
+			<ThemeToggle />
 			<div id='user-login-page'>
 				<div>PIKE</div>
 				<div id='user-login-menu'>

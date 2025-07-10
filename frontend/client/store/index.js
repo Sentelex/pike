@@ -8,6 +8,7 @@ import {
 	chatLists,
 	newChatMessage,
 	chatHistory,
+	theme,
 } from './store';
 
 const reducer = combineReducers({
@@ -16,6 +17,7 @@ const reducer = combineReducers({
 	chatLists,
 	newChatMessage,
 	chatHistory,
+	theme,
 });
 const middleware = composeWithDevTools(
 	applyMiddleware(thunkMiddleware, createLogger({ collapsed: true }))

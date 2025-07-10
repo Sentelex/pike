@@ -6,15 +6,20 @@ import AgentsMarketplace from './AgentsMarketplace';
 import AddNewAgentButton from './AddNewAgentButton';
 import UserDashboard from './UserDashboard';
 import UserDashboardButton from './UserDashboardButton';
+import ThemeToggle from './ThemeToggle';
 import { useSelector, useDispatch } from 'react-redux';
 import { BrowserRouter, Route, Routes, Link, Switch } from 'react-router-dom';
 import { fetchUserAgents, fetchPinnedChats } from '../store';
+import { useTheme } from '../utils/themeUtils';
 
 export default function Dashboard() {
 	const dispatch = useDispatch();
 	const userAgents = useSelector((state) => state.agents);
 	const pinnedChats = useSelector((state) => state.pinnedChats);
 	const [selectedAgentId, selectAgentId] = useState(null);
+
+	// Initialize theme
+	useTheme();
 
 	useEffect(() => {
 		dispatch(fetchUserAgents(1));
@@ -54,8 +59,10 @@ export default function Dashboard() {
 	//Actual page:
 	return (
 		<div id='app-frame'>
+			<ThemeToggle />
 			<UserDashboardButton />
 			<div key={12} id='left-panel'>
+				Left panel
 				<AddNewAgentButton
 					selected={selectedAgentId === 'add-agent'}
 					onSelect={() => selectAgentId('add-agent')}
