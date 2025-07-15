@@ -1,7 +1,7 @@
-import langchain_core.tools as lcct
+import backend.src.pike_tool as pt
 
 
-@lcct.tool
+@pt.pike_tool(display="Parse Text File", icon="text-page-svgrepo-com.svg")
 def parse_file(file: str) -> str:
     """Mock: Return fake parsed content from text file."""
     return "Parsed content from the text file (mocked)."
