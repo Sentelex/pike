@@ -1,4 +1,5 @@
 import langchain_core.tools as lct
+import langchain_core.runnables as lcr
 import typing as t
 import backend.src.model as bm
 import base64
@@ -92,7 +93,38 @@ class PikeTool(lct.BaseTool):
         """
         return self._call(*args, **kwargs)
 
+# langchain_core.tools.tool() call cases:
+#   1. name_or_callable = None, runnable=None
+#   2. name_or_callable = str (name), runnable = Runnable
+#   3. name_or_callable = callable (func), runnable = None
+#   4. name_or_callable = str(name), runnable = None
+#
+#   If runnable: (Case 2)
+#     if no name_or_callable: RaiseError
+#     if name_or_callable is not str:  Raise error
+#     return tool(name_or_callable)(runnable)
+
+#   If name_or_callable not none: (Case 3 or 4)
+#     if name_or_callable is callable:
+#       # Got a function
+#       func = name_or_callable
+#       return tool(name=func.__name__)(func)
+#     elif name_or_callable is str:
+#       return tool(name=name_or_callable)
+#     else:
+#       raise BadArgumentError(Need name or callable with .__name__)
+
+#    Case 1:  Calling a decorator on a function/runnable to add info, but not
+#             redefine required arguments
+#    Define partial by extracting name from runnable or func
+#    def _partial(func: t.Callable | langchain_core.runnagles.Runnable) -> BaseTool:
+#        return 
+
+
 def pike_tool(
+    func: t.Callable | None = None,
+    runnable: lcr.Runnable | None = None,
+    *,
     display: str | None = None,
     name: str | None = None,
     description: str | None = None,
@@ -121,4 +153,7 @@ def pike_tool(
             args_schema=args_schema,
             return_direct=return_direct,
         )
-    return decorator
+    if func is None:
+        return decorator
+    else:
+        return decorator(func)

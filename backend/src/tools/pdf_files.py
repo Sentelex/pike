@@ -1,14 +1,11 @@
-import langchain_core.tools as lcct
 import fitz
 import unicodedata
-import os
-
+import backend.src.pike_tool as pt
 
 def get_pdf_attachment(id: str):
     pass
 
-
-@lcct.tool
+@pt.pike_tool(display="Extract PDF", icon="pdf-file-svgrepo-com.svg")
 def parse_pdf(attachment_id: str) -> str:
     """
     Extracts and returns the full text content from a PDF file using PyMuPDF.
@@ -20,8 +17,6 @@ def parse_pdf(attachment_id: str) -> str:
     - str: Extracted text from the PDF.
     """
     attachment = get_pdf_attachment(attachment_id)
-
-    # Fix: use stream=... and filetype='pdf'
     with fitz.open(stream=attachment, filetype="pdf") as doc:
         if doc.is_encrypted:
             doc.authenticate("")  # encrypted pdfs openable with no password
@@ -29,3 +24,4 @@ def parse_pdf(attachment_id: str) -> str:
         text = "\n".join(page.get_text() for page in doc)
         normalized_text = unicodedata.normalize("NFC", text)
         return normalized_text.strip()
+ 

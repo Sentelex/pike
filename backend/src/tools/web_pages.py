@@ -1,4 +1,4 @@
-import langchain_core.tools as lcct
+import backend.src.pike_tool as pt
 import bs4
 import requests as req
 import pydantic as pyd
@@ -26,7 +26,8 @@ def host_resolvable(url: str) -> bool:
         e.msg = f"Host {host} is not resolvable: {e}"
         raise e
 
-@lcct.tool
+@pt.pike_tool
+#(display="Parse Webpage", icon="web-page-website-svgrepo-com.svg")
 def parse_webpage(website: str) -> str:
     """
     Parse a webpage and return its textual content.
