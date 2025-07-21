@@ -301,7 +301,7 @@ export function chatLists(state = [], action) {
 				if (!agent.chatsList || agent.chatsList.length === 0) return agent;
 				const chatsCount = agent.chatsList.length;
 				const updatedChatsList = agent.chatsList.map((chat, index) => {
-					if (index < chatsCount - 1) {
+					if (index < chatsCount) {
 						return { ...chat, isOpen: false };
 					}
 					return chat;
