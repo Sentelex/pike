@@ -33,6 +33,7 @@ class PikeTool(lct.BaseTool):
     Extended BaseTool with icon and optional LLM model.
     If the tool function requires an LLM, it will be passed as an argument.
     """
+    display: str | None = None
     icon: str | None = None  # base64-encoded icon
     llm: bm.Model | None = None
     id: u.UUID | None = None
