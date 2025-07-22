@@ -26,8 +26,7 @@ def host_resolvable(url: str) -> bool:
         e.msg = f"Host {host} is not resolvable: {e}"
         raise e
 
-@pt.pike_tool
-#(display="Parse Webpage", icon="web-page-website-svgrepo-com.svg")
+@pt.pike_tool(display="Parse Webpage", icon="web-page-website-svgrepo-com.svg")
 def parse_webpage(website: str) -> str:
     """
     Parse a webpage and return its textual content.
