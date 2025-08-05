@@ -7,7 +7,7 @@ import os
 import importlib as il
 import dotenv as de
 import uuid as u
-
+import inspect
 
 def get_icons_path() -> str:
     tools_path = il.resources.files("backend.src.tools")
@@ -77,11 +77,8 @@ class PikeTool(lct.BaseTool):
         """
         Calls the tool function, passing the LLM if present and required.
         """
-        import inspect
-
         sig = inspect.signature(self.func)
         if self.llm is not None and 'llm' in sig.parameters:
-
             return self.func(*args, llm=self.llm, **kwargs)
         else:
             return self.func(*args, **kwargs)
