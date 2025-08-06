@@ -20,8 +20,11 @@ def mock_dependencies(monkeypatch):
             ]
             return SimpleNamespace(content=f"```json\n{json.dumps(fake_json)}\n```")
 
-    # Patch model instantiation
-    monkeypatch.setattr("backend.src.tools.summaries.ChatGoogleGenerativeAI", lambda **kwargs: MockModel())
+    # Patch model initialization to use MockModel
+    def mock_post_init(self, *args, **kwargs):
+        self.model_instance = MockModel()
+
+    monkeypatch.setattr("backend.src.model.Model.model_post_init", mock_post_init)
 
     # Patch Jinja environment and rendering
     class MockTemplate:
