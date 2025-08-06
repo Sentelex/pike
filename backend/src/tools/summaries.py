@@ -1,5 +1,5 @@
 import backend.src.pike_tool as pt
-from langchain_google_genai import ChatGoogleGenerativeAI
+import backend.src.model as ml
 from jinja2 import Environment, FileSystemLoader
 import os
 import json
@@ -33,8 +33,9 @@ def summarize_text(input_text: str, num: int=5) -> str:
     template = env.get_template("templates/CoD_summarize.j2")
     prompt = template.render(num=num, input_text=input_text)
 
-    model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
-    response = model.invoke(prompt)
+    # TODO:  Create a better way to do this -> pass model into tools which want models
+    model = ml.Model(name="gemini-2.0-flash-lite", provider="google", api_key=api_key)
+    response = model.model_instance.invoke(prompt)
 
     try:
         response_text = response.content.strip().strip("`").replace("json", "", 1).strip()
