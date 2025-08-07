@@ -1,8 +1,10 @@
-import backend.src.pike_tool as pt
+import src.pike_tool as pt
 import bs4
 import requests as req
 import pydantic as pyd
 import socket
+import pydantic as pdc
+
 
 def host_resolvable(url: str) -> bool:
     """
@@ -26,7 +28,16 @@ def host_resolvable(url: str) -> bool:
         e.msg = f"Host {host} is not resolvable: {e}"
         raise e
 
-@pt.pike_tool(display="Parse Webpage", icon="web-page-website-svgrepo-com.svg")
+
+class ParseWebpageArgs(pdc.BaseModel):
+    website: str = pdc.Field(
+        description="String containing the URL of the webpage from which text extraction is desired."
+    )
+
+
+@pt.pike_tool(display="Parse Webpage", 
+              icon="web-page-website-svgrepo-com.svg",
+              args_schema=ParseWebpageArgs)
 def parse_webpage(website: str) -> str:
     """
     Parse a webpage and return its textual content.
