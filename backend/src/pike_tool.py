@@ -1,6 +1,6 @@
 import langchain_core.tools as lct
 import typing as t
-import backend.src.model as bm
+import src.model as bm
 import base64
 import urllib
 import os
@@ -10,7 +10,7 @@ import uuid as u
 import inspect
 
 def get_icons_path() -> str:
-    tools_path = il.resources.files("backend.src.tools")
+    tools_path = il.resources.files("src.tools")
     icons_path = tools_path / "icons"
     return icons_path
 

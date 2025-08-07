@@ -1,12 +1,22 @@
 import fitz
 import unicodedata
-import backend.src.pike_tool as pt
+import src.pike_tool as pt
+import pydantic as pdc
 
 def get_pdf_attachment(id: str):
     pass
 
-@pt.pike_tool(display="Extract PDF", icon="pdf-file-svgrepo-com.svg")
-def parse_pdf(attachment_id: str) -> str:
+
+class ParsePDFArgs(pdc.BaseModel):
+    pdf_file: str = pdc.Field(
+        description="Unicode encoded binary content representing a PDF file from which text will be extracted."
+    )
+
+
+@pt.pike_tool(display="Extract PDF", 
+              icon="pdf-file-svgrepo-com.svg",
+              args_schema=ParsePDFArgs)
+def parse_pdf(pdf_file: str) -> str:
     """
     Extracts and returns the full text content from a PDF file using PyMuPDF.
 
@@ -24,4 +34,3 @@ def parse_pdf(attachment_id: str) -> str:
         text = "\n".join(page.get_text() for page in doc)
         normalized_text = unicodedata.normalize("NFC", text)
         return normalized_text.strip()
- 
