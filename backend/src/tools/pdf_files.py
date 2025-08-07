@@ -8,15 +8,15 @@ def get_pdf_attachment(id: str):
 
 
 class ParsePDFArgs(pdc.BaseModel):
-    pdf_file: str = pdc.Field(
-        description="Unicode encoded binary content representing a PDF file from which text will be extracted."
+    attachment_id: str = pdc.Field(
+        description="Id which maps to an Base64 encoded file in the user's attachment database."
     )
 
 
 @pt.pike_tool(display="Extract PDF", 
               icon="pdf-file-svgrepo-com.svg",
               args_schema=ParsePDFArgs)
-def parse_pdf(pdf_file: str) -> str:
+def parse_pdf(attachment_id: str) -> str:
     """
     Extracts and returns the full text content from a PDF file using PyMuPDF.
 
