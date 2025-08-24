@@ -3,8 +3,9 @@ from typing import Dict, Optional
 import uuid
 import os
 from dotenv import load_dotenv
-import langchain_google_genai as lcg
+import langchain_google_genai as lgai
 import langchain_openai as loai
+import langchain_core.runnables as lcr
 
 load_dotenv()
 
@@ -37,25 +38,26 @@ class Model(BaseModel):
         global MODEL_CACHE
 
         # Set environment variables for model APIs
+
         if self.provider.lower() == "google":
-            os.environ["GOOGLE_API_KEY"] = self.api_key
             # Create Google model instance
-            self.model_instance = lcg.ChatGoogleGenerativeAI(
+            raw_model = lgai.ChatGoogleGenerativeAI(
                 model=self.name,
                 google_api_key=self.api_key,
                 **self.additional_kwargs
             )
         elif self.provider.lower() == "openai":
-            os.environ["OPENAI_API_KEY"] = self.api_key
             # Create OpenAI model instance
-            self.model_instance = loai.ChatOpenAI(
+            raw_model = loai.ChatOpenAI(
                 model=self.name,
                 **self.additional_kwargs
             )
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
 
-        # Add to global cache
+        # Seem to be having some initialization issues, so let's add a small
+        #   retry queue to the model for robustness
+        self.model_instance = raw_model
         MODEL_CACHE[self.id] = self
 
 
