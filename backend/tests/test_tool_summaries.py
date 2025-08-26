@@ -1,7 +1,7 @@
 import pytest
 import json
 from types import SimpleNamespace
-from backend.src.tools import summaries as su
+from src.tools import summaries as su
 
 
 @pytest.fixture
@@ -24,7 +24,7 @@ def mock_dependencies(monkeypatch):
     def mock_post_init(self, *args, **kwargs):
         self.model_instance = MockModel()
 
-    monkeypatch.setattr("backend.src.model.Model.model_post_init", mock_post_init)
+    monkeypatch.setattr("src.model.Model.model_post_init", mock_post_init)
 
     # Patch Jinja environment and rendering
     class MockTemplate:
@@ -37,7 +37,7 @@ def mock_dependencies(monkeypatch):
             assert name == "templates/CoD_summarize.j2"
             return MockTemplate()
 
-    monkeypatch.setattr("backend.src.tools.summaries.Environment", lambda *args, **kwargs: MockEnv())
+    monkeypatch.setattr("src.tools.summaries.Environment", lambda *args, **kwargs: MockEnv())
 
     return captured
 
