@@ -1,5 +1,5 @@
-import backend.src.pike_tool as pt
-import backend.src.model as ml
+import src.pike_tool as pt
+import src.model as ml
 from jinja2 import Environment, FileSystemLoader
 import os
 import json

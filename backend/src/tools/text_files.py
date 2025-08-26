@@ -1,4 +1,4 @@
-import backend.src.pike_tool as pt
+import src.pike_tool as pt
 
 
 @pt.pike_tool(display="Parse Text File", icon="text-page-svgrepo-com.svg")

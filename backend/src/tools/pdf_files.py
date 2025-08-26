@@ -1,6 +1,6 @@
 import fitz
 import unicodedata
-import backend.src.pike_tool as pt
+import src.pike_tool as pt
 
 def get_pdf_attachment(id: str):
     pass

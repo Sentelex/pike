@@ -1,4 +1,4 @@
-import backend.src.pike_tool as pt
+import src.pike_tool as pt
 
 
 @pt.pike_tool(display="Get Stock Price", icon="stock-svgrepo-com.svg")
