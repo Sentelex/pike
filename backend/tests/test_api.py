@@ -10,7 +10,7 @@ import src.mocks.mock_model as mm
 import src.mocks.backend_mocks as bm
 import src.model as model
 import pike as pike
-import src.graph_builder as gb
+import src.agent as gb
 from fixtures import agent_config
 
 

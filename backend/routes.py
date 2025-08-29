@@ -5,7 +5,7 @@ import fastapi as fapi
 import src.mocks.mock_api_interfaces as mapi
 import src.mocks.backend_mocks as bm
 import src.chat as ct
-import src.graph_builder as gb
+import src.agent as gb
 import src.model as ml
 
 pike_router = fapi.APIRouter()

@@ -1,6 +1,6 @@
 import pytest
-import backend.src.graph_builder as gb
-import backend.src.chat as ct
+import src.agent as gb
+import src.chat as ct
 from typing import Callable
 import langgraph.graph as lgg
 import langchain_core.messages as lcm

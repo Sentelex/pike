@@ -2,7 +2,7 @@ import pytest
 import langchain_core.messages as lcm
 import uuid as u
 import src.chat as ct
-import src.graph_builder as gb
+import src.agent as gb
 
 
 @pytest.fixture
