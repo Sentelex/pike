@@ -1,13 +1,23 @@
 import src.pike_tool as pt
 import src.model as ml
+import pydantic as pdc
 from jinja2 import Environment, FileSystemLoader
 import os
 import json
-from dotenv import load_dotenv
 
-load_dotenv()
 
-@pt.pike_tool(display="Summarize Text", icon="flipped-book-svgrepo-com.svg")
+class SummaryArgs(pdc.BaseModel):
+    input_text: str = pdc.Field(
+        description="Text string containing information to be summarized."
+    )
+    num_passes: int = pdc.Field(
+        description ="Number of refinement passes to use for summary.",
+        default=5
+    )
+
+@pt.pike_tool(display="Summarize Text", 
+              icon="flipped-book-svgrepo-com.svg",
+              args_schema=SummaryArgs)
 def summarize_text(input_text: str, num: int=5) -> str:
     """
     Generate a concise summary of the given text.
@@ -24,9 +34,6 @@ def summarize_text(input_text: str, num: int=5) -> str:
     str
         A short, dense summary of the input.
     """
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        raise EnvironmentError("GOOGLE_API_KEY must be set in the environment")
 
     template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     env = Environment(loader=FileSystemLoader(template_dir))
@@ -34,7 +41,7 @@ def summarize_text(input_text: str, num: int=5) -> str:
     prompt = template.render(num=num, input_text=input_text)
 
     # TODO:  Create a better way to do this -> pass model into tools which want models
-    model = ml.Model(name="gemini-2.0-flash-lite", provider="google", api_key=api_key)
+    model = ml.Model(name="gemini-2.0-flash-lite", provider="google")
     response = model.model_instance.invoke(prompt)
 
     try:
