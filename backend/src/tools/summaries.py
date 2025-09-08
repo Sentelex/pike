@@ -1,5 +1,5 @@
-import langchain_core.tools as lcct
-from langchain_google_genai import ChatGoogleGenerativeAI
+import src.pike_tool as pt
+import src.model as ml
 from jinja2 import Environment, FileSystemLoader
 import os
 import json
@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-@lcct.tool
+@pt.pike_tool(display="Summarize Text", icon="flipped-book-svgrepo-com.svg")
 def summarize_text(input_text: str, num: int=5) -> str:
     """
     Generate a concise summary of the given text.
