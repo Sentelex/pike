@@ -69,7 +69,7 @@ def test_parse_webpage_ignores_scripts(
     assert 'Test_Text_12' not in result, f"Test_Text_12 should not be found in parsed content"
 
 def test_parse_webpage_raises_for_nonexistent_url():
-    non_existent_url = 'http://localhost:9999/thispagedoesnotexist.html'
+    non_existent_url = 'http://www.google.com/thisisnotarealpageandthereforedoesnotexist.html'
     with pytest.raises(requests.HTTPError):
         wp.parse_webpage(non_existent_url)
 
