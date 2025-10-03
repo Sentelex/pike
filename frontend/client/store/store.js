@@ -81,7 +81,7 @@ export const toggleTheme = () => ({
 export const fetchUserAgents = (userId) => {
 	return async (dispatch) => {
 		const { data } = await axios.get(
-			`http://localhost:8000/user/${userId}/agents`
+			`http://localhost:8090/user/${userId}/agents`
 		);
 		// KEEP FOR TESTING
 		// const data = mockAgents;
@@ -93,7 +93,7 @@ export const fetchUserAgents = (userId) => {
 export const fetchPinnedChats = (userId) => {
 	return async (dispatch) => {
 		const { data } = await axios.get(
-			`http://localhost:8000/user/${userId}/pinned-chats`
+			`http://localhost:8090/user/${userId}/pinned-chats`
 		);
 		// KEEP FOR TESTING
 		// const data = mockPinnedChats;
@@ -106,7 +106,7 @@ export const fetchPinnedChats = (userId) => {
 export const fetchAgentChatsList = (userId, agentId) => {
 	return async (dispatch) => {
 		const { data } = await axios.get(
-			`http://localhost:8000/user/${userId}/agent/${agentId}/chats`
+			`http://localhost:8090/user/${userId}/agent/${agentId}/chats`
 		);
 		// KEEP FOR TESTING:
 		// const data = mockAgentChatLists.find(
@@ -154,7 +154,7 @@ export const createNewChat = (userId, agentId, newMessage) => {
 		while (attempt < maxAttempts) {
 			try {
 				response = await axios.post(
-					`http://localhost:8000/user/${userId}/agent/${agentId}/create_chat/${chatId}`,
+					`http://localhost:8090/user/${userId}/agent/${agentId}/create_chat/${chatId}`,
 					{ message: newMessage, attachment: null },
 					{ timeout: delay }
 				);
@@ -186,7 +186,7 @@ export const fetchChatHistory = (chatId) => {
 	return async (dispatch) => {
 		try {
 			const { data } = await axios.get(
-				`http://localhost:8000/chat/${chatId}/history`
+				`http://localhost:8090/chat/${chatId}/history`
 			);
 			// Assuming data is an array of message objects
 			dispatch(setChatHistory(chatId, data.messages));
@@ -208,7 +208,7 @@ export const sendChatMessage = (chatId, message) => {
 
 		try {
 			const { data } = await axios.post(
-				`http://localhost:8000/chat/${chatId}/response`,
+				`http://localhost:8090/chat/${chatId}/response`,
 				{ message, attachment: null }
 			);
 			console.log('Response to new Message:', data);

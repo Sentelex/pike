@@ -1,94 +1,69 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import remarkGfm from 'remark-gfm';
+
+function CopyButton({ text }) {
+	const [copied, setCopied] = React.useState(false);
+	const onCopy = async () => {
+		try {
+			await navigator.clipboard.writeText(text);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1200);
+		} catch (e) {}
+	};
+	return (
+		<button className="code-copy-btn" onClick={onCopy} aria-label="Copy code">
+			{copied ? 'Copied' : 'Copy'}
+		</button>
+	);
+}
 
 export default function AgentMessage({ message }) {
-	// Extract content from message
 	const getMessageText = () => {
-		if (Array.isArray(message.content)) {
-			// Handle array content (find text content)
-			const textContent = message.content.find(
-				(item) => item.type === 'text' || typeof item === 'string'
-			);
-			return textContent?.text || textContent;
+		if (typeof message === 'string') return message;
+		const c = message?.content;
+		if (!c) return message?.text || message?.message || '';
+		if (Array.isArray(c)) {
+			return c.map((it) => (typeof it === 'string' ? it : it?.text || ''))
+				.filter(Boolean)
+				.join('\n');
 		}
-		return message.content || '';
+		return typeof c === 'string' ? c : String(c);
 	};
 
 	const content = getMessageText();
 
-	// Custom components for markdown rendering
 	const components = {
-		code({ node, inline, className, children, ...props }) {
+		pre({ children }) {
+			return <div className="md-pre">{children}</div>;
+		},
+		code({ inline, className, children, ...props }) {
 			const match = /language-(\w+)/.exec(className || '');
-			const language = match ? match[1] : '';
-
-			return !inline && language ? (
-				<SyntaxHighlighter
-					style={oneDark}
-					language={language}
-					PreTag='div'
-					customStyle={{
-						margin: '1em 0',
-						borderRadius: '8px',
-						fontSize: '14px',
-					}}
-					{...props}
-				>
-					{String(children).replace(/\n$/, '')}
-				</SyntaxHighlighter>
-			) : (
-				<code className={`inline-code ${className || ''}`} {...props}>
+			const language = match ? match[1] : undefined;
+			if (!inline) {
+				const codeText = String(children);
+				return (
+					<div className="code-block">
+						<CopyButton text={codeText} />
+						<SyntaxHighlighter
+							style={oneDark}
+							language={language}
+							PreTag="div"
+							wrapLongLines={true}
+							customStyle={{ borderRadius: 8 }}
+							{...props}
+						>
+							{codeText.replace(/\n$/, '')}
+						</SyntaxHighlighter>
+					</div>
+				);
+			}
+			return (
+				<code className={className} {...props}>
 					{children}
 				</code>
-			);
-		},
-		pre({ children }) {
-			return <div className='code-block-wrapper'>{children}</div>;
-		},
-		p({ children }) {
-			return <p className='markdown-paragraph'>{children}</p>;
-		},
-		ul({ children }) {
-			return <ul className='markdown-list'>{children}</ul>;
-		},
-		ol({ children }) {
-			return <ol className='markdown-ordered-list'>{children}</ol>;
-		},
-		li({ children }) {
-			return <li className='markdown-list-item'>{children}</li>;
-		},
-		blockquote({ children }) {
-			return (
-				<blockquote className='markdown-blockquote'>{children}</blockquote>
-			);
-		},
-		h1({ children }) {
-			return <h1 className='markdown-h1'>{children}</h1>;
-		},
-		h2({ children }) {
-			return <h2 className='markdown-h2'>{children}</h2>;
-		},
-		h3({ children }) {
-			return <h3 className='markdown-h3'>{children}</h3>;
-		},
-		h4({ children }) {
-			return <h4 className='markdown-h4'>{children}</h4>;
-		},
-		h5({ children }) {
-			return <h5 className='markdown-h5'>{children}</h5>;
-		},
-		h6({ children }) {
-			return <h6 className='markdown-h6'>{children}</h6>;
-		},
-		// Custom link component:
-		a({ href, children, ...props }) {
-			return (
-				<a href={href} target='_blank' rel='noopener noreferrer' {...props}>
-					{children}
-				</a>
 			);
 		},
 	};
