@@ -1,6 +1,6 @@
 import uuid as u
 import langchain_core.messages as lcm
-import backend.src.chat as ct
+import src.chat as ct
 
 
 def print_stream(stream):
