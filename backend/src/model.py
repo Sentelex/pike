@@ -3,18 +3,21 @@ from typing import Dict, Optional
 import uuid
 import os
 from dotenv import load_dotenv
-import langchain_google_genai as lcg
+import langchain_google_genai as lgai
 import langchain_openai as loai
+import langchain_core.runnables as lcr
 
 load_dotenv()
 
-# Environment variable setup
-google_api_key = os.getenv("GOOGLE_API_KEY")
-openai_api_key = os.getenv("OPENAI_API_KEY")
-if openai_api_key:
-    os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-else:
-    os.environ["OPENAI_API_KEY"] = ""
+def extract_environ_var(var_name: str) -> str:
+    saved_env = dict(os.environ)
+    try:
+        load_dotenv()
+        extracted = os.environ.get(var_name)
+    finally:
+        os.environ.clear()
+        os.environ.update(saved_env)
+    return extracted
 
 # Global cache for model instances
 global MODEL_CACHE
@@ -25,7 +28,6 @@ class Model(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     provider: str
-    api_key: str
     additional_kwargs: Optional[Dict] = {}
     model_instance: object = None
 
@@ -37,25 +39,27 @@ class Model(BaseModel):
         global MODEL_CACHE
 
         # Set environment variables for model APIs
+
         if self.provider.lower() == "google":
-            os.environ["GOOGLE_API_KEY"] = self.api_key
             # Create Google model instance
-            self.model_instance = lcg.ChatGoogleGenerativeAI(
+            raw_model = lgai.ChatGoogleGenerativeAI(
                 model=self.name,
-                google_api_key=self.api_key,
+                google_api_key=extract_environ_var("GOOGLE_API_KEY"),
                 **self.additional_kwargs
             )
         elif self.provider.lower() == "openai":
-            os.environ["OPENAI_API_KEY"] = self.api_key
             # Create OpenAI model instance
-            self.model_instance = loai.ChatOpenAI(
+            raw_model = loai.ChatOpenAI(
                 model=self.name,
+                api_key=extract_environ_var("OPENAI_API_KEY"),
                 **self.additional_kwargs
             )
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
 
-        # Add to global cache
+        # Seem to be having some initialization issues, so let's add a small
+        #   retry queue to the model for robustness
+        self.model_instance = raw_model
         MODEL_CACHE[self.id] = self
 
 
@@ -65,14 +69,14 @@ def create_default_model():
         return Model(
             provider="google",
             name="gemini-2.0-flash",
-            api_key=os.getenv("GOOGLE_API_KEY"),
+            api_key=extract_environ_var("GOOGLE_API_KEY"),
             additional_kwargs={}
         )
     elif provider == "openai":
         return Model(
             provider="openai",
             name="gpt-4o-mini",
-            api_key=os.getenv("OPENAI_API_KEY"),
+            api_key=extract_environ_var("OPENAI_API_KEY"),
             additional_kwargs={}
         )
     else:
