@@ -5,17 +5,7 @@ import routes as routes
 import dotenv as de
 import src.pike_util as pike_util
 import os
- 
- 
-
-if not os.environ.get("DEFAULT_MODEL_PROVIDER"):
-    default_provider = pike_util.extract_environ_var("DEFAULT_MODEL_PROVIDER")
-    os.environ["DEFAULT_MODEL_PROVIDER"]=default_provider
-
-if not os.environ.get("DEFAULT_DOMAIN"):
-    default_domain = pike_util.extract_environ_var("DEFAULT_DOMAIN")
-    os.environ["DEFAULT_DOMAIN"]=default_domain
-
+     
 
 @cl.asynccontextmanager
 async def service_lifecycle(app: fapi.FastAPI):
