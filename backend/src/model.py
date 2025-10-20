@@ -1,13 +1,10 @@
 import pydantic as pdc
 from typing import Dict, Optional
 import uuid
-import os
-from dotenv import load_dotenv
 import langchain_google_genai as lgai
 import langchain_openai as loai
-import langchain_core.runnables as lcr
 import src.pike_util as pike_util
-
+import src.pike_defaults as pike_defaults
 
 # Global cache for model instances
 global MODEL_CACHE
@@ -54,7 +51,7 @@ class Model(pdc.BaseModel):
 
 
 def create_default_model():
-    provider = os.getenv("DEFAULT_MODEL_PROVIDER")
+    provider = pike_defaults.provider
     if provider == "google":
         return Model(
             provider="google",
