@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+import pydantic as pdc
 from typing import Dict, Optional
 import uuid
 import os
@@ -6,26 +6,16 @@ from dotenv import load_dotenv
 import langchain_google_genai as lgai
 import langchain_openai as loai
 import langchain_core.runnables as lcr
+import src.pike_util as pike_util
 
-load_dotenv()
-
-def extract_environ_var(var_name: str) -> str:
-    saved_env = dict(os.environ)
-    try:
-        load_dotenv()
-        extracted = os.environ.get(var_name)
-    finally:
-        os.environ.clear()
-        os.environ.update(saved_env)
-    return extracted
 
 # Global cache for model instances
 global MODEL_CACHE
 MODEL_CACHE: dict[str, 'Model'] = {}
 
 
-class Model(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+class Model(pdc.BaseModel):
+    id: str = pdc.Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     provider: str
     additional_kwargs: Optional[Dict] = {}
@@ -38,20 +28,20 @@ class Model(BaseModel):
         """
         global MODEL_CACHE
 
-        # Set environment variables for model APIs
+        # Instantiate provider models without embedding API keys in environment.
 
         if self.provider.lower() == "google":
             # Create Google model instance
             raw_model = lgai.ChatGoogleGenerativeAI(
                 model=self.name,
-                google_api_key=extract_environ_var("GOOGLE_API_KEY"),
+                google_api_key=pike_util.extract_environ_var("GOOGLE_API_KEY"),
                 **self.additional_kwargs
             )
         elif self.provider.lower() == "openai":
             # Create OpenAI model instance
             raw_model = loai.ChatOpenAI(
                 model=self.name,
-                api_key=extract_environ_var("OPENAI_API_KEY"),
+                api_key=pike_util.extract_environ_var("OPENAI_API_KEY"),
                 **self.additional_kwargs
             )
         else:
@@ -69,14 +59,14 @@ def create_default_model():
         return Model(
             provider="google",
             name="gemini-2.0-flash",
-            api_key=extract_environ_var("GOOGLE_API_KEY"),
+            api_key=pike_util.extract_environ_var("GOOGLE_API_KEY"),
             additional_kwargs={}
         )
     elif provider == "openai":
         return Model(
             provider="openai",
             name="gpt-4o-mini",
-            api_key=extract_environ_var("OPENAI_API_KEY"),
+            api_key=pike_util.extract_environ_var("OPENAI_API_KEY"),
             additional_kwargs={}
         )
     else:
