@@ -2,10 +2,7 @@ import contextlib as cl
 import fastapi as fapi
 import fastapi.middleware.cors as fapi_cors
 import routes as routes
-import dotenv as de
-import src.pike_util as pike_util
-import os
-     
+
 
 @cl.asynccontextmanager
 async def service_lifecycle(app: fapi.FastAPI):

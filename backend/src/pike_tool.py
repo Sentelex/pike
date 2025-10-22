@@ -6,7 +6,7 @@ import urllib
 import os
 import importlib as il
 import uuid as u
-import src.pike_defaults as pike_defaults
+import src.pike_defaults as defaults
 import inspect
 
 def get_icons_path() -> str:
@@ -66,10 +66,10 @@ class PikeTool(lct.BaseTool):
         self.llm = llm
 
     def model_post_init(self, __context=None):
-        default_domain = pike_defaults.domain
+        default_domain = defaults.domain
         if default_domain is None:
             default_domain = "nothing.nowhere.com"
-        self.id = u.uuid5(u.uuid5(u.NAMESPACE_DNS, pike_defaults.domain), self.name)
+        self.id = u.uuid5(u.uuid5(u.NAMESPACE_DNS, defaults.domain), self.name)
 
     def _call(self, *args, **kwargs):
         """
