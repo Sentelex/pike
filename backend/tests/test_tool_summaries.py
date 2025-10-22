@@ -44,7 +44,7 @@ def mock_dependencies(monkeypatch):
 
 def test_summarize_text_mocked(mock_dependencies):
     input_text = "Artificial Intelligence is transforming the world."
-    output = su.summarize_text(input_text)
+    output = su.summarize_text.invoke(input_text)
 
     expected_prompt = f"Summarize: {input_text}"
     assert mock_dependencies['prompt'] == expected_prompt
@@ -55,6 +55,6 @@ def test_summarize_text_mocked(mock_dependencies):
 @pytest.mark.skip_in_pipeline
 def test_summarize_text_real():
     input_text = "Artificial Intelligence is changing global industries with automation, data analysis, and decision-making support."
-    output = su.summarize_text(input_text)
+    output = su.summarize_text.invoke(input_text)
 
     assert isinstance(output, str)
