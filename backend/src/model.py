@@ -3,8 +3,8 @@ from typing import Dict, Optional
 import uuid
 import langchain_google_genai as lgai
 import langchain_openai as loai
-import src.pike_util as pike_util
-import src.pike_defaults as pike_defaults
+import src.pike_util as util
+import src.pike_defaults as defaults
 
 # Global cache for model instances
 global MODEL_CACHE
@@ -31,14 +31,14 @@ class Model(pdc.BaseModel):
             # Create Google model instance
             raw_model = lgai.ChatGoogleGenerativeAI(
                 model=self.name,
-                google_api_key=pike_util.extract_environ_var("GOOGLE_API_KEY"),
+                google_api_key=util.extract_environ_var("GOOGLE_API_KEY"),
                 **self.additional_kwargs
             )
         elif self.provider.lower() == "openai":
             # Create OpenAI model instance
             raw_model = loai.ChatOpenAI(
                 model=self.name,
-                api_key=pike_util.extract_environ_var("OPENAI_API_KEY"),
+                api_key=util.extract_environ_var("OPENAI_API_KEY"),
                 **self.additional_kwargs
             )
         else:
@@ -51,19 +51,19 @@ class Model(pdc.BaseModel):
 
 
 def create_default_model():
-    provider = pike_defaults.provider
+    provider = defaults.provider
     if provider == "google":
         return Model(
             provider="google",
             name="gemini-2.0-flash",
-            api_key=pike_util.extract_environ_var("GOOGLE_API_KEY"),
+            api_key=util.extract_environ_var("GOOGLE_API_KEY"),
             additional_kwargs={}
         )
     elif provider == "openai":
         return Model(
             provider="openai",
             name="gpt-4o-mini",
-            api_key=pike_util.extract_environ_var("OPENAI_API_KEY"),
+            api_key=util.extract_environ_var("OPENAI_API_KEY"),
             additional_kwargs={}
         )
     else:

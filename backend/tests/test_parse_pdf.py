@@ -25,7 +25,7 @@ def test_parse_pdf_reads_content(monkeypatch, generate_test_pdf_bytes):
     monkeypatch.setattr(pf, "get_pdf_attachment",
                         lambda _: io.BytesIO(pdf_binary))
 
-    content = pf.parse_pdf("fake-uuid-1234")
+    content = pf.parse_pdf.invoke("fake-uuid-1234")
 
     assert isinstance(content, str)
     assert "Hello World" in content
@@ -41,4 +41,4 @@ def test_parse_pdf_invalid_attachment(monkeypatch):
     )
 
     with pytest.raises(FileNotFoundError):
-        pf.parse_pdf("non-existent-uuid")
+        pf.parse_pdf.invoke("non-existent-uuid")
