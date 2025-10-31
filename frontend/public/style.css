@@ -352,12 +352,12 @@ div#create-chat-button.collapsed:active {
 }
 
 /* .create-chat-input::placeholder {
-	color: transparent; 
+	color: transparent;
 	transition: color 2s ease-in-out;
 }
 
 .create-chat-input.fade-in::placeholder {
-	color: #aaa; 
+	color: #aaa;
 } */
 
 .input-field {
@@ -843,3 +843,77 @@ div#create-chat-button.collapsed:active {
 	cursor: default !important;
 	user-select: none;
 }
+
+
+/* Preserve user message newlines */
+.user-message .user-text-content {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+/* Dark background for fenced code blocks in agent messages */
+.agent-message pre {
+	background: #0b0b0b;
+	color: #eee;
+	border-radius: 8px;
+	overflow: auto;
+	margin: 12px 0;
+}
+.agent-message pre code {
+	background: transparent;
+	color: inherit;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: 0.95em;
+}
+/* Remove any extra wrapper frame */
+.md-pre {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+.code-block {
+	position: relative;
+	margin: 12px 0;
+	border-radius: 8px;
+}
+.code-copy-btn {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	padding: 4px 8px;
+	font-size: 12px;
+	border-radius: 6px;
+	border: 1px solid var(--border-secondary);
+	background: var(--bg-secondary);
+	color: var(--text-primary);
+	cursor: pointer;
+	opacity: 0.85;
+	transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.code-copy-btn:hover { opacity: 1; }
+.code-copy-btn:active { transform: scale(0.98); }
+
+/* Agent message margin and code copy button */
+.agent-message {
+	margin: 8px var(--message-offset-margin);
+}
+.code-block {
+	position: relative;
+}
+.code-copy-btn {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	padding: 4px 8px;
+	font-size: 12px;
+	border-radius: 6px;
+	border: 1px solid var(--border-secondary);
+	background: var(--bg-secondary);
+	color: var(--text-primary);
+	cursor: pointer;
+	opacity: 0.85;
+	transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.code-copy-btn:hover { opacity: 1; }
+.code-copy-btn:active { transform: scale(0.98); }
